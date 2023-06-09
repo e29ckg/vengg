@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ven_name_sub.color as color, 
                     ven_name_sub.price as price, 
                     ven_name_sub.id as vns_id,
-                    ven_name_sub.id as id,
+                    ven_name.id as id,
                     ven_name.srt as vn_srt,
                     ven_name_sub.srt as vns_srt
                 FROM ven_name 

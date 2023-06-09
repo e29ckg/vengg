@@ -9,7 +9,7 @@ Vue.createApp({
       },
       ven_name_form_act:'insert',
       ven_name_subs   :'',
-      ven_name_sub_form : {name : '', price:'',color:''},
+      ven_name_sub_form : {srt:0, name : '', price:0, color:'BlueViolet'},
       ven_name_sf_act:'insert',
       isLoading : false,
       colors:['BlueViolet','Blue','goldenrod','Green','cadetblue','Magenta','Violet','red','YellowGreen','Brown','Chocolate','DarkBlue','DarkCyan','Maroon']
@@ -17,21 +17,23 @@ Vue.createApp({
   },
   mounted(){
     this.url_base = window.location.protocol + '//' + window.location.host;
-    this.get_ven_names()
-    this.get_ven_name_subs()
+    this.get_works()
+    // this.get_ven_name_subs()
   },
   watch: {
     
   },
   methods: {
-    get_ven_names(){
+    get_works(){
       this.isLoading = true
-      axios.post('../../server/asu/get_ven_names.php')
-      .then(response => {
-          
-          if (response.data.status) {
-              this.ven_names = response.data.respJSON;
-          } 
+      axios.post('../../server/asu/work_name/get_works.php')
+      .then(response => {   
+        if (!response.data.status) {  
+          let icon = 'warning' 
+          let message = response.data.message
+          this.alert(icon,message,0)
+        }      
+        this.ven_names = response.data.respJSON;  
       })
       .catch(function (error) {
           console.log(error);
@@ -42,11 +44,14 @@ Vue.createApp({
     },
     get_ven_name(id){
       this.isLoading = true
-      axios.post('../../server/asu/get_ven_name.php',{id:id})
+      axios.post('../../server/asu/work_name/get_ven_name.php',{id:id})
       .then(response => {
-          if (response.data.status) {
-            this.ven_name_form = response.data.respJSON;
+          if (!response.data.status) {
+            let icon = 'warning' 
+            let message = response.data.message
+            this.alert(icon,message,0)
           } 
+          this.ven_name_form = response.data.respJSON;
       })
       .catch(function (error) {
           console.log(error);
@@ -57,10 +62,13 @@ Vue.createApp({
     },
     ven_name_save(){
       if(this.ven_name_form.name != '' ){
-          axios.post('../../server/asu/ven_name_act.php',{ven_name:this.ven_name_form, act:this.ven_name_form_act})
+          axios.post('../../server/asu/work_name/ven_name_act.php',{
+              ven_name:this.ven_name_form, 
+              act:this.ven_name_form_act
+            })
             .then(response => {
                 if (response.data.status) {
-                  this.get_ven_names()
+                  this.get_works()
                   let icon = 'success' 
                   this.alert(icon,response.data.message,1000)
                   this.$refs.close_ven_name_form.click()
@@ -106,11 +114,11 @@ Vue.createApp({
         confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
         if (result.isConfirmed) {
-          axios.post('../../server/asu/ven_name_act.php',{ven_name:this.ven_name_form,act:'delete'})
+          axios.post('../../server/asu/work_name/ven_name_act.php',{ven_name:this.ven_name_form,act:'delete'})
                 .then(response => {
                     
                     if (response.data.status) {
-                      this.get_ven_names()
+                      this.get_works()
                       let icon = 'success' 
                       this.alert(icon,response.data.message,1000)
                       this.$refs.close_ven_name_form.click()
@@ -131,7 +139,7 @@ Vue.createApp({
 
     get_ven_name_subs(){
       this.isLoading = true
-      axios.post('../../server/asu/get_ven_name_subs.php')
+      axios.post('../../server/asu/work_name/get_ven_name_subs.php')
       .then(response => {
           
           if (response.data.status) {
@@ -162,7 +170,7 @@ Vue.createApp({
       })      
     },
     clear_vnsf(){
-      this.ven_name_sub_form = {name : '', price:'',color:'', act:'insert'}
+      this.ven_name_sub_form = {srt:0, name : '', price:'',color:'BlueViolet', act:'insert'}
     },
     ven_name_update_show_form(id){
       this.ven_name_form_act = 'update'
@@ -175,13 +183,16 @@ Vue.createApp({
       this.ven_name_sf_act = 'insert'
     },
     ven_name_sub_save(){
-      // if(this.ven_name_sub_form.name != '' && this.ven_name_sub_form.price != ''){
-      if(this.ven_name_sub_form.name != '' ){
-        axios.post('../../server/asu/ven_name_sub_act.php',{ven_name_sub:this.ven_name_sub_form, act:this.ven_name_sf_act})
+      if(this.ven_name_sub_form.name != '' && this.ven_name_sub_form.price != ''){
+      // if(this.ven_name_sub_form.name != '' ){
+        axios.post('../../server/asu/work_name/ven_name_sub_act.php',{
+            ven_name_sub:this.ven_name_sub_form, 
+            act:this.ven_name_sf_act
+          })
           .then(response => {
               if (response.data.status) {
-                this.get_ven_names()
-                this.get_ven_name_subs()
+                this.get_works()
+                // this.get_ven_name_subs()
                 this.$refs.close_vnsf.click()
                 this.alert('success',response.data.message,1000)
                 // this.clear_vnsf()
@@ -214,8 +225,8 @@ Vue.createApp({
                 .then(response => {
                     
                     if (response.data.status) {
-                      this.get_ven_names()
-                      this.get_ven_name_subs()
+                      this.get_works()
+                      // this.get_ven_name_subs()
                       let icon = 'success' 
                       this.alert(icon,response.data.message,1000)
                       this.$refs.close_ven_name_form.click()

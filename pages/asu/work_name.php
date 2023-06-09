@@ -59,33 +59,33 @@ require_once('../../server/authen.php');
                                             <thead>
                                                 <tr>
                                                     <th colspan="2" class="text-center">
-                                                        {{vn.name}}
+                                                        {{vn.vn_srt + ' '+ vn.vn_name}}
                                                         <span >({{vn.DN == 'กลางวัน' ? '☀️' : ''}}{{vn.DN == 'กลางคืน' ? '🌙' : ''}} {{vn.DN}}) </span>
                                                     </th>
                                                     <th class="text-center">
-                                                        <button class="btn btn-warning btn-sm" @click="ven_name_usf(vn.id)">แก้ไขชื่อ</button>
+                                                        <button class="btn btn-warning btn-sm" @click="ven_name_usf(vn.vn_id)">แก้ไขชื่อ</button>
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody v-for="vns in ven_name_subs" >
-                                                <tr v-if="vn.id === vns.ven_name_id">
-                                                    <th scope="row">{{vns.srt}}</th>
+                                            <tbody v-for="vns in vn.ven_name_subs" >
+                                                <tr >
+                                                    <th scope="row">{{vns.vns_srt}}</th>
                                                     <td :style="'background-color: '+vns.color+'; color:white;'" v-if="vns.color">
-                                                        {{vns.name}} ({{vns.price ? '💰'+vns.price : '' }}) {{vns.color ? vns.color : ''}} 
+                                                        {{vns.vns_name}} ({{vns.price ? '💰'+vns.price : '' }}) {{vns.color ? vns.color : ''}} 
                                                     </td>
                                                     <td  v-else>
                                                         {{vns.name}} ({{vns.price ? '💰'+vns.price : '' }}) {{vns.color ? vns.color : ''}} 
                                                     </td>
                                                     <td class="text-center">
-                                                        <button @click="ven_name_s_up(vns.id)" class="btn btn-warning btn-sm me-1">แก้ไข</button>
-                                                        <button class="btn btn-danger btn-sm" @click="ven_name_s_del(vns.id)">ลบ</button>
+                                                        <button @click="ven_name_s_up(vns.vns_id)" class="btn btn-warning btn-sm me-1">แก้ไข</button>
+                                                        <button class="btn btn-danger btn-sm" @click="ven_name_s_del(vns.vns_id)">ลบ</button>
                                                     </td>
                                                 </tr>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
                                                     <td colspan="3" class="text-center">
-                                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#ven_name_sub" @click="vns_insert(vn.id)">
+                                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#ven_name_sub" @click="vns_insert(vn.vn_id)">
                                                             เพิ่มชื่อเวร
                                                         </button>
                                                         <!-- <button class="btn btn-success btn-sm">เพิ่มหน้าที่</button> -->
@@ -118,7 +118,7 @@ require_once('../../server/authen.php');
                                     <div class="row mb-3">                                        
                                         <div class="col mb-3">
                                             <label for="srt" class="form-label">ลำดับ</label>
-                                            <input type="number" min="1"  max="9" class="form-control" id="srt" v-model="ven_name_form.srt">
+                                            <input type="number" min="0"  max="9" class="form-control" id="srt" v-model="ven_name_form.srt">
                                         </div>
                                         <div class="col mb-3">
                                             <label for="namef" class="form-label">ชื่อเวร</label>

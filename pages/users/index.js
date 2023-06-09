@@ -295,9 +295,9 @@ Vue.createApp({
         this.isLoading = true;
         axios.post('../../server/users/user_search.php',{q:this.q})
           .then(response => {
-              if (response.data.status){
+              // if (response.data.status){
                 this.datas = response.data.respJSON;                    
-              }
+              // }
           })
           .catch(function (error) {
               console.log(error);

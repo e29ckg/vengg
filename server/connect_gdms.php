@@ -12,7 +12,7 @@ try {
     $conn_gdms->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 } catch(PDOException $e) {
     http_response_code(200);
-    $response = array('status'=>false,'message' => 'การเชื่อมต่อฐานข้อมูลล้มเหลว:'  . $e->getMessage());
+    $response = array('status'=>false,'message' => 'การเชื่อมต่อฐานข้อมูล GDMS ล้มเหลว:'  . $e->getMessage());
     echo json_encode($response);
     die();
 }

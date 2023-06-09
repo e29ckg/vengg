@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล ','respJSON' => $datas));
         exit;
     
     }catch(PDOException $e){
