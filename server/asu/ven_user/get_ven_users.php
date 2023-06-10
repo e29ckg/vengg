@@ -6,8 +6,8 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
-include "../connect.php";
-include "../function.php";
+include "../../connect.php";
+include "../../function.php";
 
 
 // The request is using the POST method
@@ -30,17 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = $query->fetchAll(PDO::FETCH_OBJ);            
             foreach($result as $rs){
                 array_push($datas, array(
-                    'id' => $rs->id,
-                    'user_id' => $rs->user_id,
-                    'order' => $rs->order,
-                    'ven_name' => $rs->ven_name,
-                    'u_name' => $rs->fname.$rs->name.' '.$rs->sname,
-                    'DN' => $rs->DN,
-                    'uvn' => $rs->uvn,
-                    'v_time' => $rs->v_time,
-                    'price' => $rs->price,
-                    'color' => $rs->color,
-                    'comment' => $rs->comment
+                    'id'        => $rs->id,
+                    'user_id'   => $rs->user_id,
+                    'order'     => $rs->order,
+                    'ven_name'  => $rs->ven_name,
+                    'u_name'    => $rs->fname.$rs->name.' '.$rs->sname,
+                    'DN'        => $rs->DN,
+                    'uvn'       => $rs->uvn,
+                    'v_time'    => $rs->v_time,
+                    'price'     => $rs->price,
+                    'color'     => $rs->color,
+                    'comment'   => $rs->comment
                 ));
 
             }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล'));
         exit;
     
     }catch(PDOException $e){

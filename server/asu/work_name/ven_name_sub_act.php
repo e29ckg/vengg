@@ -15,18 +15,29 @@ $data = json_decode(file_get_contents("php://input"));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $datas = array();
+    $errors = array();
+    
     $act    = $data->act;
     
     try{
         if($act == 'insert'){
-            $ven_name_sub   = $data->ven_name_sub;
-            $name           = $ven_name_sub->name;
-            $ven_name_id    = $ven_name_sub->ven_name_id;
-            $price          = $ven_name_sub->price;
-            $color          = $ven_name_sub->color;
-            $srt            = $ven_name_sub->srt;
+            // $ven_name_sub   = $data->ven_name_sub;
 
-            $sql = "INSERT INTO ven_name_sub(name, ven_name_id, price, color, srt) VALUE(:name, :ven_name_id, :price, :color, :srt);";        
+            isset($data->ven_name_sub) ?  $ven_name_sub = $data->ven_name_sub : array_push($errors,'ven_name_sub'); 
+            isset($ven_name_sub->name) ?  $name = $ven_name_sub->name           : array_push($errors,'name'); 
+            isset($ven_name_sub->ven_name_id) ?  $ven_name_id = $ven_name_sub->ven_name_id : array_push($errors,'ven_name_id'); 
+            isset($ven_name_sub->price) ?  $price = (int)$ven_name_sub->price   : array_push($errors,'price'); 
+            isset($ven_name_sub->color) ?  $color = $ven_name_sub->color        : array_push($errors,'color'); 
+            isset($ven_name_sub->srt)   ?  $srt = (int)$ven_name_sub->srt       : array_push($errors,'ลำดับ'); 
+            
+            if(count($errors)>0){
+                http_response_code(200);
+                echo json_encode(array('status' => false, 'message' => $errors));
+                exit;
+            }
+
+            $sql = "INSERT INTO ven_name_sub(name, ven_name_id, price, color, srt) 
+                    VALUE(:name, :ven_name_id, :price, :color, :srt);";        
             $query = $conn->prepare($sql);
             $query->bindParam(':name', $name, PDO::PARAM_STR);
             $query->bindParam(':ven_name_id', $ven_name_id, PDO::PARAM_INT);
@@ -40,12 +51,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;                
         }    
         if($act == 'update'){
-            $ven_name_sub   = $data->ven_name_sub;
-            $id             = $ven_name_sub->id;
-            $name           = $ven_name_sub->name;
-            $price          = $ven_name_sub->price;
-            $color          = $ven_name_sub->color;
-            $srt            = $ven_name_sub->srt;
+            // $ven_name_sub   = $data->ven_name_sub;
+            // $id             = $ven_name_sub->id;
+            // $name           = $ven_name_sub->name;
+            // $price          = (int)$ven_name_sub->price;
+            // $color          = $ven_name_sub->color;
+            // $srt            = (int)$ven_name_sub->srt;
+
+            isset($data->ven_name_sub)  ?  $ven_name_sub = $data->ven_name_sub : array_push($errors,'ven_name_sub'); 
+            isset($ven_name_sub->id)    ?  $id = $ven_name_sub->id              : array_push($errors,'ven_name_sub'); 
+            isset($ven_name_sub->name)  ?  $name = $ven_name_sub->name          : array_push($errors,'name'); 
+            isset($ven_name_sub->ven_name_id) ?  $ven_name_id = $ven_name_sub->ven_name_id : array_push($errors,'ven_name_id'); 
+            isset($ven_name_sub->price) ?  $price = (int)$ven_name_sub->price   : array_push($errors,'price'); 
+            isset($ven_name_sub->color) ?  $color = $ven_name_sub->color        : array_push($errors,'color'); 
+            isset($ven_name_sub->srt)   ?  $srt = (int)$ven_name_sub->srt       : array_push($errors,'ลำดับ'); 
+            
+            if(count($errors)>0){
+                http_response_code(200);
+                echo json_encode(array('status' => false, 'message' => $errors));
+                exit;
+            }
 
             $sql = "UPDATE ven_name_sub SET name =:name, price=:price, color=:color, srt=:srt WHERE id = :id";   
 
@@ -64,17 +89,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if($act == 'delete'){
 
             $id     = $data->id;
-            $sql = "DELETE FROM ven_name_sub WHERE id = $id";
-            $conn->exec($sql);
+
+            $sql    = "SELECT vn.name AS vn_name, vns.name AS vns_name, vn.DN
+                        FROM ven_name_sub AS vns
+                        INNER JOIN ven_name AS vn ON vn.id = vns.ven_name_id
+                        WHERE vns.id = :id
+                        ";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':id',$id, PDO::PARAM_INT);
+            $query->execute();
+            if($query->rowCount()){
+                $res_vns = $query->fetch(PDO::FETCH_OBJ);    
+                $sql    = "DELETE FROM ven_user                        
+                            WHERE ven_name =:ven_name AND uvn =:uvn AND DN =:DN";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':ven_name',$res_vns->vn_name, PDO::PARAM_STR);
+                $query->bindParam(':uvn',$res_vns->vns_name, PDO::PARAM_STR);
+                $query->bindParam(':DN',$res_vns->DN, PDO::PARAM_STR);
+                $query->execute();
+
+                $sql    = "DELETE FROM ven_name_sub WHERE id = $id";
+                $conn->exec($sql);
+                http_response_code(200);
+                echo json_encode(array('status' => true, 'message' => 'DEL ok', 'resp'=>$res_vns));
+                exit;                
+            }
+
 
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'DEL ok'));
+            echo json_encode(array('status' => false, 'message' => 'ไม่สำเร็จ'));
             exit;                
         }  
         
         
     }catch(PDOException $e){
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }

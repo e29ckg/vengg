@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
+        if($query->rowCount() > 0){
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
             exit;

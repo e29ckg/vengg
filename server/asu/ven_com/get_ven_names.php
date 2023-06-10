@@ -6,34 +6,41 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
-include "../connect.php";
-include "../function.php";
+include "../../connect.php";
+include "../../function.php";
 
-
-$data = json_decode(file_get_contents("php://input"));
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $datas = array();
 
     try{
-        $id = $data->id;
-
-        $sql = "SELECT * FROM ven_com WHERE id =:id";
+        // $sql = "SELECT * FROM ven_name ORDER BY srt ASC";
+        $sql = "SELECT 
+                    ven_name.id as id,
+                    ven_name.name as name, 
+                    ven_name.DN as DN, 
+                    ven_name.srt as srt
+                FROM ven_name 
+                ORDER BY ven_name.srt ASC";
         $query = $conn->prepare($sql);
-        $query->bindParam(':id',$id, PDO::PARAM_INT);
         $query->execute();
-        $result = $query->fetch(PDO::FETCH_OBJ);
+        $datas = $query->fetchAll(PDO::FETCH_OBJ);
 
         if($query->rowCount() > 0){                        //count($result)  for odbc
             
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
+            echo json_encode(array(
+                'status' => true, 
+                'message' => 'สำเร็จ', 
+                'respJSON' => $datas
+            ));
             exit;
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล ','respJSON' => $datas));
         exit;
     
     }catch(PDOException $e){

@@ -50,7 +50,7 @@ Vue.createApp({
     vc_save(){
       if(this.vc_form.ven_com_num != '' && this.vc_form.ven_com_date != '' && this.vc_form.ven_month != '' && this.vc_form.ven_name != ''){
         this.isLoading = true
-        axios.post('../../server/asu/ven_com_act.php',{vc:this.vc_form, act:this.vc_form_act})
+        axios.post('../../server/asu/ven_com/ven_com_act.php',{vc:this.vc_form, act:this.vc_form_act})
         .then(response => {
             if (response.data.status) {
               this.$refs.close_vc.click()
@@ -92,7 +92,7 @@ Vue.createApp({
       }).then((result) => {
         if (result.isConfirmed) {
           this.isLoading = true;
-          axios.post('../../server/asu/ven_com_act.php',{id:id, act:'delete'})
+          axios.post('../../server/asu/ven_com/ven_com_act.php',{id:id, act:'delete'})
             .then(response => {
                 if (response.data.status) { 
                   this.$refs.close_vc.click()
@@ -113,7 +113,7 @@ Vue.createApp({
     },
     vc_status(id,st){
       this.isLoading = true;
-      axios.post('../../server/asu/ven_com_act.php',{id:id, act:'status', st:st})
+      axios.post('../../server/asu/ven_com/ven_com_act.php',{id:id, act:'status', st:st})
             .then(response => {
                 if (response.data.status) { 
                   this.get_ven_coms()
@@ -133,7 +133,7 @@ Vue.createApp({
 
     get_ven_coms(){
       this.isLoading = true
-      axios.post('../../server/asu/get_ven_coms.php')
+      axios.post('../../server/asu/ven_com/get_ven_coms.php')
       .then(response => {
           if (response.data.status) {
               this.ven_coms = response.data.respJSON;
@@ -153,7 +153,7 @@ Vue.createApp({
     },
     get_ven_names(){
       this.isLoading = true
-      axios.post('../../server/asu/get_ven_names.php')
+      axios.post('../../server/asu/ven_com/get_ven_names.php')
       .then(response => {
           if (response.data.status) {
               this.ven_names = response.data.respJSON;
@@ -168,7 +168,7 @@ Vue.createApp({
     },
     get_ven_com(id){
       this.isLoading = true
-      axios.post('../../server/asu/get_ven_com.php',{id:id})
+      axios.post('../../server/asu/ven_com/get_ven_com.php',{id:id})
       .then(response => {
           if (response.data.status) {
               this.vc_form = response.data.respJSON;
@@ -198,124 +198,6 @@ Vue.createApp({
       return result = month_th[( date.getMonth()+1 )]+" "+( date.getFullYear()+543 );
     },
 
-
-
-
-
-
-    get_ven_name_subs(){
-      this.isLoading = true
-      axios.post('../../server/asu/get_ven_name_subs.php')
-      .then(response => {
-          if (response.data.status) {
-              this.ven_name_subs = response.data.respJSON;
-          } 
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      })
-    },
-    get_ven_users(){
-      this.isLoading = true
-      axios.post('../../server/asu/get_ven_users.php')
-      .then(response => {
-          if (response.data.status) {
-              this.ven_users = response.data.respJSON;
-          } 
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      })
-    },
-    get_users(){
-      axios.post('../../server/users/users.php')
-      .then(response => {
-          if (response.data.status) {
-              this.users = response.data.respJSON;
-          } 
-      })
-    },
-    vu_add(vni,vnsi){
-      this.$refs.show_vu_form.click()
-      this.vu_form.ven_name  = this.ven_names[vni].name
-      this.vu_form.uvn    = this.ven_name_subs[vnsi].name
-      this.vu_form.DN     = this.ven_names[vni].DN
-      this.vu_form.v_time = this.DN[this.ven_names[vni].DN] +':'+this.ven_names[vni].srt + this.ven_name_subs[vnsi].srt
-      this.vu_form.price  = this.ven_name_subs[vnsi].price
-      this.vu_form.color  = this.ven_name_subs[vnsi].color
-      
-      
-    },
-    clear_vu_form(){
-      this.vu_form = {user_id :'',order : '',DN : '',price : '',ven_name : '',uvn : '',v_time : '',color : ''}
-    },
-
-    vu_save(){
-      if(this.vu_form.user_id != '' && this.vu_form.order != ''){
-        this.isLoading = true;
-        axios.post('../../server/asu/user_ven_act.php',{ven_user:this.vu_form, act:this.vu_form_act})
-        .then(response => {
-            if (response.data.status) {            
-              this.$refs.close_vu.click()
-              this.get_ven_names()
-              this.get_ven_name_subs()
-              this.get_ven_users()
-              this.get_users()
-              this.alert('success',response.data.message,1500)
-                // this.ven_name_subs = response.data.respJSON;
-            } 
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        })
-      }else{
-        const message = []
-        if(this.vu_form.user_id == ''){message.push('กรุณาเลือกชื่อ')}
-        if(this.vu_form.order == ''){message.push('กรุณากรอกลำดับที่')}
-        this.alert('warning',message,0)
-      }
-    },
-    vu_del(id){
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          axios.post('../../server/asu/user_ven_act.php',{id:id, act:'delete'})
-            .then(response => {
-                if (response.data.status) {  
-                  this.get_ven_names()
-                  this.get_ven_name_subs()
-                  this.get_ven_users()
-                  this.get_users()
-                  this.alert('success',response.data.message,1500)
-                }else{
-                  this.alert('warning',response.data.message,0)
-                } 
-            })
-            .catch(function (error) {
-                console.log(error);
-            })
-            .finally(() => {
-              this.isLoading = false;
-            })
-        }
-      })
-    },
 
     alert(icon,message,timer=0){
       swal.fire({

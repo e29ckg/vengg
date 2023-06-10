@@ -6,8 +6,8 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
-include "../connect.php";
-include "../function.php";
+include "../../connect.php";
+include "../../function.php";
 
 
 $data = json_decode(file_get_contents("php://input"));
@@ -15,17 +15,16 @@ $data = json_decode(file_get_contents("php://input"));
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $datas = array();    
-    $act = $data->act;
+    $datas  = array();    
+    $act    = $data->act;
 
-    
     try{
         if($act == 'insert'){
             $ven_user   = $data->ven_user; 
             $user_id    = $ven_user->user_id;
 
-            $sql = "SELECT fname, name, sname FROM profile WHERE user_id =:user_id";
-            $query = $conn->prepare($sql);
+            $sql    = "SELECT fname, name, sname FROM profile WHERE user_id =:user_id";
+            $query  = $conn->prepare($sql);
             $query->bindParam(':user_id',$user_id, PDO::PARAM_INT);
             $query->execute();
             $result = $query->fetch(PDO::FETCH_OBJ);
@@ -35,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ven_name   = $ven_user->ven_name;
             $uvn        = $ven_user->uvn;
             $DN         = $ven_user->DN;
-            $v_time     = $ven_user->v_time;
+            $v_time     = Date("H:i:s", strtotime($ven_user->v_time));
             $price      = $ven_user->price;
             $color      = $ven_user->color;
             $comment    = "";
@@ -58,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->execute();
 
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $data ));
+            echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $data));
             exit;                
         }    
         if($act == 'update'){
@@ -80,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;                
         }  
         if($act == 'delete'){
-            $id     = $data->id;
+            $id  = $data->id;
             $sql = "DELETE FROM ven_user WHERE id = $id";
             $conn->exec($sql);
 
@@ -91,7 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'no content'));
         exit;  
-        
         
     }catch(PDOException $e){
         http_response_code(400);

@@ -13,8 +13,8 @@ $data = json_decode(file_get_contents("php://input"));
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     $datas = array();    
-
 
     try{   
         $sb_uvn = $data->uvn;

@@ -3,6 +3,7 @@
 <title>Pkkjc - VenGG00</title>
 <link rel="shortcut icon" href="../../assets/images/favicon/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="../../assets/css/bootstrap.css">
+<link rel="stylesheet" href="../../node_modules/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
 
 <link rel="stylesheet" href="../../assets/vendors/iconly/bold.css">
 
@@ -10,6 +11,16 @@
 <link rel="stylesheet" href="../../assets/vendors/bootstrap-icons/bootstrap-icons.css">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../node_modules/sweetalert2/dist/sweetalert2.min.css">
+
+<!-- Styles -->
+<!-- <link rel="stylesheet" href="../../node_modules/select2-bootstrap-5-theme/dist/css/select2.min.css" /> -->
+<!-- <link rel="stylesheet" href="../../node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css" /> -->
+<!-- Or for RTL support -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" /> -->
+
+
+
+
 
 <style>
     [v-cloak] > * { display:none; }

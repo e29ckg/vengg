@@ -14,31 +14,26 @@ $data = json_decode(file_get_contents("php://input"));
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     $datas = array();
 
     try{
+        $id = $data->id;
 
-        $ven_name   = $data->ven_name;
-        $uvn        = $data->uvn;
-        $uvn_sst    = '';
-        
-        $sql = "SELECT * FROM ven_user WHERE ven_name = :ven_name AND uvn =:uvn ORDER BY ven_user.order ASC";
-
+        $sql = "SELECT * FROM ven_com WHERE id =:id";
         $query = $conn->prepare($sql);
-        $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
-        $query->bindParam(':uvn',$uvn, PDO::PARAM_STR);
+        $query->bindParam(':id',$id, PDO::PARAM_INT);
         $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
+        $result = $query->fetch(PDO::FETCH_OBJ);
 
-        if($query->rowCount() > 0){
+        if($query->rowCount() > 0){                        //count($result)  for odbc
+            
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ'.strlen($uvn) , 'respJSON' => $result));
+            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
             exit;
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล'));
+        echo json_encode(array('status' => true, 'message' => 'ไม่พบข้อมูล ','respJSON' => $result));
         exit;
     
     }catch(PDOException $e){

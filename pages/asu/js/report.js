@@ -25,7 +25,7 @@ Vue.createApp({
   methods: {
     get_ven_coms(){
       // this.isLoading = true
-      axios.post('../../server/asu/get_ven_coms.php')
+      axios.post('../../server/asu/report/get_ven_coms.php')
       .then(response => {
           if (response.data.status) {
               this.ven_coms = response.data.respJSON;

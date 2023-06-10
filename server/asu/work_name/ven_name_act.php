@@ -16,14 +16,25 @@ $data = json_decode(file_get_contents("php://input"));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $datas = array();
+    $errors = array();
     $ven_name    = $data->ven_name; 
     $act         = $data->act;
 
     try{
         if($act == 'insert'){
-            $name   = $ven_name->name;
-            $srt    = $ven_name->srt;
-            $DN     = $ven_name->DN;
+            // $name   = $ven_name->name;
+            // $srt    = (int)$ven_name->srt;
+            // $DN     = $ven_name->DN;
+
+            isset($ven_name->name)  ?  $name = $ven_name->name      : array_push($errors,'ชื่อ'); 
+            isset($ven_name->srt)   ?  $srt = (int)$ven_name->srt   : array_push($errors,'ลำดับ'); 
+            isset($ven_name->DN)    ?  $DN  = $ven_name->DN         : array_push($errors,'กลางวัน/กลางคืน'); 
+            
+            if(count($errors)>0){
+                http_response_code(200);
+                echo json_encode(array('status' => false, 'message' => $errors));
+                exit;
+            }
 
             $sql = "INSERT INTO ven_name(name, DN, srt) VALUE(:name, :DN, :srt);";        
             $query = $conn->prepare($sql);
@@ -40,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id     = $ven_name->id;
             $name   = $ven_name->name;
             $DN     = $ven_name->DN;
-            $srt    = $ven_name->srt;
+            $srt    = (int)$ven_name->srt;
 
             $sql = "UPDATE ven_name SET name =:name, DN=:DN, srt=:srt WHERE id = :id";   
 
@@ -57,21 +68,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }  
         if($act == 'delete'){
             $id     = $ven_name->id;
-            
-            $sql = "DELETE FROM ven_name WHERE id = $id";
-            $conn->exec($sql);
 
-            $sql = "DELETE FROM ven_name_sub WHERE ven_name_id = $id";
-            $conn->exec($sql);
+            $sql    =   "SELECT vn.name AS vn_name
+                        FROM ven_name AS vn                     
+                        WHERE vn.id = :id";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':id', $id, PDO::PARAM_INT);
+            $query->execute();
+            if($query->rowCount()){
+                $res_vn = $query->fetch(PDO::FETCH_OBJ);    
+                $sql    = "DELETE FROM ven_user                        
+                            WHERE ven_name =:ven_name";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':ven_name',$res_vn->vn_name, PDO::PARAM_STR);
+                $query->execute();
+
+                $sql = "DELETE FROM ven_name WHERE id = $id";
+                $conn->exec($sql);
+    
+                $sql = "DELETE FROM ven_name_sub WHERE ven_name_id = $id";
+                $conn->exec($sql);
+    
+                http_response_code(200);
+                echo json_encode(array('status' => true, 'message' => 'DEL ok'));
+                exit;                
+            }
 
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'DEL ok'));
-            exit;                
-        }  
-        
+            echo json_encode(array('status' => false, 'message' => 'unchanged'));
+            exit;  
+        }          
         
     }catch(PDOException $e){
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }

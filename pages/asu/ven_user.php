@@ -6,13 +6,8 @@ require_once('../../server/authen.php');
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    
 <?php require_once('../includes/_header.php') ?>
-<!-- Styles -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-<!-- Or for RTL support -->
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" /> -->
 
 </head>
 <body>
@@ -29,17 +24,17 @@ require_once('../../server/authen.php');
                 <h3>เตรียมผู้อยู่เวร</h3>
             </div>
             
-            <div class="page-content" id="userVen" v-cloak>                 
+            <div class="page-content" id="venUser" v-cloak> 
                 <!-- {{ven_names}}             -->
                 <!-- {{ven_name_subs}}             -->
                 <!-- {{ven_users}}             -->
                 <!-- {{users}} -->
                 <section class="row" v-for="vn, index in ven_names">
                     <div class="card-body" >
-                        <h5 class="card-title" :style="'background-color: '+vn.color+' ; color:white;'" >{{vn.vn_name}} ({{vn.vns_DN == 'กลางวัน' ? '☀️' : '🌙'}} {{vn.DN}}) {{vn.vns_name}} </h5>
+                        <h5 class="card-title" :style="'background-color: '+vn.color+' ; color:white;'" >{{vn.vn_name}} ({{vn.DN == 'กลางวัน' ? '☀️' : '🌙'}} {{vn.DN}}) {{vn.vns_name}} </h5>
                                 
                         <!-- {{vn}} -->
-                        <div v-if="ven_users.length > 0" v-for="vu in ven_users" >
+                        <div v-if="ven_users" v-for="vu in ven_users" >
                             <li class="list-group-item" v-if="vu.ven_name == vn.vn_name && vn.vns_name == vu.uvn">
                                 <!-- {{vu}} -->
                                 {{vn.vns_DN == 'กลางวัน' ? '☀️' : '🌙'}}{{vu.order + ' ' +vu.u_name + ' '}}  
@@ -78,7 +73,7 @@ require_once('../../server/authen.php');
                                     <div class="row mb-3">                                        
                                         <div class="col mb-3">
                                             <label for="srt" class="form-label">ลำดับ</label>
-                                            <input type="number" min="1" class="form-control" id="srt" v-model="vu_form.order">
+                                            <input type="number" min="0" class="form-control" id="srt" v-model="vu_form.order">
                                         </div>
                                         <div class="col mb-3">
                                             <label for="nameuf" class="form-label">ชื่อ</label>
@@ -115,10 +110,7 @@ require_once('../../server/authen.php');
     </div>
     
     <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-   
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    
     <script src="../../assets/js/main.js"></script>
 
     <!--  -->
@@ -127,7 +119,7 @@ require_once('../../server/authen.php');
     <script src="../../node_modules/axios/dist/axios.js"></script>
     <script src="../../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
     <!-- Scripts -->
-    <script src="./js/user_ven.js"></script>
+    <script src="./js/ven_user.js"></script>
     
 </body>
 

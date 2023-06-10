@@ -6,48 +6,57 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
-include "../connect.php";
-include "../function.php";
+include "../../connect.php";
+include "../../function.php";
 
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $datas = array();
-
+    $datas      = array();
+    
     try{
         // $sql = "SELECT * FROM ven_name ORDER BY srt ASC";
         $sql = "SELECT 
                     ven_name.name as vn_name, 
-                    ven_name.DN as vns_DN, 
+                    ven_name.DN as DN, 
                     ven_name_sub.name as vns_name, 
                     ven_name_sub.color as color, 
                     ven_name_sub.price as price, 
                     ven_name_sub.id as vns_id,
-                    ven_name.id as id,
+                    ven_name.id as vn_id,
+                    ven_name_sub.ven_name_id as vns_vn_id,
                     ven_name.srt as vn_srt,
                     ven_name_sub.srt as vns_srt
                 FROM ven_name 
                 INNER JOIN ven_name_sub
-                ON ven_name.id = ven_name_sub.ven_name_id
-                ORDER BY ven_name.srt ASC, vns_srt ASC";
+                ON ven_name.id = ven_name_sub.ven_name_id 
+                ORDER BY ven_name.srt ASC, ven_name_sub.srt ASC";
         $query = $conn->prepare($sql);
         $query->execute();
-        $datas = $query->fetchAll(PDO::FETCH_OBJ);
+        $resps = $query->fetchAll(PDO::FETCH_OBJ);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
+
+        if($query->rowCount() > 0){ 
+            $ven_names  = array();                   
+            $ven_name = '';   
+                      
             
+                        
             http_response_code(200);
             echo json_encode(array(
                 'status' => true, 
                 'message' => 'สำเร็จ', 
-                'respJSON' => $datas
+                // 'ven_name' => $ven_names,
+                'resp' => $resps,
+                'respJSON' => $resps,
+                // 'respJSON' => $datas,
             ));
             exit;
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล','respJSON' => $datas));
         exit;
     
     }catch(PDOException $e){

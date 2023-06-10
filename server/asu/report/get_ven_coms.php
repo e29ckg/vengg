@@ -6,8 +6,8 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
-include "../connect.php";
-include "../function.php";
+include "../../connect.php";
+include "../../function.php";
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,7 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
        
 
         $res_g = array();
-        $sql = "SELECT * FROM ven_com ORDER BY ven_month DESC,ven_com_num ASC LIMIT 100";
+        $sql = "SELECT *
+                FROM ven_com
+                ORDER BY ven_month DESC, CAST(ven_com_num AS DECIMAL) 
+                LIMIT 100
+                ";
         $query = $conn->prepare($sql);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);

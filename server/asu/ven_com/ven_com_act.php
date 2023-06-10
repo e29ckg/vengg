@@ -6,8 +6,8 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
-include "../connect.php";
-include "../function.php";
+include "../../connect.php";
+include "../../function.php";
 
 $data = json_decode(file_get_contents("php://input"));
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bindParam(':ven_com_num',$ven_com_num, PDO::PARAM_STR);
             $query->bindParam(':ven_com_date',$ven_com_date, PDO::PARAM_STR);
             $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_name',$ven_com_name, PDO::PARAM_STR);
+            $query->bindParam(':ven_com_name',$ven_name, PDO::PARAM_STR);
             $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
             $query->bindParam(':ref',$ref , PDO::PARAM_STR);
             $query->bindParam(':status',$status , PDO::PARAM_INT);
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->execute();
             $result = $query->fetchAll(PDO::FETCH_OBJ);
 
-            if($query->rowCount()){
+            if($query->rowCount() > 0){
                 http_response_code(200);
                 echo json_encode(array('status' => false, 'message' => 'ไม่สามารถลบได้'));
                 exit;   
