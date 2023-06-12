@@ -22,17 +22,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
-            foreach($result as $rs){
-                array_push($datas,array(
-                    'id'    => $rs->id,
-                    'name'  => $rs->name,
-                    'DN'  => $rs->DN,
-                    'srt'  => $rs->srt
-                ));
-            }
+        if($query->rowCount() > 0){                       
+            // foreach($result as $rs){
+            //     array_push($datas,array(
+            //         'id'    => $rs->id,
+            //         'name'  => $rs->name,
+            //         'DN'  => $rs->DN,
+            //         'srt'  => $rs->srt
+            //     ));
+            // }
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
+            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
             exit;
         }
      

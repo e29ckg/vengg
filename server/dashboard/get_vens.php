@@ -24,11 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         $res = $query->fetchAll(PDO::FETCH_OBJ);
         
 
-        $sql = "SELECT id, ven_date, ven_time, user_id, u_name, u_role, DN, price, ven_com_name, ven.status
-        FROM ven    
-        WHERE status = 1 OR status = 2
-        ORDER BY ven_date DESC, ven_time ASC
-        LIMIT 800";
+        $sql = "SELECT v.id, v.ven_date, v.ven_time, v.user_id, v.u_role, v.DN, v.price, v.color, v.ven_com_name, v.status, p.fname, p.`name`, p.sname
+                FROM ven AS v
+                INNER JOIN `profile` AS p ON v.user_id = p.id
+                WHERE v.status = 1 OR v.status = 2
+                ORDER BY v.ven_date DESC, v.ven_time ASC
+                LIMIT 800";
         $query = $conn->prepare($sql);
         $query->execute();
         
@@ -36,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $result = $query->fetchAll(PDO::FETCH_OBJ);
             foreach($result as $rs){
                 $rs->DN == 'กลางวัน' ? $d = '☀️' : $d = '🌙';
-                $bgcolor = getColor($res, $rs->u_role, $rs->price, $rs->ven_com_name);
+                $bgcolor = $rs->color;
                 if($rs->status == 2 ){
                     $bgcolor ='Yellow' ;
                     $textC = 'black';
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 }
                 array_push($datas,array(
                     'id'    => $rs->id,
-                    'title' => $d.' '.$rs->u_name,
+                    'title' => $d.' '.$rs->fname.$rs->name.' '.$rs->sname,
                     'start' => $rs->ven_date.' '.$rs->ven_time,
                     'allDay' => true,
                     'backgroundColor' => $bgcolor,

@@ -14,46 +14,77 @@ include "../../function.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $datas = array();
+    
 
     try{
         
-        // $sql = "SELECT * FROM ven_user ORDER BY v_time ASC, `order` ASC";
-        $sql = "SELECT vu.*, pr.fname, pr.`name`, pr.sname
-                FROM ven_user as vu
-                INNER JOIN `profile` as pr
-                ON vu.user_id = pr.id
-                ORDER BY vu.v_time ASC, vu.`order` ASC;";
-        $query = $conn->prepare($sql);
-        $query->execute();
+        $sql_wn = "SELECT 
+                        ven_name.id AS vn_id, 
+                        ven_name.name AS vn_name,
+                        ven_name.DN,
+                        ven_name.srt AS vn_srt,
+                        ven_name_sub.id as vns_id,
+                        ven_name_sub.name as vns_name,
+                        ven_name_sub.price,
+                        ven_name_sub.color,
+                        ven_name_sub.srt AS vns_srt
+                    FROM ven_name 
+                    INNER JOIN ven_name_sub
+                    ON ven_name.id = ven_name_sub.ven_name_id 
+                    ORDER BY ven_name.srt ASC, ven_name_sub.srt ASC";
+        $query_wn = $conn->prepare($sql_wn);
+        $query_wn->execute();
+        $res_wn = $query_wn->fetchAll(PDO::FETCH_OBJ);
         
-        if($query->rowCount() > 0){  
-            $result = $query->fetchAll(PDO::FETCH_OBJ);            
-            foreach($result as $rs){
+
+        if($query_wn->rowCount() > 0){  
+
+            foreach($res_wn as $rs_wn){
+
+                $sql_u = "SELECT vu.*, pr.fname, pr.`name`, pr.sname
+                        FROM ven_user as vu
+                        INNER JOIN `profile` as pr
+                        ON vu.user_id = pr.id
+                        WHERE vu.vn_id = $rs_wn->vn_id AND vu.vns_id = $rs_wn->vns_id
+                        ORDER BY vu.`order` ASC;";
+                $query_u = $conn->prepare($sql_u);
+                $query_u->execute();
+
+                $users = array();    
+                
+                foreach($query_u->fetchAll(PDO::FETCH_OBJ) as $u){
+                    array_push($users,array(
+                        "vu_id" => $u->vu_id,
+                        "user_id" => $u->user_id,
+                        "order" => $u->order,
+                        "vn_id" => $u->vn_id,
+                        "vns_id" => $u->vns_id,
+                        "name" => $u->fname.$u->name.' '.$u->sname,
+                    ));
+                }
+
+                http_response_code(200);
                 array_push($datas, array(
-                    'id'        => $rs->id,
-                    'user_id'   => $rs->user_id,
-                    'order'     => $rs->order,
-                    'ven_name'  => $rs->ven_name,
-                    'u_name'    => $rs->fname.$rs->name.' '.$rs->sname,
-                    'DN'        => $rs->DN,
-                    'uvn'       => $rs->uvn,
-                    'v_time'    => $rs->v_time,
-                    'price'     => $rs->price,
-                    'color'     => $rs->color,
-                    'comment'   => $rs->comment
-                ));
+                    "vn_id" => $rs_wn->vn_id,
+                    "vns_id" => $rs_wn->vns_id,
+                    "vn_name" => $rs_wn->vn_name,
+                    "vns_name" => $rs_wn->vns_name,
+                    "color" => $rs_wn->color,
+                    "users" => $users,
 
+                ));                
+                
             }
-            
-
-            http_response_code(200);
             echo json_encode(array(
                 'status' => true, 
                 'message' => 'สำเร็จ', 
+                'resps' => $res_wn,
                 'respJSON' => $datas
             ));
             exit;
+
         }
+
      
         http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล'));

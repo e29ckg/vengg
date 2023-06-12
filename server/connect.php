@@ -4,14 +4,14 @@ error_reporting(E_ALL);
 // error_reporting(0);
 
 define("__GOOGLE_CALENDAR__", false);           // true : false
-define("__LOGIN_BY__", "");                     // vengg : gdms
+define("__LOGIN_BY__", "gdms");                     // vengg : gdms
 define("__VERSION__", "V 2.0.9");               // version
 
 date_default_timezone_set("Asia/Bangkok");
 
 $servername = "localhost";
 $username   = "root";
-$password   = "rgpk;N900";
+$password   = "";
 $dbname     = "vengg";
 
 /** เชื่อมต่อฐานข้อมูลด้วย PHP PDO */

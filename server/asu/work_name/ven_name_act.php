@@ -62,42 +62,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bindParam(':id',$id, PDO::PARAM_INT);
             $query->execute();         
 
+            $sql = "UPDATE ven SET ven_com_name =:ven_com_name, ven_name =:name, DN=:DN WHERE vn_id = :id";   
+
+            $query = $conn->prepare($sql);
+            $query->bindParam(':ven_com_name',$name, PDO::PARAM_STR);
+            $query->bindParam(':name',$name, PDO::PARAM_STR);
+            $query->bindParam(':DN',$DN, PDO::PARAM_STR);
+            $query->bindParam(':id',$id, PDO::PARAM_INT);
+            $query->execute();         
+
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $datas));
             exit;                
         }  
         if($act == 'delete'){
-            $id     = $ven_name->id;
+            $vn_id     = $ven_name->id;
 
-            $sql    =   "SELECT vn.name AS vn_name
-                        FROM ven_name AS vn                     
-                        WHERE vn.id = :id";
-            $query = $conn->prepare($sql);
-            $query->bindParam(':id', $id, PDO::PARAM_INT);
-            $query->execute();
-            if($query->rowCount()){
-                $res_vn = $query->fetch(PDO::FETCH_OBJ);    
-                $sql    = "DELETE FROM ven_user                        
-                            WHERE ven_name =:ven_name";
-                $query = $conn->prepare($sql);
-                $query->bindParam(':ven_name',$res_vn->vn_name, PDO::PARAM_STR);
-                $query->execute();
+            $sql = "DELETE FROM ven_name WHERE id = $vn_id";
+            $conn->exec($sql);
 
-                $sql = "DELETE FROM ven_name WHERE id = $id";
-                $conn->exec($sql);
-    
-                $sql = "DELETE FROM ven_name_sub WHERE ven_name_id = $id";
-                $conn->exec($sql);
-    
-                http_response_code(200);
-                echo json_encode(array('status' => true, 'message' => 'DEL ok'));
-                exit;                
-            }
+            $sql = "DELETE FROM ven_name_sub WHERE ven_name_id = $vn_id";
+            $conn->exec($sql);
+
+            $sql = "DELETE FROM ven_user WHERE vn_id = $vn_id";
+            $conn->exec($sql);
 
             http_response_code(200);
-            echo json_encode(array('status' => false, 'message' => 'unchanged'));
-            exit;  
-        }          
+            echo json_encode(array('status' => true, 'message' => 'DEL ok'));
+            exit;                
+        }   
         
     }catch(PDOException $e){
         http_response_code(200);

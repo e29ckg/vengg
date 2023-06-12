@@ -8,6 +8,11 @@ require_once('../../server/authen.php');
 <head>
     
 <?php require_once('../includes/_header.php') ?>
+<!-- Styles -->
+<link rel="stylesheet" href="../../node_modules/select2-bootstrap-5-theme/dist/css/select2.min.css" />
+<link rel="stylesheet" href="../../node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css" />
+<!-- Or for RTL support -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" /> -->
 
 </head>
 <body>
@@ -25,22 +30,21 @@ require_once('../../server/authen.php');
             </div>
             
             <div class="page-content" id="venUser" v-cloak> 
-                <!-- {{ven_names}}             -->
-                <!-- {{ven_name_subs}}             -->
-                <!-- {{ven_users}}             -->
+                <!-- {{datas}}             -->
                 <!-- {{users}} -->
-                <section class="row" v-for="vn, index in ven_names">
+
+                <section class="row" v-for="data, index in datas">
                     <div class="card-body" >
-                        <h5 class="card-title" :style="'background-color: '+vn.color+' ; color:white;'" >{{vn.vn_name}} ({{vn.DN == 'กลางวัน' ? '☀️' : '🌙'}} {{vn.DN}}) {{vn.vns_name}} </h5>
+                        <h5 class="card-title" :style="'background-color: '+data.color+' ; color:white;'" >
+                            {{data.vn_name}} ({{data.DN == 'กลางวัน' ? '☀️' : '🌙'}} {{data.DN}}) {{data.vns_name}} 
+                        </h5>
                                 
-                        <!-- {{vn}} -->
-                        <div v-if="ven_users" v-for="vu in ven_users" >
-                            <li class="list-group-item" v-if="vu.ven_name == vn.vn_name && vn.vns_name == vu.uvn">
-                                <!-- {{vu}} -->
-                                {{vn.vns_DN == 'กลางวัน' ? '☀️' : '🌙'}}{{vu.order + ' ' +vu.u_name + ' '}}  
-                                <!-- {{vu.id}}  -->
-                                <button @click="vu_up(vu.id)" class="btn btn-warning btn-sm me-1">แก้ไข</button>
-                                <button @click="vu_del(vu.id)" class="btn btn-danger btn-sm">ลบ</button>
+                        <div v-if="ven_users" v-for="d_user in data.users" >
+                            <li class="list-group-item" >
+                                <!-- {{d_user}} -->
+                                {{data.vns_DN == 'กลางวัน' ? '☀️' : '🌙'}}{{d_user.order + ' ' +d_user.name + ' '}} 
+                                <button @click="vu_up(d_user.vu_id)" class="btn btn-warning btn-sm me-1">แก้ไข</button>
+                                <button @click="vu_del(d_user.vu_id)" class="btn btn-danger btn-sm">ลบ</button>
                             </li>     
                         </div>
                         <li class="list-group-item">
@@ -67,8 +71,8 @@ require_once('../../server/authen.php');
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clear_vu_form" ref="close_vu"></button>
                             </div>
                             <div class="modal-body">
-                                <!-- {{vu_form}}
-                                {{vu_form_act}} -->
+                                <!-- {{vu_form}} -->
+                                <!-- {{vu_form_act}} -->
                                 <form @submit.prevent="vu_save">                                    
                                     <div class="row mb-3">                                        
                                         <div class="col mb-3">
@@ -109,9 +113,9 @@ require_once('../../server/authen.php');
         </div>
     </div>
     
-    <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    
-    <script src="../../assets/js/main.js"></script>
+    <?php require_once('../includes/_footer_sc.php') ?>
+    <!-- <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script> -->    
+    <!-- <script src="../../assets/js/main.js"></script> -->
 
     <!--  -->
     <script src="../../node_modules/vue/dist/vue.global.js"></script>

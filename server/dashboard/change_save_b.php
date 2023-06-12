@@ -29,7 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status             = 2 ;
         $create_at          = Date("Y-m-d H:i:s");
         
-        $sql    = "SELECT * FROM ven WHERE id = :id AND ven.status=1";
+        $sql    = "SELECT v.* , p.fname, p.name, p.sname
+                    FROM ven AS v
+                    INNER JOIN profile as p ON v.user_id = p.user_id  
+                    WHERE v.id = :id AND v.status=1";
         $query  = $conn->prepare($sql);
         $query->bindParam(':id',$ch_v1->id, PDO::PARAM_INT);
         $query->execute();
@@ -45,7 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
         $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
 
-        $sql_VU = "SELECT * FROM ven WHERE user_id = $user_id2 AND ven_date >= '$ven_date_d1' AND ven_date <= '$ven_date_u1' AND (status=1 OR status=2)";
+        $sql_VU = "SELECT * , p.fname, p.name, p.sname
+                    FROM ven AS v
+                    INNER JOIN profile as p ON v.user_id = p.user_id 
+                    WHERE v.user_id = $user_id2 
+                        AND v.ven_date >= '$ven_date_d1' 
+                        AND v.ven_date <= '$ven_date_u1' 
+                        AND (v.status=1 OR v.status=2)";
         $query_VU = $conn->prepare($sql_VU);
         $query_VU->execute();
         $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
@@ -74,9 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
          
         $conn->beginTransaction();
+
         // /**  สร้างเวรใบ1 */
-        $sql = "INSERT INTO ven(id, ven_date, ven_time, DN, ven_month, ven_com_id, ven_com_idb, user_id, u_name, u_role, ven_name, ven_com_name, ven_com_num_all, ref1, ref2, price, gcal_id, `status`, update_at, create_at) 
-                    VALUE(:id, :ven_date, :ven_time, :DN, :ven_month, :ven_com_id, :ven_com_idb, :user_id, :u_name, :u_role, :ven_name, :ven_com_name, :ven_com_num_all, :ref1, :ref2, :price, :gcal_id, :status, :update_at, :create_at);";        
+        $sql = "INSERT INTO ven(id, ven_date, ven_time, DN, ven_month, ven_com_id, ven_com_idb, user_id, vn_id, vns_id, u_role, ven_name, ven_com_name, ven_com_num_all, ref1, ref2, price, gcal_id, `status`, update_at, create_at) 
+                VALUE(:id, :ven_date, :ven_time, :DN, :ven_month, :ven_com_id, :ven_com_idb, :user_id, :vn_id, :vns_id, :u_role, :ven_name, :ven_com_name, :ven_com_num_all, :ref1, :ref2, :price, :gcal_id, :status, :update_at, :create_at);";        
         $query = $conn->prepare($sql);
         $query->bindParam(':id',$idv1, PDO::PARAM_INT);
         $query->bindParam(':ven_date',$rsv1->ven_date, PDO::PARAM_STR);
@@ -86,7 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->bindParam(':ven_com_id',$rsv1->ven_com_id, PDO::PARAM_STR);
         $query->bindParam(':ven_com_idb',$rsv1->ven_com_idb, PDO::PARAM_STR);
         $query->bindParam(':user_id',$user_id2, PDO::PARAM_INT);
-        $query->bindParam(':u_name',$u_name2, PDO::PARAM_STR);
+        $query->bindParam(':vn_id',$rsv1->vn_id, PDO::PARAM_INT);
+        $query->bindParam(':vns_id',$rsv1->vns_id, PDO::PARAM_INT);
         $query->bindParam(':u_role',$rsv1->u_role, PDO::PARAM_STR);
         $query->bindParam(':ven_name',$rsv1->ven_name, PDO::PARAM_STR);
         $query->bindParam(':ven_com_name',$rsv1->ven_com_name, PDO::PARAM_STR);
@@ -169,8 +180,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /** google calendar */
         if(__GOOGLE_CALENDAR__){
-            $sql_V = "SELECT * FROM ven WHERE gcal_id = '$rsv1->gcal_id' AND (status=1 OR status=2)
-                        ORDER BY ven_time ASC";
+            $sql_V = "SELECT * , p.fname, p.name, p.sname
+                        FROM ven AS v
+                        INNER JOIN profile as p ON v.user_id = p.user_id 
+                        WHERE v.gcal_id = '$rsv1->gcal_id' AND (v.status=1 OR v.status=2)
+                        ORDER BY v.ven_time ASC";
             $query_V = $conn->prepare($sql_V);
             $query_V->execute();
             if($query_V->rowCount()){
@@ -178,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $name = $res_V[0]->ven_com_name."\n";
                 $sms = '';
                 foreach($res_V as $v){
-                    $sms .= $v->u_name."\n";
+                    $sms .= $v->fname.$v->name.' '. $v->sname."\n";
                 }
 
                 gcal_update($rsv1->gcal_id, $name, $sms, 5);

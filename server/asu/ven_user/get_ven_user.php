@@ -17,9 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datas = array();
 
     try{
-        $sql = "SELECT * FROM ven_user WHERE id = :id";
+        $sql = "SELECT * FROM ven_user WHERE vu_id = :vu_id";
         $query = $conn->prepare($sql);
-        $query->bindParam(':id',$id, PDO::PARAM_STR);
+        $query->bindParam(':vu_id',$id, PDO::PARAM_STR);
         $query->execute();
         $result = $query->fetch(PDO::FETCH_OBJ);
 

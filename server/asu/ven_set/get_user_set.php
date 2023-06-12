@@ -23,7 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uvn        = $data->uvn;
         $uvn_sst    = '';
         
-        $sql = "SELECT * FROM ven_user WHERE ven_name = :ven_name AND uvn =:uvn ORDER BY ven_user.order ASC";
+        $sql = "SELECT * 
+                FROM ven_user 
+                WHERE ven_name = :ven_name AND uvn =:uvn 
+                ORDER BY ven_user.order ASC";
 
         $query = $conn->prepare($sql);
         $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);

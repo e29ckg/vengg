@@ -3,6 +3,7 @@ Vue.createApp({
   data() {
     return {
       q:'',
+      
       url_base:'',
       url_base_app:'',
       url_base_now:'',
@@ -57,6 +58,9 @@ Vue.createApp({
     price       : '',
     ref         : '',
 
+    vn_id : 0,
+    vns_id : 0,
+
     label_message : '<--กรุณาเลือกคำสั่ง',
     isLoading : false,
   }
@@ -102,6 +106,7 @@ Vue.createApp({
       this.ven_com_id = []
     },
     ch_sel_ven_name(ven_name_index){
+      console.log(ven_name_index)
       this.ven_name_sub = ''
       this.profiles = []
       this.get_ven_coms()
@@ -114,6 +119,7 @@ Vue.createApp({
         .then(response => {
           if (response.data.status) {
             this.ven_name_subs = response.data.respJSON
+            // this.vn_id
           } else{            
             this.alert('warning',response.data.message,0)
 
@@ -125,6 +131,7 @@ Vue.createApp({
 
     },
     ch_sel_vns(ven_name_sub){
+      console.log(ven_name_sub)
 
       if(ven_name_sub != ''){
         axios.post('../../server/asu/ven_set/get_user_set.php',{ven_name:this.ven_name , uvn:ven_name_sub})

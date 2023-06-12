@@ -20,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_now = Date("Y-m-d");
     
     try{
-        $sql = "SELECT v.*,p.name,p.img 
-                FROM ven as v 
-                INNER JOIN profile as p
+        $sql = "SELECT v.*, p.fname, p.name, p.sname, p.img 
+                FROM ven AS v 
+                INNER JOIN profile AS p
                 ON v.user_id = p.user_id
                 WHERE v.id = $id 
                 ORDER BY v.ven_date DESC";
@@ -30,12 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         $result = $query->fetch(PDO::FETCH_OBJ);
 
+        
         /** ประวัติการเปลี่ยน */
-        $sql = "SELECT vc.id, vc.ven_id1, vc.ven_id2 
+        $sql = "SELECT 	vc.id, vc.ven_id1, vc.ven_id2, 
+                        p1.fname AS p1_fname, p1.name AS p1_name, p1.sname AS p1_sname, 
+                        p2.fname AS p2_fname, p2.name AS p2_name, p2.sname AS p2_sname
                 FROM ven_change as vc  
-                -- LEFT JOIN profile as p1
-                -- ON p1.user_id = vc.user_id1
-                WHERE ven_date1=:ven_date1 OR ven_date2 =:ven_date2 
+                INNER JOIN profile as p1 ON p1.user_id = vc.user_id1
+                INNER JOIN profile as p2 ON p2.id = vc.user_id2
+                WHERE (ven_date1=:ven_date1 OR ven_date2 =:ven_date2) AND (vc.status = 1 OR vc.status = 2)
                 ORDER BY vc.id DESC";
         $query = $conn->prepare($sql);
         $query->bindParam(':ven_date1',$result->ven_date, PDO::PARAM_STR);
@@ -43,8 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         $res_vh0 = $query->fetchAll(PDO::FETCH_OBJ);
 
-        $sql = "SELECT v.*
+        $sql = "SELECT v.*, p.fname, p.name, p.sname
                 FROM ven as v 
+                INNER JOIN profile AS p ON v.user_id = p.id 
                 WHERE ven_date=:ven_date AND ven_month=:ven_month AND ven_com_idb = :ven_com_idb 
                 AND DN=:DN AND u_role=:u_role AND ven_time=:ven_time  AND (v.status = 1 OR v.status = 2 OR v.status = 4)
                 ORDER BY v.id DESC";
@@ -58,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         // $res_vh = $query->fetchAll(PDO::FETCH_OBJ);
         $res_vh = array();
+
         foreach($query->fetchAll(PDO::FETCH_OBJ) as $rs){
             $ven_change_id = '';
             foreach($res_vh0 as $rsvh0){
@@ -74,12 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             array_push($res_vh,array(
                 // 'id'=>$rs->id,
                 'id'=>$ven_change_id,
-                'u_name'=>$rs->u_name
+                'u_name'=>$rs->fname.$rs->name.' '.$rs->sname
             )); 
         }
 
-        /** เวรที่สามารถเปลี่ยนได้ */
-        $sql = "SELECT v.*, p.img
+        $vfu_arr =array(); /** เวรที่สามารถเปลี่ยนได้ */
+
+        /** เวรที่สามารถเปลี่ยนได้ */        
+        $sql = "SELECT v.*, p.fname, p.name, p.sname, p.img
                 FROM ven as v  
                 INNER JOIN profile as p
                 ON v.user_id = p.user_id               
@@ -96,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         $res_vfu = $query->fetchAll(PDO::FETCH_OBJ);
         
-        $vfu_arr =array();
+        $vfu_arr =array(); 
         foreach($res_vfu as $rsvfu){
 
             $img_link = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['HTTP_HOST'] ;
@@ -110,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "img" => $img_link,
                 "price" => $rsvfu->price,
                 "status" => $rsvfu->status,
-                "u_name" => $rsvfu->u_name,
+                "u_name" => $rsvfu->fname.$rsvfu->name.' '.$rsvfu->sname,
                 "u_role" => $rsvfu->u_role,
                 "user_id" => $rsvfu->user_id,
                 "ven_com_id" => $rsvfu->ven_com_id,
@@ -133,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ven_select = [
             "id" => $result->id,
             "DN" => $result->DN,
-            "u_name" => $result->u_name,
+            "u_name" => $result->fname.$result->name.' '.$result->sname,
             "u_role" => $result->u_role,
             "img" => $img,
             "price" => $result->price,
@@ -147,8 +154,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "ven_month" => $result->ven_month,
             "ven_name" => $result->ven_name,
             "ven_time" => $result->ven_time,
+            "vn_id" => $result->vn_id,
+            "vns_id" => $result->vns_id,
             "status" => $result->status,
         ];
+
+        /** user ที่จะยกให้ */
+        $users = array();
+
+        $sql = "SELECT vu.vu_id, vu.user_id, p.fname,p.name,p.sname, p.img
+                FROM ven_user as vu   
+                INNER JOIN profile as p
+                ON vu.user_id = p.user_id 
+                WHERE vu.vns_id = :vns_id";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':vns_id',$result->vns_id, PDO::PARAM_INT);
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_OBJ);
+
+        if($query->rowCount() > 0){                        //count($result)  for odbc
+            foreach($result as $rs){
+                $img_link = ($rs->img != null && $rs->img != '' && file_exists('../../uploads/users/' . $rs->img )) 
+                            ? '../../uploads/users/'. $rs->img
+                            : '../../assets/images/profiles/nopic.png';
+
+                array_push($users,array(
+                    'id'    => $rs->vu_id,
+                    'user_id' => $rs->user_id,
+                    'u_name' => $rs->fname.$rs->name.' '.$rs->sname,
+                    'img' => $img_link,
+                ));
+            }
+        }
 
         http_response_code(200);
         echo json_encode(array(
@@ -158,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 'respJSON' => $result ,
             // 'vh0'   => $res_vh0,
             'my_v'  => $vfu_arr,
+            'users'  => $users,
             'vh'    => $res_vh,
             'd_now' => $date_now
             ));
@@ -165,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     
     }catch(PDOException $e){
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }

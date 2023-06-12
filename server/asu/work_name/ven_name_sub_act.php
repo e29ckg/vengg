@@ -77,48 +77,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query = $conn->prepare($sql);
             $query->bindParam(':name',$name, PDO::PARAM_STR);
             $query->bindParam(':price',$price, PDO::PARAM_INT);
-            $query->bindParam(':color',$color, PDO::PARAM_INT);
+            $query->bindParam(':color',$color, PDO::PARAM_STR);
             $query->bindParam(':srt',$srt, PDO::PARAM_INT);
             $query->bindParam(':id',$id, PDO::PARAM_INT);
-            $query->execute();         
+            $query->execute();     
 
+            $sql = "UPDATE ven SET u_role =:name, price=:price, color=:color WHERE vns_id = :id";   
+
+            $query = $conn->prepare($sql);
+            $query->bindParam(':name',$name, PDO::PARAM_STR);
+            $query->bindParam(':price',$price, PDO::PARAM_INT);
+            $query->bindParam(':color',$color, PDO::PARAM_INT);
+            $query->bindParam(':id',$id, PDO::PARAM_INT);
+            $query->execute();  
+            
+            
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $datas));
             exit;                
         }  
         if($act == 'delete'){
 
-            $id     = $data->id;
+            $vns_id     = $data->id;
 
-            $sql    = "SELECT vn.name AS vn_name, vns.name AS vns_name, vn.DN
-                        FROM ven_name_sub AS vns
-                        INNER JOIN ven_name AS vn ON vn.id = vns.ven_name_id
-                        WHERE vns.id = :id
-                        ";
-            $query = $conn->prepare($sql);
-            $query->bindParam(':id',$id, PDO::PARAM_INT);
-            $query->execute();
-            if($query->rowCount()){
-                $res_vns = $query->fetch(PDO::FETCH_OBJ);    
-                $sql    = "DELETE FROM ven_user                        
-                            WHERE ven_name =:ven_name AND uvn =:uvn AND DN =:DN";
-                $query = $conn->prepare($sql);
-                $query->bindParam(':ven_name',$res_vns->vn_name, PDO::PARAM_STR);
-                $query->bindParam(':uvn',$res_vns->vns_name, PDO::PARAM_STR);
-                $query->bindParam(':DN',$res_vns->DN, PDO::PARAM_STR);
-                $query->execute();
-
-                $sql    = "DELETE FROM ven_name_sub WHERE id = $id";
-                $conn->exec($sql);
-                http_response_code(200);
-                echo json_encode(array('status' => true, 'message' => 'DEL ok', 'resp'=>$res_vns));
-                exit;                
+            $sms = array();        
+           
+            $sql    = "DELETE FROM ven_name_sub WHERE id = $vns_id";
+            if($conn->exec($sql)){
+                array_push($sms, array(
+                    "ven_name_sub" => "ven_name_sub -> del"
+                ));
             }
 
+            $sql    = "DELETE FROM ven_user WHERE vns_id = $vns_id";
+            $conn->exec($sql);
+            if($conn->exec($sql)){
+                array_push($sms, array(
+                    "ven_user" => "ven_user -> del"
+                ));
+            }
 
             http_response_code(200);
-            echo json_encode(array('status' => false, 'message' => 'ไม่สำเร็จ'));
-            exit;                
+            echo json_encode(array('status' => true, 'message' => 'DEL ok','sms' => $sms));
+            
+               
         }  
         
         

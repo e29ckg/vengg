@@ -17,17 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try{
         // $sql = "SELECT * FROM ven_name ORDER BY srt ASC";
-        $sql = "SELECT 
-                    ven_name.name as vn_name, 
-                    ven_name.DN as DN, 
-                    ven_name_sub.name as vns_name, 
-                    ven_name_sub.color as color, 
-                    ven_name_sub.price as price, 
-                    ven_name_sub.id as vns_id,
-                    ven_name.id as vn_id,
-                    ven_name_sub.ven_name_id as vns_vn_id,
-                    ven_name.srt as vn_srt,
-                    ven_name_sub.srt as vns_srt
+        $sql = "SELECT ven_name.id as vn_id, ven_name_sub.id as vns_id, ven_name.name as vn_name, ven_name_sub.color
                 FROM ven_name 
                 INNER JOIN ven_name_sub
                 ON ven_name.id = ven_name_sub.ven_name_id 
@@ -48,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => true, 
                 'message' => 'สำเร็จ', 
                 // 'ven_name' => $ven_names,
-                'resp' => $resps,
                 'respJSON' => $resps,
                 // 'respJSON' => $datas,
             ));

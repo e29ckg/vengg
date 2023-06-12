@@ -17,11 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try{
         // $sql = "SELECT * FROM ven_name ORDER BY srt ASC";
-        $sql = "SELECT 
-                    ven_name.id as id,
-                    ven_name.name as name, 
-                    ven_name.DN as DN, 
-                    ven_name.srt as srt
+        $sql = "SELECT *
                 FROM ven_name 
                 ORDER BY ven_name.srt ASC";
         $query = $conn->prepare($sql);
@@ -37,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'respJSON' => $datas
             ));
             exit;
+            
         }
      
         http_response_code(200);

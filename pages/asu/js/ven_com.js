@@ -8,8 +8,7 @@ Vue.createApp({
         ven_com_num :'',
         ven_com_date :'',
         ven_month :'',
-        ven_com_name :'',
-        ven_name : ''
+        vn_id : ''
       },
       vc_form_act :'insert',
       sel_ven_month :[],
@@ -36,7 +35,7 @@ Vue.createApp({
     // this.$refs.close_vc.click()
     ven_com_add(){
       // console.log('ven_com_Add')
-      
+      this.get_ven_names()
       this.vc_form_act = 'insert'
       this.$refs.show_vc_form.click()
     },
@@ -45,12 +44,17 @@ Vue.createApp({
     },
     clear_vc_form(){
       console.log('clear_vc_form')
-      this.vc_form  = {ven_com_num :'', ven_com_date :'', ven_month :'', ven_com_name:'', ven_name:''}
+      this.vc_form  = {ven_com_num :'', ven_com_date :'', ven_month :'', vn_id:''}
     },
+
     vc_save(){
-      if(this.vc_form.ven_com_num != '' && this.vc_form.ven_com_date != '' && this.vc_form.ven_month != '' && this.vc_form.ven_name != ''){
+      if(this.vc_form.ven_com_num != '' && this.vc_form.ven_com_date != '' && this.vc_form.ven_month != '' && this.vc_form.vn_id != ''){
         this.isLoading = true
-        axios.post('../../server/asu/ven_com/ven_com_act.php',{vc:this.vc_form, act:this.vc_form_act})
+        axios.post('../../server/asu/ven_com/ven_com_act.php',
+              {
+                vc:this.vc_form,  
+                act:this.vc_form_act
+              })
         .then(response => {
             if (response.data.status) {
               this.$refs.close_vc.click()
@@ -71,7 +75,7 @@ Vue.createApp({
         if(this.vc_form.ven_com_num == ''){message.push('เลขคำสั่ง')}
         if(this.vc_form.ven_com_date == ''){message.push('ลงวันที่')}
         if(this.vc_form.ven_month == ''){message.push('เวรเดือน')}
-        if(this.vc_form.ven_name == ''){message.push('ชื่อเวร')}
+        if(this.vc_form.vn_id == ''){message.push('ชื่อเวร')}
         this.alert('warning',message,0)
       }
     },
@@ -151,13 +155,14 @@ Vue.createApp({
         this.isLoading = false;
       })
     },
+
     get_ven_names(){
       this.isLoading = true
       axios.post('../../server/asu/ven_com/get_ven_names.php')
       .then(response => {
-          if (response.data.status) {
+          // if (response.data.status) {
               this.ven_names = response.data.respJSON;
-          } 
+          // } 
       })
       .catch(function (error) {
           console.log(error);
@@ -166,6 +171,7 @@ Vue.createApp({
         this.isLoading = false;
       })
     },
+
     get_ven_com(id){
       this.isLoading = true
       axios.post('../../server/asu/ven_com/get_ven_com.php',{id:id})

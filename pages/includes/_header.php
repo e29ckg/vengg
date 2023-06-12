@@ -3,7 +3,7 @@
 <title>Pkkjc - VenGG00</title>
 <link rel="shortcut icon" href="../../assets/images/favicon/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="../../assets/css/bootstrap.css">
-<link rel="stylesheet" href="../../node_modules/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+<!-- <link rel="stylesheet" href="../../node_modules/bootstrap@5.1.3/dist/css/bootstrap.min.css" /> -->
 
 <link rel="stylesheet" href="../../assets/vendors/iconly/bold.css">
 

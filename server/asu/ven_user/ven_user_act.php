@@ -21,7 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try{
         if($act == 'insert'){
             $ven_user   = $data->ven_user; 
+            $order      = $ven_user->order;
             $user_id    = $ven_user->user_id;
+            $vn_id      = $ven_user->vn_id;
+            $vns_id     = $ven_user->vns_id;
 
             $sql    = "SELECT fname, name, sname FROM profile WHERE user_id =:user_id";
             $query  = $conn->prepare($sql);
@@ -29,29 +32,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->execute();
             $result = $query->fetch(PDO::FETCH_OBJ);
 
-            $u_name     = $result->fname.$result->name.' '.$result->sname;
-            $order      = $ven_user->order;
-            $ven_name   = $ven_user->ven_name;
-            $uvn        = $ven_user->uvn;
-            $DN         = $ven_user->DN;
-            $v_time     = Date("H:i:s", strtotime($ven_user->v_time));
-            $price      = $ven_user->price;
-            $color      = $ven_user->color;
             $comment    = "";
             $create_at  = Date("Y-m-d h:i:s");
 
-            $sql = "INSERT INTO ven_user(user_id, u_name, `order`, ven_name, uvn, DN, v_time, price, color, comment, create_at) 
-                    VALUE(:user_id, :u_name, :order, :ven_name, :uvn, :DN, :v_time, :price, :color, :comment, :create_at);";        
+            $sql = "INSERT INTO ven_user(user_id, `order`, vn_id, vns_id, comment, create_at) 
+                    VALUE(:user_id, :order, :vn_id, :vns_id, :comment, :create_at);";        
             $query = $conn->prepare($sql);
             $query->bindParam(':user_id',$user_id, PDO::PARAM_INT);
-            $query->bindParam(':u_name',$u_name, PDO::PARAM_STR);
             $query->bindParam(':order',$order, PDO::PARAM_INT);
-            $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
-            $query->bindParam(':uvn',$uvn, PDO::PARAM_STR);
-            $query->bindParam(':DN',$DN, PDO::PARAM_STR);
-            $query->bindParam(':v_time',$v_time, PDO::PARAM_STR);
-            $query->bindParam(':price',$price, PDO::PARAM_STR);
-            $query->bindParam(':color',$color, PDO::PARAM_STR);
+            $query->bindParam(':vn_id',$vn_id, PDO::PARAM_INT);
+            $query->bindParam(':vns_id',$vns_id, PDO::PARAM_INT);
             $query->bindParam(':comment',$comment, PDO::PARAM_STR);
             $query->bindParam(':create_at',$create_at, PDO::PARAM_STR);
             $query->execute();
@@ -62,37 +52,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }    
         if($act == 'update'){
             $ven_user   = $data->ven_user; 
-            $id         = $ven_user->id;
+            $vu_id         = $ven_user->vu_id;
             $user_id    = $ven_user->user_id;
             $order      = $ven_user->order;
+            $vn_id      = $ven_user->vn_id;
+            $vns_id     = $ven_user->vns_id;
 
-            $sql = "UPDATE ven_user SET user_id =:user_id, `order`=:order WHERE id = :id";   
+            $sql = "UPDATE ven_user 
+                    SET 
+                        user_id =:user_id, 
+                        `order` =:order 
+                    WHERE vu_id = :vu_id";   
 
             $query = $conn->prepare($sql);
             $query->bindParam(':user_id',$user_id, PDO::PARAM_INT);
-            $query->bindParam(':order',$order, PDO::PARAM_STR);
-            $query->bindParam(':id',$id, PDO::PARAM_INT);
+            $query->bindParam(':order',$order, PDO::PARAM_INT);
+            $query->bindParam(':vu_id',$vu_id, PDO::PARAM_INT);
             $query->execute();    
-
+            if($query->execute()){
+                http_response_code(200);
+                echo json_encode(array('status' => true, 'message' => 'update ok'));
+                exit; 
+            }
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $datas));
-            exit;                
+            echo json_encode(array('status' => false, 'message' => 'not update'));
+            exit; 
         }  
         if($act == 'delete'){
-            $id  = $data->id;
-            $sql = "DELETE FROM ven_user WHERE id = $id";
-            $conn->exec($sql);
-
+            $vu_id  = $data->id;
+            $sql = "DELETE FROM ven_user WHERE vu_id = $vu_id";
+            if($conn->exec($sql)){
+                http_response_code(200);
+                echo json_encode(array('status' => true, 'message' => 'DEL ok'));
+                exit;               
+                
+            };
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'DEL ok'));
-            exit;                
+            echo json_encode(array('status' => false, 'message' => 'not work'));
+            exit;               
         }  
         http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'no content'));
         exit;  
         
     }catch(PDOException $e){
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }

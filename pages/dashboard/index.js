@@ -113,7 +113,8 @@ Vue.createApp({
               this.my_v = response.data.my_v
               this.vh = response.data.vh
               this.d_now = response.data.d_now
-              this.get_users(this.data_event.ven_name,this.data_event.u_role)
+              this.users = response.data.users
+              // this.get_users(this.data_event.ven_name,this.data_event.u_role)
               this.$refs['show_modal'].click()  
             }else{               
               this.alert('warning',response.data.message ,0)  
@@ -215,27 +216,27 @@ Vue.createApp({
       })
       
     },
-    get_users(ven_name,uvn){
-      this.isLoading = true;
-      axios.post('../../server/dashboard/get_users.php',{ven_name:ven_name, uvn:uvn})
-      .then(response => {
-          console.log(response.data);
-          if (response.data.status) {
-            this.users =response.data.respJSON
-            // this.alert('success',response.data.message,1000) 
-          } else{
-            // this.alert('warning',response.data.message,0) 
-          }
+    // get_users(ven_name,uvn){
+    //   this.isLoading = true;
+    //   axios.post('../../server/dashboard/get_users.php',{ven_name:ven_name, uvn:uvn})
+    //   .then(response => {
+    //       console.log(response.data);
+    //       if (response.data.status) {
+    //         this.users =response.data.respJSON
+    //         // this.alert('success',response.data.message,1000) 
+    //       } else{
+    //         // this.alert('warning',response.data.message,0) 
+    //       }
           
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      })      
+    //   })
+    //   .catch(function (error) {
+    //       console.log(error);
+    //   })
+    //   .finally(() => {
+    //     this.isLoading = false;
+    //   })      
 
-    },
+    // },
    
     
     close_m(){

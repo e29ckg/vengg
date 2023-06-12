@@ -25,20 +25,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ven_com_num    = $vc->ven_com_num;
             $ven_com_date   = $vc->ven_com_date;
             $ven_month      = $vc->ven_month;
-            $ven_com_name   = $vc->ven_com_name;
-            $ven_name       = $vc->ven_name;
+            $vn_id          = $vc->vn_id;
             $ref            = generateRandomString();
             $status         = 1 ;
 
-            $sql = "INSERT INTO ven_com(id, ven_com_num, ven_com_date, ven_month, ven_com_name, ven_name, ref, `status`) 
-                    VALUE(:id, :ven_com_num, :ven_com_date, :ven_month, :ven_com_name, :ven_name, :ref, :status);";        
+            $sql = "INSERT INTO ven_com(id, ven_com_num, ven_com_date, ven_month, vn_id, ref, `status`) 
+                    VALUE(:id, :ven_com_num, :ven_com_date, :ven_month, :vn_id, :ref, :status);";        
             $query = $conn->prepare($sql);
             $query->bindParam(':id',$id, PDO::PARAM_INT);
             $query->bindParam(':ven_com_num',$ven_com_num, PDO::PARAM_STR);
             $query->bindParam(':ven_com_date',$ven_com_date, PDO::PARAM_STR);
             $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_name',$ven_name, PDO::PARAM_STR);
-            $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
+            $query->bindParam(':vn_id',$vn_id, PDO::PARAM_INT);
             $query->bindParam(':ref',$ref , PDO::PARAM_STR);
             $query->bindParam(':status',$status , PDO::PARAM_INT);
             $query->execute();
@@ -48,39 +46,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;                
         }    
         if($act == 'update'){
-            $vc   = $data->vc; 
-            $id   = $vc->id;
-
+            $vc   = $data->vc;
+            
+            $id             = $vc->id;
             $ven_com_num    = $vc->ven_com_num;
             $ven_com_date   = $vc->ven_com_date;
             $ven_month      = $vc->ven_month;
-            $ven_com_name   = $vc->ven_com_name;
-            $ven_name       = $vc->ven_name;
+            $vn_id          = $vc->vn_id;
 
             $create_at  = Date("Y-m-d h:i:s");
 
-            $sql = "UPDATE ven_com SET ven_com_num=:ven_com_num, ven_com_date=:ven_com_date, ven_month=:ven_month, ven_com_name=:ven_com_name, ven_name=:ven_name 
+            $sql = "UPDATE ven_com 
+                    SET 
+                        ven_com_num=:ven_com_num, 
+                        ven_com_date=:ven_com_date, 
+                        ven_month=:ven_month, 
+                        vn_id=:vn_id 
                     WHERE id = :id";   
 
             $query = $conn->prepare($sql);
             $query->bindParam(':ven_com_num',$ven_com_num, PDO::PARAM_STR);
             $query->bindParam(':ven_com_date',$ven_com_date, PDO::PARAM_STR);
             $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_name',$ven_com_name, PDO::PARAM_STR);
-            $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
+            $query->bindParam(':vn_id',$vn_id, PDO::PARAM_INT);
             $query->bindParam(':id',$id, PDO::PARAM_INT);
             $query->execute();
 
-            $sql = "UPDATE ven SET ven_month=:ven_month, ven_com_name=:ven_com_name, ven_name=:ven_name, ven_com_num_all=:ven_com_num_all 
-                    WHERE ven_com_idb = :id";   
+            // $sql = "UPDATE ven SET ven_month=:ven_month, vn_id=:vn_id, ven_com_num_all=:ven_com_num_all 
+            //         WHERE ven_com_idb = :id";   
 
-            $query = $conn->prepare($sql);
-            $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_name',$ven_name, PDO::PARAM_STR);
-            $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_num_all',$ven_com_num, PDO::PARAM_STR);
-            $query->bindParam(':id',$id, PDO::PARAM_INT);
-            $query->execute();
+            // $query = $conn->prepare($sql);
+            // $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
+            // $query->bindParam(':ven_com_name',$ven_name, PDO::PARAM_STR);
+            // $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
+            // $query->bindParam(':ven_com_num_all',$ven_com_num, PDO::PARAM_STR);
+            // $query->bindParam(':id',$id, PDO::PARAM_INT);
+            // $query->execute();
 
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $datas));
@@ -97,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if($query->rowCount() > 0){
                 http_response_code(200);
-                echo json_encode(array('status' => false, 'message' => 'ไม่สามารถลบได้'));
+                echo json_encode(array('status' => false, 'message' => 'ไม่สามารถลบได้ คำสั่งนี้มีการจัดเวรแล้ว'));
                 exit;   
             }else{
                 $sql = "DELETE FROM ven_com WHERE id = $id";

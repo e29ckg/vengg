@@ -3,6 +3,7 @@ Vue.createApp({
   data() {
     return {
       q:'2254',
+      datas : [],
       ven_names :'',
       ven_name_subs :'',
       ven_users : [],
@@ -12,12 +13,8 @@ Vue.createApp({
       vu_form   :{
         user_id :'',
         order   : 0,
-        DN      : '',
-        price   : '',
-        ven_name  : '',
-        uvn     : '',
-        v_time  : '',
-        color   : '',
+        vn_id   : 0,
+        vns_id  : 0,
       },
       vu_form_act :'insert',
       user      : '',
@@ -32,7 +29,7 @@ Vue.createApp({
     this.url_base = window.location.protocol + '//' + window.location.host;
     this.url_base_app = window.location.protocol + '//' + window.location.host + '/adminphp/';
     // const d = 
-    this.get_ven_names()
+    // this.get_ven_names()
     this.get_ven_users()
     this.get_users()
   },
@@ -40,22 +37,22 @@ Vue.createApp({
     
   },
   methods: {
-    get_ven_names(){
-      this.isLoading = true
-      axios.post('../../server/asu/ven_user/get_ven_names.php')
-      .then(response => {
-          if (!response.data.status) {
-            this.alert('warning',response.data.message,timer=0)  
-          } 
-            this.ven_names = response.data.respJSON;
-      })
-      .catch(function (error) {
-          console.log(error);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      })
-    },
+    // get_ven_names(){
+    //   this.isLoading = true
+    //   axios.post('../../server/asu/ven_user/get_ven_names.php')
+    //   .then(response => {
+    //       if (!response.data.status) {
+    //         this.alert('warning',response.data.message,timer=0)  
+    //       } 
+    //         this.ven_names = response.data.respJSON;
+    //   })
+    //   .catch(function (error) {
+    //       console.log(error);
+    //   })
+    //   .finally(() => {
+    //     this.isLoading = false;
+    //   })
+    // },
     
     get_ven_users(){
       this.isLoading = true
@@ -66,7 +63,8 @@ Vue.createApp({
           } else{   
             this.ven_users = []
           }
-          this.ven_users  = response.data.respJSON;
+          this.datas  = response.data.respJSON;
+          // this.ven_users  = response.data.respJSON;
       })
       .catch(function (error) {
           console.log(error);
@@ -88,12 +86,11 @@ Vue.createApp({
     
     vu_add(index){
       // this.get_ven_users()
-      this.vu_form.ven_name = this.ven_names[index].vn_name
-      this.vu_form.uvn    = this.ven_names[index].vns_name
-      this.vu_form.DN     = this.ven_names[index].DN
-      this.vu_form.v_time = this.DN[this.ven_names[index].DN] +':'+this.ven_names[index].vn_srt + this.ven_names[index].vns_srt
-      this.vu_form.price  = this.ven_names[index].price
-      this.vu_form.color  = this.ven_names[index].color
+      // this.vu_form = this.datas[index]
+      this.vu_form.vn_id  = this.datas[index].vn_id
+      this.vu_form.vns_id = this.datas[index].vns_id
+      this.vu_form.order  = 0
+      this.vu_form.user_id = ''
       this.vu_form_act    = 'insert'
       this.$refs.show_vu_form.click()   
     },
@@ -144,7 +141,7 @@ Vue.createApp({
     },
 
     clear_vu_form(){
-      this.vu_form = {user_id:'', order:0, DN : '', price : '', ven_name:'', uvn:'', v_time:'', color : ''}
+      this.vu_form = {user_id :'', order   : 0, vn_id   : 0, vns_id  : 0,}
       this.vu_form_act = 'insert'
     },
 
@@ -155,11 +152,13 @@ Vue.createApp({
         .then(response => {
             if (response.data.status) {            
               this.$refs.close_vu.click()
-              this.get_ven_names()
+              // this.get_ven_names()
+              // this.get_users()
               this.get_ven_users()
-              this.get_users()
               this.alert('success',response.data.message,1000)
-            } 
+            } else{
+              this.alert('warning',response.data.message,0)
+            }
         })
         .catch(function (error) {
             console.log(error);
@@ -183,7 +182,6 @@ Vue.createApp({
               this.vu_form      = response.data.respJSON;
               this.$refs.show_vu_form.click()
 
-              // this.alert('success',response.data.message,1000)
             }else{
               this.alert('warning',response.data.message,1000)
             } 
@@ -208,10 +206,8 @@ Vue.createApp({
         if (result.isConfirmed) {
           axios.post('../../server/asu/ven_user/ven_user_act.php',{id:id, act:'delete'})
             .then(response => {
-                if (response.data.status) {  
-                  this.get_ven_names()
+                if (response.data.status) { 
                   this.get_ven_users()
-                  this.get_users()
                   this.alert('success',response.data.message,1000)
                 }else{
                   this.alert('warning',response.data.message,0)

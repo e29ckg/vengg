@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $datas = array();
 
     try{
-        $sql = "SELECT vu.id, vu.user_id, vu.u_name, p.img
-        FROM ven_user as vu   
-        INNER JOIN profile as p
-        ON vu.user_id = p.user_id 
-        WHERE vu.ven_name = :ven_name AND vu.uvn = :uvn";
+        $sql = "SELECT vu.id, vu.user_id, p.name, p.img
+                FROM ven_user as vu   
+                INNER JOIN profile as p
+                ON vu.user_id = p.user_id 
+                WHERE vu.ven_name = :ven_name AND vu.uvn = :uvn";
         $query = $conn->prepare($sql);
         $query->bindParam(':ven_name',$data->ven_name, PDO::PARAM_STR);
         $query->bindParam(':uvn',$data->uvn, PDO::PARAM_STR);
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 array_push($datas,array(
                     'id'    => $rs->id,
                     'user_id' => $rs->user_id,
-                    'u_name' => $rs->u_name,
+                    'u_name' => $rs->name,
                     'img' => $img_link,
                 ));
             }
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     
     }catch(PDOException $e){
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }

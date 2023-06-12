@@ -18,11 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
        
 
         $res_g = array();
-        $sql = "SELECT *
+        $sql = "SELECT ven_com.*, ven_name.name AS vn_name, ven_name.DN 
                 FROM ven_com
+                LEFT JOIN ven_name ON ven_com.vn_id = ven_name.id 
                 ORDER BY ven_month DESC, CAST(ven_com_num AS DECIMAL) 
-                LIMIT 100
-                ";
+                LIMIT 200;";
         $query = $conn->prepare($sql);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'ven_com_num'  => $rs->ven_com_num,
                         'ven_com_date' => $rs->ven_com_date,
                         'ven_com_date_th' => DateThai_full($rs->ven_com_date),
-                        'ven_name'  => $rs->ven_name,
+                        'ven_name'  => $rs->vn_name,
                         'status'    => $rs->status
                     ));  
                 }              

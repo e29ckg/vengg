@@ -110,7 +110,7 @@ require_once('../../server/authen.php');
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clear_vc_form" ref="close_vc"></button>
                             </div>
                             <div class="modal-body">
-                                <!-- {{vc_form}} -->
+                                {{vc_form}}
                                 <!-- {{vc_form_act}} -->
                                 <form @submit.prevent="vc_save">                                    
                                     <div class="row mb-3">                                        
@@ -137,8 +137,8 @@ require_once('../../server/authen.php');
                                         <div class="col-12 ">
                                             <label for="ven_name" class="form-label">ชื่อเวร</label>
                                             <!-- <input type="text" class="form-control" id="ven_name" v-model="vc_form.ven_name"> -->
-                                            <select class="form-select" aria-label="Default select example" v-model="vc_form.ven_name" >
-                                                <option v-for="vn in ven_names" :value="vn.name" >{{vn.name}}</option>
+                                            <select class="form-select" aria-label="Default select example" v-model="vc_form.vn_id" >
+                                                <option v-for="vn in ven_names" :value="vn.id" >{{vn.name}}</option>
                                             </select>
                                         </div>
                                     </div>

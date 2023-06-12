@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ven_name_sub.price as price, 
                     ven_name_sub.id as vns_id,
                     ven_name.id as vn_id,
-                    ven_name_sub.ven_name_id as vns_vn_id,
                     ven_name.srt as vn_srt,
                     ven_name_sub.srt as vns_srt
                 FROM ven_name 
@@ -60,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $vn_srt     = $vns["vn_srt"];
                 $ven_name_subs  = array();
                 foreach($resps as $rs){
-                    if($rs->vns_vn_id == $vn_id){
+                    if($rs->vn_id == $vn_id && $rs->vns_id != null){
                         array_push($ven_name_subs,array(
                             "vn_name"   => $rs->vn_name,
                             "vns_DN"    => $rs->DN,
@@ -92,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => true, 
                 'message' => 'สำเร็จ', 
                 // 'ven_name' => $ven_names,
-                'resp' => $resps,
+                // 'resp' => $resps,
                 'respJSON' => $datas,
             ));
             exit;
