@@ -21,11 +21,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $id = time();
             $ven_date       = $data->ven_date;
-            $user_id        = $data->uid;
-            $u_role         = $data->u_role;
-            $ven_month      = $data->ven_month;
-            $DN             = $data->DN;
-            $ven_name       = $data->ven_name; 
+            $user_id        = $data->user_id;
+
+            $ven_com_id     = '',
+            $ven_com_idb     = '',
+            $ven_time     = '',
+            $ven_month      = '',
+            $vn_id      = '',
+            $vns_id      = '',
+            $DN      = '',
+            $ven_com_name      = '',
+            $ven_com_name_all      = '',
+            $ven_name      = '',
+            $u_role         = '';
+            $price      = '',
+            $color      = '',
+            $status     = 2,
+            $update_at     = '',
+            $create_at     = '',
+            
+
             $ven_com_id     = array();
             
 

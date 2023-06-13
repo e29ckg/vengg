@@ -13,29 +13,47 @@ $data = json_decode(file_get_contents("php://input"));
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $ven_month = $data->ven_month; 
     $datas = array();
 
     try{
-        $vn_id = $data->vn_id;
-
-        $sql = "SELECT vn.*, vns.*, vns.id AS vns_id
-                FROM ven_name AS vn
-                INNER JOIN ven_name_sub AS vns ON vn.id = vns.ven_name_id 
-                WHERE vns.ven_name_id =:id 
-                ORDER BY vns.srt ASC";
+        $sql = "SELECT 
+                -- 	vc.*,
+                -- 	vn.*,
+                    vc.id ,
+                    vn.id AS vn_id,
+                    vc.ven_com_num,
+                    vc.ven_com_date,
+                    vc.ven_month,
+                    vc.`status`,
+                    vc.vn_id,
+                    vn.name,
+                    vn.DN
+                FROM ven_com AS vc
+                INNER JOIN ven_name AS vn ON vc.vn_id = vn.id 
+                WHERE ven_month = '$ven_month';";
         $query = $conn->prepare($sql);
-        $query->bindParam(':id',$vn_id, PDO::PARAM_INT);
         $query->execute();
+
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
-        if($result){                       
+        if($query->rowCount() > 0){                       
+            // foreach($result as $rs){
+            //     array_push($datas,array(
+            //         'id'    => $rs->id,
+            //         'name'  => $rs->name,
+            //         'DN'  => $rs->DN,
+            //         'srt'  => $rs->srt
+            //     ));
+            // }
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
             exit;
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล'));
+        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล (คำสั่งเวร) '));
         exit;
     
     }catch(PDOException $e){

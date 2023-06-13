@@ -20,9 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // The request is using the POST method
     try{
         
-        $sql = "SELECT vc.id,  
-                    v1o.u_name as u_name_old1, v1o.gcal_id as gcal_id1, 
-                    v2o.u_name as u_name_old2, v2o.gcal_id as gcal_id2
+        $sql = "SELECT vc.id, v1o.gcal_id as gcal_id1, v2o.gcal_id as gcal_id2
                 FROM ven_change as vc  
                 LEFT JOIN ven AS v1o ON v1o.id = vc.ven_id1_old
                 LEFT JOIN ven AS v2o ON v2o.id = vc.ven_id2_old
@@ -34,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $result = $query->fetch(PDO::FETCH_OBJ);
 
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
+        if($query->rowCount() > 0){                        
+            
             $conn->beginTransaction();
             $sql = "UPDATE ven_change as vc
                     LEFT JOIN ven AS v1 ON v1.id = vc.ven_id1
@@ -51,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $query2 = $conn->prepare($sql);
             $query2->bindParam(':id',$id, PDO::PARAM_STR);
             $query2->execute();
+            
             $conn->commit();
 
             if($query2->rowCount()){   
@@ -59,8 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if(__GOOGLE_CALENDAR__){
                     
                     if($result->gcal_id1){
-                        $sql_V = "SELECT * FROM ven WHERE gcal_id = '$result->gcal_id1' AND (status=1 OR status=2)
-                                    ORDER BY ven_time ASC";
+                        $sql_V = "SELECT v.ven_com_name, p.fname, p.`name`, p.sname 
+                                    FROM ven AS v
+                                    INNER JOIN `profile` AS p ON v.user_id = p.id 
+                                    WHERE v.gcal_id = '$result->gcal_id1' AND (v.status=1 OR v.status=2)
+                                    ORDER BY v.ven_time ASC";
                         $query_V = $conn->prepare($sql_V);
                         $query_V->execute();
                         if($query_V->rowCount()){
@@ -68,14 +71,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $name = $res_V[0]->ven_com_name."\n";
                             $sms = '';
                             foreach($res_V as $v){
-                                $sms .= $v->u_name."\n";
+                                $sms .= $v->fname.$v->name.' '.$v->sname."\n";
                             }
                             gcal_update($result->gcal_id1, $name, $sms, 1);
                         }
                     }
                     if($result->gcal_id2){
-                        $sql_V = "SELECT * FROM ven WHERE gcal_id = '$result->gcal_id2' AND (status=1 OR status=2)
-                                    ORDER BY ven_time ASC";
+                        $sql_V = "SELECT v.ven_com_name, p.fname, p.`name`, p.sname 
+                                    FROM ven AS v
+                                    INNER JOIN `profile` AS p ON v.user_id = p.id 
+                                    WHERE v.gcal_id = '$result->gcal_id2' AND (v.status=1 OR v.status=2)
+                                    ORDER BY v.ven_time ASC";
                         $query_V = $conn->prepare($sql_V);
                         $query_V->execute();
                         if($query_V->rowCount()){
@@ -83,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $name = $res_V[0]->ven_com_name."\n";
                             $sms = '';
                             foreach($res_V as $v){
-                                $sms .= $v->u_name."\n";
+                                $sms .= $v->fname.$v->name.' '.$v->sname."\n";
                             }
                             gcal_update($result->gcal_id2, $name, $sms, 1);
                         }
@@ -118,8 +124,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     }catch(Exception $e){
         $conn->rollback();
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        exit;
     }
 }
 

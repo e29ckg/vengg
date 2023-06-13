@@ -19,24 +19,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try{
 
-        $ven_name   = $data->ven_name;
-        $uvn        = $data->uvn;
-        $uvn_sst    = '';
+        $vn_id      = $data->vn_id;
+        $vns_id     = $data->vns_id;
         
-        $sql = "SELECT * 
-                FROM ven_user 
-                WHERE ven_name = :ven_name AND uvn =:uvn 
-                ORDER BY ven_user.order ASC";
+        $sql = "SELECT vu.*, p.fname, p.name, p.sname 
+                FROM ven_user AS vu
+                INNER JOIN `profile` AS p ON vu.user_id = p.user_id
+                WHERE vu.vn_id = :vn_id AND vu.vns_id =:vns_id 
+                ORDER BY vu.order ASC";
 
         $query = $conn->prepare($sql);
-        $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
-        $query->bindParam(':uvn',$uvn, PDO::PARAM_STR);
+        $query->bindParam(':vn_id',$vn_id, PDO::PARAM_INT);
+        $query->bindParam(':vns_id',$vns_id, PDO::PARAM_INT);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
+        foreach($result AS $rs){
+            array_push($datas,array(
+                'uid'   => $rs->user_id,
+                'u_name'    => $rs->fname.$rs->name.' '.$rs->sname,
+                'vn_id'     => $rs->vn_id,
+                'vns_id'    => $rs->vns_id,
+                'order'     => $rs->order,
+            ));
+        }
+
         if($query->rowCount() > 0){
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ'.strlen($uvn) , 'respJSON' => $result));
+            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
             exit;
         }
      

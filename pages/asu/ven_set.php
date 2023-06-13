@@ -131,28 +131,36 @@ require_once('../../server/authen.php');
   </div>
   
   <div id='external-events2'>
-  {{ven_month}} | {{ven_name}} | {{ven_name_sub}} | {{DN}} | 
-  {{price}} 
-  <!-- {{ven_coms}} {{ven_com_id}} -->
+  {{ven_month}} | 
+  {{ven_com.ven_com_num}} {{ven_com.name}} |
+  {{ven_name_sub.name}} |
+  {{vn_id}} | 
+  {{vns_id}} | 
   </div>
   <div id='external-events'>
     <form >
+      <!-- เลือกเดือน -->
       <select class="form-select mt-1 co-10" id="u_role" v-model="ven_month" placeholder="เดือน" @change="ch_sel_ven_month()">
-          <option v-for="svm in sel_ven_month" :value="svm.ven_month" >{{svm.name}} </option>        
+          <option v-for="svm in months" :value="svm.ven_month" >{{svm.name}} </option>        
+      </select>
+
+      <!-- เลือกคำสั่งเวร -->
+      <select class="form-select mt-1 co-10" id="u_role" v-model="vci" placeholder="เลือกคำสั่งเวร" @change="ch_sel_ven_name(vci)">
+          <option v-for="vc,vci in ven_coms" :value="vci" >{{vc.ven_com_num}} {{vc.name}} </option>        
+      </select>
+
+      <!-- เลือกตำแหน่ง/หน้าที่ -->
+      <select class="form-select mt-1 co-10" id="u_role" v-model="vnsi" placeholder="เลือกตำแหน่ง" @change="ch_sel_vns(vnsi)">
+          <option v-for="vns,vnsi in ven_name_subs" :value="vnsi" > {{vns.name}} </option>        
         </select>
-      <select class="form-select mt-1 co-10" id="u_role" v-model="ven_name_index" placeholder="เลือกเวร" @change="ch_sel_ven_name(ven_name_index)">
-          <option v-for="vn,vn_i in ven_names" :value="vn_i" >{{vn.name}} </option>        
-        </select>
-      <select class="form-select mt-1 co-10" id="u_role" v-model="ven_name_sub" placeholder="เลือกตำแหน่ง" @change="ch_sel_vns(ven_name_sub)">
-          <option v-for="vns in ven_name_subs" :value="vns.name" >{{vns.name}} </option>        
-        </select>
+
       <!-- <select class="form-select mt-1 co-10" id="u_role" v-model="ven_coms_index" placeholder="กรุณาเลือกคำสั่ง / หน้าที่" @change="sel_vem_com(ven_coms_index)">
         <option v-for="vc,index in ven_coms" :value="index" >{{vc.u_role}} -> {{vc.DN}} -> {{vc.ven_com_name}} -> {{vc.ven_com_num}} ->  {{vc.price}} </option>        
       </select> -->
 
     </form>
     <p>
-      <strong>{{ven_name}}  {{ven_name_sub ? ' | '+ ven_name_sub : ''}}</strong>
+      <strong>{{ven_month}} </strong><br>
       
     </p>
     

@@ -145,15 +145,14 @@ require_once('../../server/authen.php');
                                         </li>                                        
                                     </ul>
                                     <ul class="list-group mt-3" v-if="ch_b">
-                                        <li class="list-group-item active" aria-current="true">ยกให้</li>  
-                                        <div  v-for="u in users" >
+                                        <li v-if="users"class="list-group-item active" aria-current="true">ยกให้</li>  
+                                        <div v-for="u in users" >
                                             <li class="list-group-item list-group-item-secondary" v-if="u.user_id != ssid"  @click="change_b(u.user_id,u.u_name,u.img)">                                           
                                                 <span > {{u.u_name}}  </span>
                                                 <!-- {{u.user_id +' '+ ' '+ssid}} -->
                                             </li>
-
                                         </div>
-
+                                        <li v-else class="list-group-item" aria-current="true">ไม่พบข้อมูล</li>  
                                     </ul>
                                 </div>
 
