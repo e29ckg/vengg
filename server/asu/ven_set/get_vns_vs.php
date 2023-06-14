@@ -18,7 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try{
         $vn_id = $data->vn_id;
 
-        $sql = "SELECT vn.*, vns.*, vns.id AS vns_id
+        $sql = "SELECT 
+                    vn.*, 
+                    vns.*,
+                    vns.id AS vns_id,
+                    vn.id AS vn_id,
+                    vn.srt AS vn_srt,
+                    vns.srt AS vns_srt
                 FROM ven_name AS vn
                 INNER JOIN ven_name_sub AS vns ON vn.id = vns.ven_name_id 
                 WHERE vns.ven_name_id =:id 

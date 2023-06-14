@@ -18,15 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datas = array();
 
     try{
+        /** หาคำสั่งเวรในเดือนนั้น */
         $sql = "SELECT 
                 -- 	vc.*,
                 -- 	vn.*,
+                    vc.id ,
+                    vn.id AS vn_id,
                     vc.ven_com_num,
                     vc.ven_com_date,
                     vc.ven_month,
                     vc.`status`,
-                    vc.id AS vc_id,
-                    vn.id AS vn_id,
+                    vc.vn_id,
                     vn.name,
                     vn.DN
                 FROM ven_com AS vc
@@ -35,19 +37,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query = $conn->prepare($sql);
         $query->execute();
 
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
+        $res_vcs = $query->fetchAll(PDO::FETCH_OBJ);
 
-        if($query->rowCount() > 0){                       
-            // foreach($result as $rs){
-            //     array_push($datas,array(
-            //         'id'    => $rs->id,
-            //         'name'  => $rs->name,
-            //         'DN'  => $rs->DN,
-            //         'srt'  => $rs->srt
-            //     ));
-            // }
+        if($query->rowCount() > 0){     
+
+                $sql = "SELECT vn.*, vns.*, vns.id AS vns_id, vn.id AS vn_id
+                        FROM ven_name AS vn
+                        INNER JOIN ven_name_sub AS vns ON vn.id = vns.ven_name_id 
+                        WHERE vns.ven_name_id =:id 
+                        ORDER BY vns.srt ASC";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':id',$vn_id, PDO::PARAM_INT);
+                $query->execute();
+                $res_vns = $query->fetchAll(PDO::FETCH_OBJ);
+                    
+
+            
+
+
+            array_push($datas,array(
+                'vcs'    => $rs->res_vcs,
+                'name'  => $rs->name,
+                'DN'  => $rs->DN,
+                'srt'  => $rs->srt
+            ));
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
+            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
             exit;
         }
      

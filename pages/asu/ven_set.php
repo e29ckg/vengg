@@ -10,7 +10,15 @@ require_once('../../server/authen.php');
   <title>
     ven-set
   </title>
+  <style>
+    [v-cloak] > * { display:none; }
+      [v-cloak]::before { content: "loading..."; }
+  
+      script {
+          display: none;
+      }
 
+  </style>
 
 <!-- <link href='./dist/css/index.css' rel='stylesheet' />
 
@@ -124,7 +132,7 @@ require_once('../../server/authen.php');
 </style>
 </head>
 <body>
-<div id="venSet">
+<div id="venSet" v-cloak>
   <div class="clearfix" ref="loading" v-if="isLoading">
     <strong>Loading...</strong>
     <div class="spinner-border float-end" role="status" aria-hidden="true"></div>
@@ -132,10 +140,10 @@ require_once('../../server/authen.php');
   
   <div id='external-events2'>
   {{ven_month}} | 
-  {{ven_com.ven_com_num}} {{ven_com.name}} |
-  {{ven_name_sub.name}} |
-  {{vn_id}} | 
-  {{vns_id}} | 
+  <!-- {{ven_com}}  -->
+  {{ven_com.ven_com_num}} {{ven_com.name}} {{ven_com.id}} |
+  {{ven_name_sub.name}} {{ven_name_sub.vn_id}} : {{ven_name_sub.name}} {{ven_name_sub.vns_id}}
+  <!-- {{ven_name_sub}}  -->
   </div>
   <div id='external-events'>
     <form >
@@ -145,14 +153,16 @@ require_once('../../server/authen.php');
       </select>
 
       <!-- เลือกคำสั่งเวร -->
-      <select class="form-select mt-1 co-10" id="u_role" v-model="vci" placeholder="เลือกคำสั่งเวร" @change="ch_sel_ven_name(vci)">
+      <select class="form-select mt-1 co-10" id="select_vc" v-model="vc_index" placeholder="เลือกคำสั่งเวร" @change="ch_sel_ven_name(vc_index)">
+                
           <option v-for="vc,vci in ven_coms" :value="vci" >{{vc.ven_com_num}} {{vc.name}} </option>        
       </select>
 
       <!-- เลือกตำแหน่ง/หน้าที่ -->
-      <select class="form-select mt-1 co-10" id="u_role" v-model="vnsi" placeholder="เลือกตำแหน่ง" @change="ch_sel_vns(vnsi)">
-          <option v-for="vns,vnsi in ven_name_subs" :value="vnsi" > {{vns.name}} </option>        
-        </select>
+      <select class="form-select mt-1 co-10" id="vns" v-model="vns_index" placeholder="เลือกตำแหน่ง" @change="ch_sel_vns(vns_index)">
+         
+        <option v-for="vns,vnsi in ven_name_subs" :value="vnsi" > {{vns.name}} </option>        
+      </select>
 
       <!-- <select class="form-select mt-1 co-10" id="u_role" v-model="ven_coms_index" placeholder="กรุณาเลือกคำสั่ง / หน้าที่" @change="sel_vem_com(ven_coms_index)">
         <option v-for="vc,index in ven_coms" :value="index" >{{vc.u_role}} -> {{vc.DN}} -> {{vc.ven_com_name}} -> {{vc.ven_com_num}} ->  {{vc.price}} </option>        
@@ -164,7 +174,7 @@ require_once('../../server/authen.php');
       
     </p>
     
-    <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' v-for="pf,index in profiles" :data-event="pf.data_event" :data-uid="pf.user_id">
+    <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event' v-for="pf,index in profiles" :data-event="pf.data_event" :data-uid="pf.uid">
       <div class='fc-event-main'>{{index + 1}} {{pf.u_name}}</div>
     </div>    
        <!-- {{profiles}} -->

@@ -13,7 +13,8 @@ $data = json_decode(file_get_contents("php://input"));
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $datas = array();    
+    $datas = array();
+        
     $act = $data->act;
     
     try{
@@ -21,34 +22,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $id = time();
             $ven_date       = $data->ven_date;
-            $user_id        = $data->user_id;
+            $user_id        = $data->uid;
 
-            $ven_com_id     = '',
-            $ven_com_idb     = '',
-            $ven_time     = '',
-            $ven_month      = '',
-            $vn_id      = '',
-            $vns_id      = '',
-            $DN      = '',
-            $ven_com_name      = '',
-            $ven_com_name_all      = '',
-            $ven_name      = '',
-            $u_role         = '';
-            $price      = '',
-            $color      = '',
-            $status     = 2,
-            $update_at     = '',
-            $create_at     = '',
+            $ven_com_id     = $data->vc_id;
+            $ven_com_idb    = $data->vc_id;
+            $ven_month      = $data->ven_month;
+            $vn_id          = $data->vn_id;
+            $vns_id         = $data->vns_id;
+            $DN             = $data->DN;
             
-
-            $ven_com_id     = array();
+            $ven_name       = $data->ven_name;
+            $ven_com_name   = $data->ven_name;
+            $ven_com_name_all   = $data->ven_name;
             
+            $u_role         = $data->u_role;
+            $price          = $data->price;
+            $color          = $data->color;
+            $vn_srt         = $data->vn_srt;
+            $vns_srt        = $data->vns_srt;
+            $status         = 2;
 
-             /** เช็ควันเวลาที่อยู่เวรไม่ได้ */  
-             $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
-             $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
+            $update_at      = '';
+            $create_at      = '';
 
-            $sql_VU = "SELECT * FROM ven WHERE user_id = $user_id AND ven_date >= '$ven_date_d1' AND ven_date <= '$ven_date_u1' AND (status=1 OR status=2)";
+
+            
+          
+
+            /** เช็ควันเวลาที่อยู่เวรไม่ได้ */  
+            $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
+            $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
+
+            $sql_VU = "SELECT * 
+                        FROM ven 
+                        WHERE user_id = $user_id AND ven_date >= '$ven_date_d1' AND ven_date <= '$ven_date_u1' AND (status=1 OR status=2)";
             $query_VU = $conn->prepare($sql_VU);
             $query_VU->execute();
             $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
@@ -69,89 +76,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         http_response_code(200);
                         echo json_encode(array('status' => false, 'message' => $ven_date_u1.' มีเวร'));
                         exit;
-                    }
-                    
-                }
-
+                    }                    
+                }                
             }
                       
-            /******************** เช็คคำสั่ง****************** */ 
-            $sql_vcid = "SELECT id, ref, ven_com_name, ven_name, ven_com_num FROM ven_com WHERE ven_month = '$ven_month' AND ven_name = '$ven_name' LIMIT 1 ";
-            $query_vcid = $conn->prepare($sql_vcid);
-            $query_vcid->execute();
-            $res_vcid = $query_vcid->fetch(PDO::FETCH_OBJ);
-
-            if($query_vcid->rowCount() < 1){    
-                http_response_code(200);
-                echo json_encode(array('status' => false, 'message' => 'กรุณาออกคำสั่ง ' . $ven_name .' เดือน '.$ven_month , 'responseJSON' => $data));
-                exit; 
-            }
-
-            if($res_vcid){
-                array_push($ven_com_id,$res_vcid->id);
-                $ven_com_idb        = $res_vcid->id;
-                $r_ref              = $res_vcid->ref;
-                $ven_com_name       = $res_vcid->ven_name;
-                // $ven_com_name       = $res_vcid->ven_com_name;
-                $ven_com_num_all    = $res_vcid->ven_com_num;
-            }else{
-                $ven_com_idb        = '';
-                $r_ref              = '';
-                $ven_com_name       = '';
-                $ven_com_num_all    = '';
-            } 
-
             
-            /******************** เช็คคำสั่ง****************** */ 
-
-            /**   หาชื่อ  */
-            $sql_u = "SELECT fname, name, sname FROM profile WHERE user_id =:user_id LIMIT 1 ";
-            $query_u = $conn->prepare($sql_u);
-            $query_u->bindParam(':user_id',$user_id, PDO::PARAM_INT);
-            $query_u->execute();
-            $res_u = $query_u->fetch(PDO::FETCH_OBJ);            
-            $u_name = $res_u->fname.$res_u->name. ' '.$res_u->sname;
-            /**  end  หาชื่อ  */
-            
-
-            $ven_con_name   = '';
             $ref1           = generateRandomString();
             $ref2           =  $ref1;
-            $price          = '';
             $status         = 2 ;
+            $update_at      = Date("Y-m-d H:i:s");
             $create_at      = Date("Y-m-d H:i:s");
 
             $ven_time = '';
 
             /** หาเวลา ven_time  เรียงลำดับ */
+
+            // $ven_time       = (string)$vn_srt.(string)$vns_srt;
+            // if($DN == 'กลางวัน'){
+            //     $ven_time = '08:30:'.$ven_time;
+            // }else{
+            //     $ven_time = '16:30:'.$ven_time;
+            // }
+
             $DN == 'กลางวัน' ? $ven_time = '08:30:' : $ven_time = '16:30:';
-            $sql = "SELECT price, vn.srt AS vn_srt, vns.srt AS vns_srt
-                        FROM ven_name AS vn
-                        INNER JOIN ven_name_sub AS vns ON vns.ven_name_id = vn.id
-                        WHERE vn.name = '$ven_name' AND vns.`name` = '$u_role'";  
+            
+            $ven_time .= (string)$vn_srt ;
+            $ven_time .= (string)$vns_srt;
+            
+            $sql = "SELECT v.id 
+                    FROM ven AS v
+                    WHERE ven_month ='$ven_month' 
+                    	AND vn_id = $vn_id
+                        AND vns_id = $vns_id
+                    	AND ven_com_idb = $ven_com_id
+                        AND (v.`status`=1 OR v.`status`=2)";
             $query = $conn->prepare($sql);
             $query->execute();
-            $res_vn = $query->fetch(PDO::FETCH_OBJ); 
+            // $res_vcnt = $query->fetchAll(PDO::FETCH_OBJ);
+            // $query->rowCount();
+            // $s = '00';
+            $s = (string)$query->rowCount();
+            // $ven_time .= substr($s, -1); 
+            // $ven_time = '08:30:10';
+            $ven_time = date("h:i:s",strtotime($ven_time));
 
-            if($res_vn){
-                $price    = $res_vn->price ;
-                // $ven_time .= (string)$res_vn->vn_srt ;
-                $ven_time .= (string)$res_vn->vns_srt;
-                
-                $sql = "SELECT id FROM ven WHERE u_role = '$u_role' AND ven_date = '$ven_date' AND DN = '$DN'";
-                $query = $conn->prepare($sql);
-                $query->execute();
-                $res_vcnt = $query->fetchAll(PDO::FETCH_OBJ);
-                // $s = '00';
-                $s = (string)count($res_vcnt) ;
-                $ven_time .= substr($s, -1); 
 
-            }else{
-                $ven_time .= '00';
-            }
+            http_response_code(200);
+            echo json_encode(array('status' => true, 'message' => $data,'$query->rowCount()'=>$query->rowCount(),'time'=>$ven_time));
+            exit;
+
             /**end หาเวลา ven_time */
 
-            $ven_com_id = json_encode($ven_com_id);
+            // $ven_com_id = json_encode($ven_com_id);
+
             $sql = "INSERT INTO ven(id, ven_date, ven_time, DN, ven_month, ven_com_id, ven_com_idb, user_id, u_name, u_role, ven_name, ven_com_name, ven_com_num_all, ref1, ref2, price, `status`, update_at, create_at) 
                     VALUE(:id, :ven_date, :ven_time, :DN, :ven_month, :ven_com_id, :ven_com_idb, :user_id, :u_name, :u_role, :ven_name, :ven_com_name, :ven_com_num_all, :ref1, :ref2, :price, :status, :update_at, :create_at);";        
             $query = $conn->prepare($sql);
@@ -174,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bindParam(':status',$status , PDO::PARAM_INT);
             $query->bindParam(':update_at',$create_at , PDO::PARAM_STR);
             $query->bindParam(':create_at',$create_at , PDO::PARAM_STR);
-            $query->execute();
+            // $query->execute();
 
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => ' ok ', 'responseJSON' => $data));
@@ -183,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         
     }catch(PDOException $e){
-        http_response_code(400);
+        http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }
