@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => $data,'$query->rowCount()'=>$query->rowCount(),'time'=>$ven_time));
+            echo json_encode(array('status' => true, 'message' =>$s));
             exit;
 
             /**end หาเวลา ven_time */
