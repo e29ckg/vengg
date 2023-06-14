@@ -13,6 +13,17 @@ include "./server/function.php";
 $data = json_decode(file_get_contents("php://input"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	// $seconds = 100;
+	// echo date("H:i:s", mktime(16, 30, $seconds)); // แสดงผลเป็นเวลาที่มีวินาทีเป็น 1
+
+	function generateRandomNumber($min = 1000, $max = 9999) {
+		return rand($min, $max);
+	}
+	
+	// ตัวอย่างการใช้งาน
+	$randomNumber = generateRandomNumber();
+	echo time() . $randomNumber;
+
 	// $name = '2222222';
 	// $start = '2022-12-29 22:29:00';
 

@@ -85,6 +85,10 @@ function generateRandomString($length = 20) {
     return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
 }
 
+function generateRandomNumber($min = 1000, $max = 9999) {
+    return rand($min, $max);
+}
+
 function Num_f($num){
     return thainumDigit(number_format($num));
 }
