@@ -46,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "fname"=> $res->fname,
             "name"=> $res->name,
             "sname"=> $res->sname,
+            "status"=> $res->status
         );
 
         $sql = "SELECT 

@@ -110,7 +110,7 @@ require_once('../../server/authen.php');
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clear_vc_form" ref="close_vc"></button>
                             </div>
                             <div class="modal-body">
-                                {{vc_form}}
+                                <!-- {{vc_form}} -->
                                 <!-- {{vc_form_act}} -->
                                 <form @submit.prevent="vc_save">                                    
                                     <div class="row mb-3">                                        

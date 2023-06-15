@@ -94,7 +94,7 @@ Vue.createApp({
       .then(response => {
         if(response.data.status) {
           this.ven_coms = response.data.respJSON;
-          this.alert('success',response.data.message,1000)
+          // this.alert('success',response.data.message,1000)
         } else{
           this.ven_coms = []
           this.alert('warning',response.data.message,0)
@@ -106,7 +106,6 @@ Vue.createApp({
     },
 
     ch_sel_ven_month(){
-      // this.cal_render()
       this.ven_coms       = []
       this.ven_com       = ''
       this.ven_name_subs  = []
@@ -115,10 +114,13 @@ Vue.createApp({
       this.vns_index       = ''
       this.profiles       = []
       this.get_ven_coms()
+      this.cal_render()      
       
     },
 
     ch_sel_ven_name(index){  
+      this.ven_name_sub = ''
+      
       this.ven_name_subs = []
       this.ven_com = this.ven_coms[index]
       axios.post('../../server/asu/ven_set/get_vns_vs.php',{vn_id:this.ven_com.vn_id})
@@ -126,11 +128,13 @@ Vue.createApp({
           if (response.data.status) {
             this.ven_name_subs = response.data.respJSON
           }else{
-            
+            this.vc_index       = ''            
             this.ven_name_sub = ''
             this.ven_name_subs = []
             this.alert('warning',response.data.message,0)
           }
+          this.vns_index       = ''
+          this.profiles = []
         })
         .catch(function (error) {        
         console.log(error);
@@ -139,7 +143,7 @@ Vue.createApp({
     },
 
     ch_sel_vns(index){  
-      console.log(index)   
+      console.log(index) 
       this.ven_name_sub = this.ven_name_subs[index]
 
       axios.post('../../server/asu/ven_set/get_ven_users.php',{vn_id:this.ven_name_sub.vn_id , vns_id:this.ven_name_sub.vns_id})
@@ -147,6 +151,7 @@ Vue.createApp({
         if (response.data.status) {
           this.profiles = response.data.respJSON
         }else{
+          this.vns_index = ''
           this.ven_name_sub = ''
           this.profiles = []
           this.alert('warning',response.data.message,0)
@@ -179,15 +184,16 @@ Vue.createApp({
           },
           editable: true,
           eventDrop: (info)=> {
-              console.log(info.event)
+              // console.log(info.event)
                 if(!this.event_drop(info.event.id,info.event.start)){
                   info.revert();
                 }
           },
           droppable: true,
           drop: (info)=> {
-            console.log(info.draggedEl.dataset.uid)
-              this.drop_insert(info.draggedEl.dataset.uid, info.dateStr)  
+            // console.log(info.draggedEl.dataset.uid)              
+            this.drop_insert(info.draggedEl.dataset.uid, info.dateStr)
+              
           }
       });
       calendar.render(); 
@@ -249,7 +255,7 @@ Vue.createApp({
                   timer: 1000
                 });
               } else{     
-                this.alert('warning',response.data.message ,0)                
+                this.alert('warning',response.data.message ,0) 
               }
               this.get_vens()
               this.cal_render()         
@@ -267,20 +273,20 @@ Vue.createApp({
         if (response.data.status) {
             this.datas = response.data.respJSON;
             this.get_vens()
+            this.cal_render()  
             swal.fire({
               icon: 'success',
               title: response.data.message,
               showConfirmButton: true,
               timer: 1000
             });
-            // return true
-        } else{
-          icon = 'warning'
-          message = response.data.message;
-          this.alert(icon,message,timer=0)
-          // return false
-        }
-        this.cal_render()  
+            return true
+          } else{
+            icon = 'warning'
+            message = response.data.message;
+            this.alert(icon,message,timer=0)
+            return false
+          }
     })
     .catch(function (error) {
         console.log(error);

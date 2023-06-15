@@ -217,7 +217,7 @@ require_once('../../server/authen.php');
                     {{data_event.status == 5 ? 'ปิดการใช้งานชั่วคราว':''}}
 
                     <button v-if="data_event.status == 5 || data_event.status == 1" @click="ven_dis_open(data_event.id)" class="btn btn-danger">
-                    {{data_event.status == 5 ? 'เปิดการใช้งานชั่วคราว':'ปิดการใช้งานชั่วคราว'}}
+                    {{data_event.status == 5 ? 'เปิดการใช้งาน':'ปิดการใช้งานชั่วคราว'}}
                     </button>
                   </td>
                 </tr>
@@ -228,11 +228,11 @@ require_once('../../server/authen.php');
                 <tr>
                   <th scope="row">เบิกเงินในคำสั่ง</th>
                   <td>
-                    {{data_event}}
+                    <!-- {{data_event}} -->
                     <select class="form-select" aria-label="Default select example" v-model="data_event.ven_com_idb" v-if="data_event_ven_coms" @change.prevent="ven_save2()">
                         <option v-for="vc in data_event_ven_coms" :value="vc.vc_id" >{{' คำสั่งที่ ' + vc.ven_com_num + ' เวร ' +vc.name}}</option>
                     </select>
-                    {{data_event_ven_coms}}
+                    <!-- {{data_event_ven_coms}} -->
                   </td>
                 </tr>
                 <tr>

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         $vc = $query->fetch(PDO::FETCH_OBJ);
    
-        $sql = "SELECT v.* , p.dep, p.workgroup
+        $sql = "SELECT v.*, p.fname, p.name,p.sname, p.dep, p.workgroup
                 FROM ven AS v
                 INNER JOIN `profile` AS p ON p.user_id = v.user_id
                 WHERE v.ven_month = '$vc->ven_month' AND (v.status=1 OR v.status=2) 
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             foreach(json_decode($rs->ven_com_id) as $v){
                                 if($vcid == $v){
         
-                                    $vt_s = substr($rs->ven_time, 0, -3);
+                                    // $vt_s = substr($rs->ven_time, 0, -3);
                                     if($OLD_VT != $vt_s){
                                         array_push($vt,$vt_s);
                                         $OLD_VT = $vt_s;
@@ -77,12 +77,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                                     if($OLD_UNAME != $rs->u_name){                                        
                                         if($rs->workgroup == 'ผู้พิพากษา'){
-                                            array_push($u_namej,$rs->u_name );
+                                            array_push($u_namej,$rs->fname.$rs->name.' '.$rs->sname );
                                         }else{
-                                            array_push($u_name,$rs->u_name);
+                                            array_push($u_name,$rs->fname.$rs->name.' '.$rs->sname);
                                             array_push($cmt,$rs->u_role);
                                         }
-                                        $OLD_UNAME = $rs->u_name;
+                                        $OLD_UNAME = $rs->fname.$rs->name.' '.$rs->sname;
                                     }
                                 }
     
