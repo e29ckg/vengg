@@ -25,7 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $sql = "SELECT v.id, v.ven_date, v.ven_time, v.u_role, v.price, v.ven_com_name, p.name, p.sname 
                 FROM ven as v 
                 INNER JOIN `profile` as p ON v.user_id = p.user_id
-                WHERE (v.status = 1 OR v.status = 2 OR v.status = 5) AND p.`status` = 10
+                WHERE (v.status = 1 OR v.status = 2 OR v.status = 5) 
+                    -- AND p.`status` = 10
                 ORDER BY v.ven_date DESC, v.ven_time ASC
                 LIMIT 500";
         $query = $conn->prepare($sql);

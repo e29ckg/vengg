@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ven_date       = $data->ven_date;
             $user_id        = $data->uid;
 
-            $ven_com_id     = $data->vc_id;
+            $ven_com_id     = json_encode(array($data->vc_id));
             $ven_com_idb    = $data->vc_id;
             $ven_month      = $data->ven_month;
             $vn_id          = $data->vn_id;
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $ven_name       = $data->ven_name;
             $ven_com_name   = $data->ven_name;
-            $ven_com_name_all   = $data->ven_name;
+            $ven_com_num    = $data->ven_com_num;
 
             $u_role         = $data->u_role;
             $price          = $data->price;
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bindParam(':vns_id', $vns_id, PDO::PARAM_INT);
             $query->bindParam(':DN', $DN, PDO::PARAM_STR);
             $query->bindParam(':ven_com_name', $ven_com_name, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_num_all', $ven_com_num_all, PDO::PARAM_STR);
+            $query->bindParam(':ven_com_num_all', $ven_com_num, PDO::PARAM_STR);
             $query->bindParam(':ven_name', $ven_name, PDO::PARAM_STR);
             $query->bindParam(':u_role', $u_role, PDO::PARAM_STR);
             $query->bindParam(':price', $price, PDO::PARAM_STR);

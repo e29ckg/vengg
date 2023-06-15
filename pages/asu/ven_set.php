@@ -228,10 +228,11 @@ require_once('../../server/authen.php');
                 <tr>
                   <th scope="row">เบิกเงินในคำสั่ง</th>
                   <td>
-                    <select class="form-select" aria-label="Default select example" v-model="data_event.ven_com_idb" v-if="ven_coms" @change.prevent="ven_save2()">
-                        <option v-for="vc in ven_coms" :value="vc.id" >{{' คำสั่งที่ ' + vc.ven_com_num + ' เวร ' +vc.ven_name}}</option>
+                    {{data_event}}
+                    <select class="form-select" aria-label="Default select example" v-model="data_event.ven_com_idb" v-if="data_event_ven_coms" @change.prevent="ven_save2()">
+                        <option v-for="vc in data_event_ven_coms" :value="vc.vc_id" >{{' คำสั่งที่ ' + vc.ven_com_num + ' เวร ' +vc.name}}</option>
                     </select>
-                    <!-- {{ven_coms}} -->
+                    {{data_event_ven_coms}}
                   </td>
                 </tr>
                 <tr>
@@ -240,11 +241,11 @@ require_once('../../server/authen.php');
                     {{data_event.u_role}} | {{data_event.DN}} | {{data_event.ven_com_name}} | {{data_event.price}}
                   </td>
                 </tr>
-                <tr v-for="vc,i in ven_coms">
+                <tr v-for="vc,i in data_event_ven_coms">
                   <td></td>
                   <td>
-                    <input type="checkbox"  :id="i" name="ckb" :value="vc.id" v-model="data_event.ven_com_id" @change.prevent="ven_save()">
-                    <label :for="i"> {{' คำสั่งที่ ' + vc.ven_com_num + ' เวร ' +vc.ven_name}}</label><br>
+                    <input type="checkbox"  :id="i" name="ckb" :value="vc.vc_id" v-model="data_event.ven_com_id" @change.prevent="ven_save()"> 
+                    <label :for="i"> {{' คำสั่งที่ ' + vc.ven_com_num + ' เวร ' +vc.name}}</label><br>
                   </td>
                 </tr>
                 <tr>

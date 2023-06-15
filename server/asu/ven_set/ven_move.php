@@ -57,47 +57,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
             }
 
-        }
+        }   
+        
+        $update_at      = Date("Y-m-d H:i:s");
 
-    
-        /** หาเวลา ven_time  เรียงลำดับ */
-        $DN == 'กลางวัน' ? $ven_time = '08:30:' : $ven_time = '16:30:';
-        $sql = "SELECT price, vn.srt AS vn_srt, vns.srt AS vns_srt
-                    FROM ven_name AS vn
-                    INNER JOIN ven_name_sub AS vns ON vns.ven_name_id = vn.id
-                    WHERE vn.name = '$res_v->ven_name' AND vns.`name` = '$res_v->u_role'";  
-        $query = $conn->prepare($sql);
-        $query->execute();
-        $res_vn = $query->fetch(PDO::FETCH_OBJ); 
-
-        if($res_vn){
-            $price    = $res_vn->price ;
-            // $ven_time .= (string)$res_vn->vn_srt ;
-            $ven_time .= (string)$res_vn->vns_srt;
-            
-            $sql = "SELECT id FROM ven WHERE u_role = '$res_v->u_role' AND ven_date = '$res_v->ven_date' AND DN = '$DN' ORDER BY ven_time ASC";
-            $query = $conn->prepare($sql);
-            $query->execute();
-            $res_vcnt = $query->fetchAll(PDO::FETCH_OBJ);
-            // $s = '00';
-            $s = (string)count($res_vcnt) ;
-            $ven_time .= substr($s, -1); 
-
-        }else{
-            $ven_time .= '00';
-        }
-        /**end หาเวลา ven_time */
-
-
-        $sql = "UPDATE ven SET ven_date =:ven_date, ven_time =:ven_time WHERE id = :id";        
+        $sql = "UPDATE ven SET ven_date =:ven_date, update_at=:update_at WHERE id = :id";        
         $query = $conn->prepare($sql);
         $query->bindParam(':ven_date',$ven_date, PDO::PARAM_STR);
-        $query->bindParam(':ven_time',$ven_time, PDO::PARAM_STR);
+        $query->bindParam(':update_at',$update_at, PDO::PARAM_STR);
         $query->bindParam(':id',$id, PDO::PARAM_INT);
-        $res = $query->execute();
+        $query->execute();
+        
+        /**  เรียงลำดับเวลา ven_time  */        
+        $sql = "SELECT 
+                    ven.id,
+                    ven.u_role,
+                    ven.ven_time,	
+                    ven_name.srt AS vn_srt,
+                    ven_name_sub.srt AS vns_srt
+                FROM ven
+                INNER JOIN ven_name ON ven.vn_id = ven_name.id
+                INNER JOIN ven_name_sub ON ven.vns_id = ven_name_sub.id
+                WHERE ven_date='$ven_date' 
+                    AND (ven.`status` = 1 OR ven.`status` = 2)
+                ORDER BY 
+                    vn_srt ASC,
+                    vns_srt ASC,
+                    update_at ASC";
+
+        $query = $conn->prepare($sql);
+        $query->execute();
+        $hours = 8;
+        $seconds = 0;
+        foreach ($query->fetchAll(PDO::FETCH_OBJ) as $rs) {
+            if ($DN == 'กลางคืน') {
+                $hours = 16;
+            }
+            ++$seconds;
+            $ven_time = date("H:i:s", mktime($hours, 30, $seconds));
+
+            $sql = "UPDATE ven SET ven_time = '$ven_time' WHERE id=$rs->id";
+            $conn->exec($sql);
+        }
+        /**end เรียงลำดับเวลาา ven_time */
 
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $res));
+        echo json_encode(array('status' => true, 'message' => 'สำเร็จ'));
         exit;
         
     

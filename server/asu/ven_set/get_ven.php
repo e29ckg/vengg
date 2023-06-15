@@ -19,18 +19,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try{
         $sql = "SELECT v.*, p.fname, p.name, p.sname 
-        FROM ven as v 
-        INNER JOIN `profile` as p ON v.user_id = p.user_id
-        WHERE v.id = :id
-        ORDER BY v.ven_date DESC
-        LIMIT 1";
+                FROM ven as v 
+                INNER JOIN `profile` as p ON v.user_id = p.user_id
+                WHERE v.id = :id
+                ORDER BY v.ven_date DESC
+                LIMIT 1";
         $query = $conn->prepare($sql);
         $query->bindParam(':id', $id, PDO::PARAM_INT);
         $query->execute();
-        $result = $query->fetch(PDO::FETCH_OBJ);
+        $res = $query->fetch(PDO::FETCH_OBJ);
+
+        $res_ven = array(
+            "id"    => $res->id,
+            "user_id"   => $res->user_id,
+            "ven_com_id"=> json_decode($res->ven_com_id),
+            "ven_com_idb"=> $res->ven_com_idb,
+            "ven_date"=> $res->ven_date,
+            "ven_time"=> $res->ven_time,
+            "ven_month"=> $res->ven_month,
+            "DN"=> $res->DN,
+            "ven_com_name"=> $res->ven_com_name,
+            "ven_com_num_all"=> $res->ven_com_num_all,
+            "ven_name"=> $res->ven_name,
+            "u_role"=> $res->u_role,
+            "price"=> $res->price,
+            "fname"=> $res->fname,
+            "name"=> $res->name,
+            "sname"=> $res->sname,
+        );
+
+        $sql = "SELECT 
+                -- 	vc.*,
+                -- 	vn.*,
+                    vc.ven_com_num,
+                    vc.ven_com_date,
+                    vc.ven_month,
+                    vc.`status`,
+                    vc.id AS vc_id,
+                    vn.id AS vn_id,
+                    vn.name,
+                    vn.DN
+                FROM ven_com AS vc
+                INNER JOIN ven_name AS vn ON vc.vn_id = vn.id 
+                WHERE ven_month = '$res->ven_month';";
+        $query = $conn->prepare($sql);
+        $query->execute();
+
+        $res_ven_coms = $query->fetchAll(PDO::FETCH_OBJ);
+
+        
      
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'ไม่พบข้อมูล ', 'respJSON' => $result));
+        echo json_encode(array('status' => true, 'message' => 'ไม่พบข้อมูล ','res_ven'=>$res_ven, 'respJSON' => $res_ven,'ven_coms'=>$res_ven_coms));
         exit;
     
     }catch(PDOException $e){

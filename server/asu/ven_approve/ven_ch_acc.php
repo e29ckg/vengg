@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->commit();
 
         if($query2->rowCount()){                        //count($result)  for odbc
-            $sql = "SELECT v1.gcal_id AS v1_gcal_id, v1.u_name AS v1_name, v2.gcal_id AS v2_gcal_id, v2.u_name AS v2_name
+            $sql = "SELECT v1.gcal_id AS v1_gcal_id, v2.gcal_id AS v2_gcal_id
                     FROM ven_change as vc
                     LEFT JOIN ven AS v1 ON v1.id = vc.ven_id1
                     LEFT JOIN ven AS v2 ON v2.id = vc.ven_id2	
@@ -71,15 +71,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 ORDER BY ven_time ASC";
                     $query_V = $conn->prepare($sql_V);
                     $query_V->execute();
-                    if($query_V->rowCount()){
-                        $res_V = $query_V->fetchAll(PDO::FETCH_OBJ);
-                        $name = $res_V[0]->ven_com_name."\n";
-                        $sms2 = '';
-                        foreach($res_V as $v){
-                            $sms2 .= $v->u_name."\n";
-                        }
-                        gcal_update($res->v2_gcal_id, $name, $sms2, 1);    
-                    }        
+                    // if($query_V->rowCount()){
+                    //     $res_V = $query_V->fetchAll(PDO::FETCH_OBJ);
+                    //     $name = $res_V[0]->ven_com_name."\n";
+                    //     $sms2 = '';
+                    //     foreach($res_V as $v){
+                    //         $sms2 .= $v->u_name."\n";
+                    //     }
+                    //     gcal_update($res->v2_gcal_id, $name, $sms2, 1);    
+                    // }        
                 }
             }
 

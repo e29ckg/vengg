@@ -43,12 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             foreach($data_event->ven_com_id as $cvi){
                 $x++;
-                $sql    = "SELECT ven_com_name, ven_com_num, ven_name FROM ven_com WHERE id = $cvi";
+                $sql    = "SELECT vc.ven_com_num, vn.name AS vn_name
+                            FROM ven_com AS vc
+                            INNER JOIN ven_name AS vn ON vc.vn_id = vn.id 
+                            WHERE vc.id = $cvi";
                 $query  = $conn->prepare($sql);
                 $query->execute();
                 $res    = $query->fetch(PDO::FETCH_OBJ);
                 $ven_com_num_all    .= $res->ven_com_num;
-                $ven_com_name       .= $res->ven_name ;
+                $ven_com_name       .= $res->vn_name;
                 if($x == $y){
                     $ven_com_name       .= '';
                     $ven_com_num_all    .= '';
@@ -60,12 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $ven_com_id = json_encode($ven_com_id);
 
-            $sql = "UPDATE ven SET ven_com_id=:ven_com_id, ven_com_idb=:ven_com_idb, ven_com_name=:ven_com_name, ven_com_num_all=:ven_com_num_all  WHERE id = :id";   
+            $sql = "UPDATE ven SET ven_com_id=:ven_com_id, ven_com_idb=:ven_com_idb, ven_com_num_all=:ven_com_num_all  WHERE id = :id";   
 
             $query = $conn->prepare($sql);
             $query->bindParam(':ven_com_id',$ven_com_id, PDO::PARAM_STR);
             $query->bindParam(':ven_com_idb',$ven_com_idb, PDO::PARAM_STR);
-            $query->bindParam(':ven_com_name',$ven_com_name, PDO::PARAM_STR);
             $query->bindParam(':ven_com_num_all',$ven_com_num_all, PDO::PARAM_STR);
             $query->bindParam(':id',$id, PDO::PARAM_INT);
             $query->execute();

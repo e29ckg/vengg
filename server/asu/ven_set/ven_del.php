@@ -34,37 +34,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         }else{
 
+            $sql = "SELECT * FROM ven WHERE id = $id";
+            $query = $conn->prepare($sql);
+            $query->execute();
+            $rs = $query->fetch(PDO::FETCH_OBJ);
+
+            $sql = "DELETE FROM ven WHERE id = $id";
+            $conn->exec($sql);
+
             
             if(__GOOGLE_CALENDAR__){  
+                                  
 
-                $sql = "SELECT * FROM ven WHERE id = $id";
-                $query = $conn->prepare($sql);
-                $query->execute();
-
-                $sql = "DELETE FROM ven WHERE id = $id";
-                $conn->exec($sql);
-                
-                if($query->rowCount()){ 
-                    $rs = $query->fetch(PDO::FETCH_OBJ);
-
-                    $sql_V  = "SELECT * 
-                                FROM ven 
-                                WHERE gcal_id =:gcal_id 
-                                AND (status=1 OR status=2)
-                                ORDER BY ven_time ASC";
-                    $query_V = $conn->prepare($sql_V);
+                    $sql_v  = "SELECT v.*,v.id, v.user_id, v.ven_com_idb, v.ven_date, v.ven_time, v.gcal_id, p.fname, p.name, p.sname, vn.`name` AS vn_name 
+                                FROM ven AS v
+                                INNER JOIN `profile` AS p ON v.user_id = p.id 
+                                INNER JOIN ven_name AS vn ON v.vn_id = vn.id
+                                WHERE  v.gcal_id =:gcal_id 
+                                AND (v.status=1 OR v.status=2)
+                                ORDER BY v.ven_time ASC";
+                    $query_V = $conn->prepare($sql_v);
                     $query_V->bindParam(':gcal_id', $rs->gcal_id, PDO::PARAM_STR);
                     $query_V->execute();
+                    $res_V = $query_V->fetchAll(PDO::FETCH_OBJ);
                                         
                     if($query_V->rowCount()){
-                        $res_V = $query_V->fetchAll(PDO::FETCH_OBJ);
                         
                         /** เตรียมข้อมูลส่ง */
                         $name           = "(เวร)".$res_V[0]->ven_com_name;
                         $desc           = '';
                         
                         foreach($res_V as $rs){
-                            $desc .= $rs->u_name."\n";                                                           
+                            $desc .= $rs->fname.$rs->name.' '.$rs->sname."\n";                                                           
                         }        
                         
                         gcal_update($rs->gcal_id, $name, $desc, 1);  
@@ -72,27 +73,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         gcal_remove($rs->gcal_id);    
                         
                     }                    
-                }                
+                               
             }
-
-            $sql = "DELETE FROM ven WHERE id = $id";
-            if($conn->exec($sql)){
-                http_response_code(200);
-                echo json_encode(array(
-                    'status' => true, 
-                    'message' => 'DEL ok'
-                    ));
-                exit; 
-            }
-
             http_response_code(200);
             echo json_encode(array(
-                'status' => false, 
-                'message' => 'ไม่มีการปรับปรุง'
+                'status' => true, 
+                'message' => 'DEL ok'
                 ));
-            exit;   
+            exit; 
 
+            
+          
+            
         }
+        
+                    http_response_code(200);
+                    echo json_encode(array(
+                        'status' => false, 
+                        'message' => 'ไม่มีการปรับปรุง'
+                        ));
+                    exit;   
 
         
     }catch(PDOException $e){

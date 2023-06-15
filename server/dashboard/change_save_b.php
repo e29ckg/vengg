@@ -14,10 +14,9 @@ $data = json_decode(file_get_contents("php://input"));
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    $ch_v1 =$data->ch_v1;
-
-    $user_id2 = $data->user_id2;
-    $u_name2  = $data->u_name2;
+    $ch_v1      = $data->ch_v1;
+    $user_id2   = $data->user_id2;
+    $u_name2    = $data->u_name2;
 
     $datas = array();    
 
@@ -85,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->beginTransaction();
 
         // /**  สร้างเวรใบ1 */
-        $sql = "INSERT INTO ven(id, ven_date, ven_time, DN, ven_month, ven_com_id, ven_com_idb, user_id, vn_id, vns_id, u_role, ven_name, ven_com_name, ven_com_num_all, ref1, ref2, price, gcal_id, `status`, update_at, create_at) 
-                VALUE(:id, :ven_date, :ven_time, :DN, :ven_month, :ven_com_id, :ven_com_idb, :user_id, :vn_id, :vns_id, :u_role, :ven_name, :ven_com_name, :ven_com_num_all, :ref1, :ref2, :price, :gcal_id, :status, :update_at, :create_at);";        
+        $sql = "INSERT INTO ven(id, ven_date, ven_time, DN, ven_month, ven_com_id, ven_com_idb, user_id, vn_id, vns_id, u_role, ven_name, ven_com_name, ven_com_num_all, ref1, ref2, price, color, gcal_id, `status`, update_at, create_at) 
+                VALUE(:id, :ven_date, :ven_time, :DN, :ven_month, :ven_com_id, :ven_com_idb, :user_id, :vn_id, :vns_id, :u_role, :ven_name, :ven_com_name, :ven_com_num_all, :ref1, :ref2, :price, :color, :gcal_id, :status, :update_at, :create_at);";        
         $query = $conn->prepare($sql);
         $query->bindParam(':id',$idv1, PDO::PARAM_INT);
         $query->bindParam(':ven_date',$rsv1->ven_date, PDO::PARAM_STR);
@@ -105,6 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->bindParam(':ref1',$ref , PDO::PARAM_STR);
         $query->bindParam(':ref2',$rsv1->ref1 , PDO::PARAM_STR);
         $query->bindParam(':price',$rsv1->price , PDO::PARAM_STR);
+        $query->bindParam(':color',$rsv1->color , PDO::PARAM_STR);
         $query->bindParam(':gcal_id',$rsv1->gcal_id , PDO::PARAM_STR);
         $query->bindParam(':status',$status , PDO::PARAM_INT);
         $query->bindParam(':update_at',$create_at , PDO::PARAM_STR);

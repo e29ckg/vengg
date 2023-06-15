@@ -35,6 +35,7 @@ Vue.createApp({
         ven_com_id: [],
         st: '',
       },
+      data_event_ven_coms:[],
 
       months   : [],
       ven_month : '',
@@ -157,9 +158,6 @@ Vue.createApp({
       });
     },
 
-    
-
-
     cal_render(){
       var calendarEl = this.$refs['calendar'];      
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -200,10 +198,11 @@ Vue.createApp({
         .then(response => {
           if (response.data.status) {
             this.data_event = response.data.respJSON
-            this.data_event.ven_com_id = JSON.parse(response.data.respJSON.ven_com_id)
+            this.data_event_ven_coms = response.data.ven_coms
+            // this.data_event.ven_com_id = JSON.parse(response.data.respJSON.ven_com_id)
             this.$refs['show_modal'].click()
-            this.ven_month = response.data.respJSON.ven_month
-            this.get_ven_coms()
+            // this.ven_month = response.data.respJSON.ven_month
+            // this.get_ven_coms()
 
           } else{
             let icon    = 'warning'
@@ -229,6 +228,7 @@ Vue.createApp({
                           vns_id      : this.ven_name_sub.vns_id,
                           DN          : this.ven_com.DN,
                           ven_name    : this.ven_com.name,
+                          ven_com_num : this.ven_com.ven_com_num,
                           u_role      : this.ven_name_sub.name,
                           price       : this.ven_name_sub.price,
                           color       : this.ven_name_sub.color,
@@ -241,28 +241,29 @@ Vue.createApp({
           .then(response => {
               // console.log(response.data);
               if (response.data.status) {
-                this.get_vens()
+                
                 swal.fire({
                   icon: 'success',
                   title: response.data.message,
                   showConfirmButton: true,
                   timer: 1000
                 });
-              } else{              
-                this.alert('warning',response.data.message ,0)
-                
+              } else{     
+                this.alert('warning',response.data.message ,0)                
               }
+              this.get_vens()
+              this.cal_render()         
             })
             .catch(function (error) {        
               console.log(error);
               
-            });    
+            });  
+
     
   }, 
   event_drop(id,start){
     axios.post('../../server/asu/ven_set/ven_move.php',{id:id,start:start})
-    .then(response => {
-        
+    .then(response => {        
         if (response.data.status) {
             this.datas = response.data.respJSON;
             this.get_vens()
@@ -272,13 +273,14 @@ Vue.createApp({
               showConfirmButton: true,
               timer: 1000
             });
-            return true
+            // return true
         } else{
           icon = 'warning'
           message = response.data.message;
           this.alert(icon,message,timer=0)
-          return false
+          // return false
         }
+        this.cal_render()  
     })
     .catch(function (error) {
         console.log(error);
@@ -286,13 +288,13 @@ Vue.createApp({
   },
   get_vens(){
     axios.get('../../server/asu/ven_set/get_vens.php')
-    .then(response => {
-        
+    .then(response => {        
         if (response.data.status) {
             this.datas = response.data.respJSON;
             this.cal_render()
             this.$refs['calendar'].focus()
         } 
+        
     })
     .catch(function (error) {
         console.log(error);
@@ -304,7 +306,6 @@ Vue.createApp({
     .then(response => {
         
       
-      this.cal_render()
         if (response.data.status) {
           // this.get_vens()
           this.cal_click(this.data_event.id)
@@ -313,6 +314,7 @@ Vue.createApp({
         } else{
           this.alert('warning',response.data.message,0)
         }
+        this.cal_render()  
     })
     .catch(function (error) {
         console.log(error);
@@ -324,13 +326,13 @@ Vue.createApp({
         
         if (response.data.status) {
           this.get_vens()
-          this.cal_render()
           this.cal_click(this.data_event.id)
           this.alert('success',response.data.message,1000)
           // this.$refs['close_modal'].click()
         } else{
           this.alert('warning',response.data.message,0)
         }
+        this.cal_render()
     })
     .catch(function (error) {
         console.log(error);
@@ -338,7 +340,6 @@ Vue.createApp({
   },
   
   ven_del(id){
-
     Swal.fire({
       title: 'Are you sure?',
       text  : "You won't be able to revert this!",
@@ -364,6 +365,7 @@ Vue.createApp({
                 this.alert(icon,message)
               } 
               this.get_vens()
+              this.cal_render()  
           })
           .catch(function (error) {
               console.log(error);
