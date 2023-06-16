@@ -9,6 +9,7 @@ Vue.createApp({
       ven_coms:'',
       ven_coms_g:'',
       vc:'',
+      heads:[],
 
     isLoading : false,
   }
@@ -99,7 +100,7 @@ Vue.createApp({
               if (response.data.status) {
                 // this.alert('success',response.data.message,1000)
                 this.datas = response.data.respJSON; 
-                this.vc = response.data.vc; 
+                this.heads = response.data.heads; 
                 this.$refs.show_modal.click()
               }else{
                 this.alert('warning',response.data.message,0)

@@ -29,9 +29,9 @@ require_once('../../server/authen.php');
   <body>
     <div id="appReports" v-cloak>
         <div class="text-center">
-            <h3>{{datas.vc.ven_name}}</h3>
-            <h4>แนบท้ายคำสั่งที่ {{datas.vc.ven_com_num}} ลงวันที่ {{date_thai(datas.vc.ven_com_date)}}</h4>
-            <h5>ประจำเดือน {{date_thai_my(datas.vc.ven_month)}}</h5>
+            <h3>{{datas.heads.vc_name}}</h3>
+            <h4>แนบท้ายคำสั่งที่ {{datas.heads.vc_num}} ลงวันที่ {{datas.heads.vc_date}}</h4>
+            <h5>ประจำเดือน {{datas.heads.ven_month_th}}</h5>
             <!-- {{datas.vc}} -->
         </div>
         <table class="table table-bordered d-print-inline d-print-table ">
@@ -46,7 +46,7 @@ require_once('../../server/authen.php');
             </thead>
             <tbody>
                 <tr v-for="d in datas.respJSON">
-                    <td>{{date_thai_dt(d.ven_date)}}</td>
+                    <td>{{d.ven_date_th}}</td>
                     <td>
                         <li class="list-group-item" v-for="dvt in d.ven_time">
                             {{dvt == '08:30' ? '8.30 - 16.30 น.' : '16.30 - 8.30 น.'}}
@@ -86,7 +86,7 @@ require_once('../../server/authen.php');
     },
     mounted(){   
       this.datas = JSON.parse(localStorage.getItem("print"))
-      localStorage.removeItem("print")
+      // localStorage.removeItem("print")
       window.print()
     },
     methods: {    

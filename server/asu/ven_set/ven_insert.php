@@ -50,9 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
             $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
 
-            $sql_VU = "SELECT * 
-                        FROM ven 
-                        WHERE user_id = $user_id AND ven_date >= '$ven_date_d1' AND ven_date <= '$ven_date_u1' AND (status=1 OR status=2)";
+            $sql_VU = "SELECT v.*, p.fname, p.name, p.sname 
+                        FROM ven AS v
+                        INNER JOIN `profile` AS p ON p.user_id = v.user_id
+                        WHERE v.user_id = $user_id AND v.ven_date >= '$ven_date_d1' AND v.ven_date <= '$ven_date_u1' AND (v.status=1 OR v.status=2)";
             $query_VU = $conn->prepare($sql_VU);
             $query_VU->execute();
             $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
@@ -61,17 +62,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($res_VU as $ru) {
                     if ($ru->ven_date == $ven_date) {
                         http_response_code(200);
-                        echo json_encode(array('status' => false, 'message' => 'วันนี้มีเวรอยู่แล้ว'));
+                        echo json_encode(array(
+                            'status' => false, 
+                            'message' => $ru->fname.$ru->sname.' '.$ru->name. "\n มีเวรวันนี้แล้ว"
+                        ));
                         exit;
                     }
                     if ($DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน') {
                         http_response_code(200);
-                        echo json_encode(array('status' => false, 'message' => $ven_date_d1 . ' มีเวร'));
+                        echo json_encode(array(
+                            'status' => false, 
+                            'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรกลางคืน \nวันก่อนหน้านี้(".DateThai($ven_date_u1).")"
+                        ));
                         exit;
                     }
                     if ($DN == 'กลางคืน'  && $ru->ven_date == $ven_date_u1 && $ru->DN == 'กลางวัน') {
                         http_response_code(200);
-                        echo json_encode(array('status' => false, 'message' => $ven_date_u1 . ' มีเวร'));
+                        echo json_encode(array(
+                            'status' => false, 
+                            'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรกลางวัน \nวันถัดไป(".DateThai($ven_date_u1).")"
+                        ));
                         exit;
                     }
                 }
