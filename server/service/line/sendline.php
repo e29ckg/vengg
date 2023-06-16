@@ -6,9 +6,7 @@ date_default_timezone_set("Asia/Bangkok");
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
 
 include "../../connect.php";

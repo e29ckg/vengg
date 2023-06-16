@@ -1,9 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
 
 include "../../connect.php";
@@ -13,8 +11,7 @@ include "../../function.php";
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $datas = array();
-    
+    $datas = array();    
 
     try{
         
@@ -42,13 +39,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach($res_wn as $rs_wn){
 
                 $sql_u = "SELECT vu.*, pr.fname, pr.`name`, pr.sname
-                        FROM ven_user as vu
-                        INNER JOIN `profile` as pr
-                        ON vu.user_id = pr.id
-                        WHERE vu.vn_id = $rs_wn->vn_id AND vu.vns_id = $rs_wn->vns_id
-                        ORDER BY vu.`order` ASC;";
+                            FROM ven_user as vu
+                            INNER JOIN `profile` as pr
+                            ON vu.user_id = pr.id
+                            WHERE vu.vn_id = :vn_id AND vu.vns_id = :vns_id
+                            ORDER BY vu.`order` ASC;";
                 $query_u = $conn->prepare($sql_u);
+                $query_u->bindParam(':vn_id', $rs_wn->vn_id, PDO::PARAM_INT);
+                $query_u->bindParam(':vns_id', $rs_wn->vns_id, PDO::PARAM_INT);
                 $query_u->execute();
+
 
                 $users = array();    
                 

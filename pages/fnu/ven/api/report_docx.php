@@ -32,28 +32,43 @@ $price_n_all = 0;
 
 
 $data = json_decode(file_get_contents("php://input"));
-$DATE_MONTH = date($data->month);
-// $DATE_MONTH = "2022-11";
+
+if (isset($data->month) && !empty($data->month) && preg_match('/^\d{4}-\d{2}$/', $data->month)) {
+    // รูปแบบถูกต้องและมีค่าไม่ว่าง
+    $month = $data->month;
+    $DATE_MONTH = date($data->month);
+    // เรียกใช้โค้ดต่อไปที่นี่
+} else {
+    // รูปแบบไม่ถูกต้องหรือมีค่าว่าง
+    http_response_code(400);
+    echo json_encode(array('status' => false, 'message' => 'รูปแบบเดือนไม่ถูกต้องหรือไม่ได้ระบุเดือน'));
+    exit;
+}
+
 
 $HOLIDAY=[];
 
 try{    
     
     $sql = "SELECT 
-            vn.`name` AS vn_name,
-            vc.*
-        FROM ven_com AS vc
-        INNER JOIN ven_name AS vn ON vc.vn_id = vn.id
-        WHERE ven_month='$DATE_MONTH'";
+                vn.`name` AS vn_name,
+                vc.*
+            FROM ven_com AS vc
+            INNER JOIN ven_name AS vn ON vc.vn_id = vn.id
+            WHERE ven_month=:date_month";
     $query = $conn->prepare($sql);
+    $query->bindParam(':date_month', $DATE_MONTH, PDO::PARAM_STR);
     $query->execute();
-    $ven_com_nums  = $query->fetchAll(PDO::FETCH_OBJ);
+    $ven_com_nums = $query->fetchAll(PDO::FETCH_OBJ);
+
         
     /** vens */
-    $sql = "SELECT * FROM `ven` WHERE ven_month = '$DATE_MONTH' AND (status =1 OR status=2)";
+    $sql = "SELECT * FROM `ven` WHERE ven_month = :date_month AND (status = 1 OR status = 2)";
     $query = $conn->prepare($sql);
+    $query->bindParam(':date_month', $DATE_MONTH, PDO::PARAM_STR);
     $query->execute();
     $vens = $query->fetchAll(PDO::FETCH_OBJ);
+
 
     /** user */    
     $sql = "SELECT * FROM profile WHERE status = 10 ORDER BY st ASC";

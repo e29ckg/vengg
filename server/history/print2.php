@@ -1,9 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
 
 include '../../vendor/autoload.php';
@@ -87,11 +85,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $sql = "SELECT id, create_at
                     FROM ven_change 
-                    WHERE (ven_id1 = '$res->ven_id1_old') OR (ven_id2 = '$res->ven_id1_old') 
-                        OR (ven_id1 = '$res->ven_id2_old') OR (ven_id2 = '$res->ven_id2_old')";
-            
+                    WHERE (ven_id1 = :ven_id1_old) OR (ven_id2 = :ven_id1_old) 
+                    OR (ven_id1 = :ven_id2_old) OR (ven_id2 = :ven_id2_old)";
+
             $query = $conn->prepare($sql);
+            $query->bindParam(':ven_id1_old', $res->ven_id1_old, PDO::PARAM_INT);
+            $query->bindParam(':ven_id2_old', $res->ven_id2_old, PDO::PARAM_INT);
             $query->execute();
+
             $res_vc_old = $query->fetchAll(PDO::FETCH_OBJ);
             $vcod = [];
             $vcod_doc = '';

@@ -8,17 +8,9 @@ header("Content-Type: application/json; charset=utf-8");
 date_default_timezone_set("Asia/Bangkok");
 
 include 'vendor/autoload.php';
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\TemplateProcessor;
 
 include_once "dbconfig.php";
 
-/** ----------------------------  a1 ใบขวาง กลางคืน ---------------------------*/
-
-// $DN1_PRICE = 2500;  /** ผู้พิพากษากลางคืน   16:30:00    */
-// $DN1_PRICE = 1200;  /** จนท กลางคืน      16:30:55    */
-// $DN2_PRICE = 3000;  /** ผู้พิพากษากลางวัน   08:30:00    */
-// $DN2_PRICE = 1500;  /** จนท กลางคืน      08:30:01, 08:30:11, 08:30:22    */
 $DN_D_PRICE_DAY = 0;
 $DN_N_PRICE_DAY = 0;
 
@@ -28,20 +20,22 @@ $price_dn2_all = 0;
 $error='';
 $datas = array();
 
-// $ven_mounth = date("Y-m-d");
-// $date_end = date('Y-m-d', strtotime('+7 days'));
-// $ven_mounth = date_format($ven_mounth,"Y-m");
-//action.php
 
 $data = json_decode(file_get_contents("php://input"));
-// $DATE_MONTH = '2022-04';
-// $DATE_MONTH = date('Y-m', strtotime('2022-10'));
-$DATE_MONTH = date($data->month);
+
+if (isset($data->month) && !empty($data->month) && preg_match('/^\d{4}-\d{2}$/', $data->month)) {
+    // รูปแบบถูกต้องและมีค่าไม่ว่าง
+    $DATE_MONTH = date($data->month);
+} else {
+    // รูปแบบไม่ถูกต้องหรือมีค่าว่าง
+    http_response_code(200);
+    echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูลหรือรูปแบบไม่ถูกต้อง'));
+    exit;
+}
+
+
 
 $HOLIDAY=[];
-// http_response_code(200);
-//         echo json_encode(array('status' => false, 'massege' => 'ไม่พบข้อมูล', 'responseJSON' => $data));
-// exit;
 try{    
     $sql = "SELECT price FROM `ven_com` WHERE ven_month ='$DATE_MONTH' AND DN = 'กลางวัน';";
     $query = $dbcon->prepare($sql);

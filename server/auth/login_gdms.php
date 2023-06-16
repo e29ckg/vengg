@@ -2,9 +2,9 @@
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header('Content-Type: text/html; charset=UTF-8');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
+
 require_once('../connect.php');
 require_once('../connect_gdms.php');
 require_once('../function.php');

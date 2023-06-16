@@ -27,10 +27,6 @@ $time='';
 $error='';
 $datas = array();
 
-// $ven_mounth = date("Y-m-d");
-// $date_end = date('Y-m-d', strtotime('+7 days'));
-// $ven_mounth = date_format($ven_mounth,"Y-m");
-//action.php
 
 $data = json_decode(file_get_contents("php://input"));
 // $DATE_MONTH = '2022-11';
@@ -42,21 +38,7 @@ $HOLIDAY=[];
 //         echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล', 'responseJSON' => $data));
 // exit;
 try{    
-    // $sql = "SELECT price FROM `ven_com` WHERE ven_month ='$DATE_MONTH' AND DN = 'กลางวัน';";
-    // $query = $conn->prepare($sql);
-    // $query->execute();
-    // $price_day = $query->fetchAll(PDO::FETCH_OBJ);
-    // foreach($price_day as $pd){
-    //     $DN_D_PRICE_DAY += $pd->price;
-    // }
-
-    // $sql = "SELECT price FROM `ven_com` WHERE ven_month ='$DATE_MONTH' AND DN = 'กลางคืน';";
-    // $query = $conn->prepare($sql);
-    // $query->execute();
-    // $price_day = $query->fetchAll(PDO::FETCH_OBJ);
-    // foreach($price_day as $pd){
-    //     $DN_N_PRICE_DAY += $pd->price;
-    // }
+   
 
     $sql = "SELECT id,ven_com_num, ven_com_name, ven_name, ven_month FROM `ven_com` WHERE id='$ven_com_id'";
     $query = $conn->prepare($sql);

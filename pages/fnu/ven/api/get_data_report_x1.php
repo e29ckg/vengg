@@ -2,18 +2,13 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 date_default_timezone_set("Asia/Bangkok");
 
 include 'vendor/autoload.php';
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\TemplateProcessor;
 
 include_once "dbconfig.php";
 include_once "function.php";
-
 
 $DN_D_PRICE_DAY = 0;
 $DN_N_PRICE_DAY = 0;
@@ -23,15 +18,20 @@ $price_dn1_all = 0;
 $price_dn2_all = 0;
 $error='';
 
-// $ven_mounth = date("Y-m-d");
-// $date_end = date('Y-m-d', strtotime('+7 days'));
-// $ven_mounth = date_format($ven_mounth,"Y-m");
-//action.php
-
 $data = json_decode(file_get_contents("php://input"));
 
-$DATE_MONTH = date("2022-11");
+// $DATE_MONTH = date("2022-11");
 // $DATE_MONTH = date($data->month);
+if (isset($data->month) && !empty($data->month) && preg_match('/^\d{4}-\d{2}$/', $data->month)) {
+    // รูปแบบถูกต้องและมีค่าไม่ว่าง
+    $DATE_MONTH = date($data->month);
+} else {
+    // รูปแบบไม่ถูกต้องหรือมีค่าว่าง
+    http_response_code(200);
+    echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูลหรือรูปแบบไม่ถูกต้อง'));
+    exit;
+}
+
 $users = array();
 $vens = array();
 $ven_users = array();

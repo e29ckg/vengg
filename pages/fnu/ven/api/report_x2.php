@@ -8,7 +8,6 @@ header("Content-Type: application/json; charset=utf-8");
 date_default_timezone_set("Asia/Bangkok");
 
 include 'vendor/autoload.php';
-// use PhpOffice\PhpWord\IOFactory;
 // use PhpOffice\PhpWord\TemplateProcessor;
 
 include_once "./dbconfig.php";
@@ -24,7 +23,6 @@ $users = array();
 $vens = array();
 $ven_users = array();
 $ven_coms = array();
-
 
 $datas = array();
 $data_j = array();

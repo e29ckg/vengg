@@ -1,9 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
 
 include "../../connect.php";
@@ -72,17 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bindParam(':id',$id, PDO::PARAM_INT);
             $query->execute();
 
-            // $sql = "UPDATE ven SET ven_month=:ven_month, vn_id=:vn_id, ven_com_num_all=:ven_com_num_all 
-            //         WHERE ven_com_idb = :id";   
-
-            // $query = $conn->prepare($sql);
-            // $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
-            // $query->bindParam(':ven_com_name',$ven_name, PDO::PARAM_STR);
-            // $query->bindParam(':ven_name',$ven_name, PDO::PARAM_STR);
-            // $query->bindParam(':ven_com_num_all',$ven_com_num, PDO::PARAM_STR);
-            // $query->bindParam(':id',$id, PDO::PARAM_INT);
-            // $query->execute();
-
+           
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $datas));
             exit;                

@@ -1,9 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
 
 include "../../connect.php";
@@ -78,14 +76,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if($act == 'delete'){
             $vn_id     = $ven_name->id;
 
-            $sql = "DELETE FROM ven_name WHERE id = $vn_id";
-            $conn->exec($sql);
+            $sql = "DELETE FROM ven_name WHERE id = :vn_id";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':vn_id', $vn_id, PDO::PARAM_INT);
+            $query->execute();
 
-            $sql = "DELETE FROM ven_name_sub WHERE ven_name_id = $vn_id";
-            $conn->exec($sql);
+            $sql = "DELETE FROM ven_name_sub WHERE ven_name_id = :vn_id";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':vn_id', $vn_id, PDO::PARAM_INT);
+            $query->execute();
 
-            $sql = "DELETE FROM ven_user WHERE vn_id = $vn_id";
-            $conn->exec($sql);
+            $sql = "DELETE FROM ven_user WHERE vn_id = :vn_id";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':vn_id', $vn_id, PDO::PARAM_INT);
+            $query->execute();
+
 
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'DEL ok'));

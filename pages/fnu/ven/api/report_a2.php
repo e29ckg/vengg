@@ -33,8 +33,17 @@ $datas = array();
 //action.php
 
 $data = json_decode(file_get_contents("php://input"));
-// $DATE_MONTH = date('Y-m', strtotime('2022-10'));
-$DATE_MONTH = date($data->month);
+
+if (isset($data->month) && !empty($data->month) && preg_match('/^\d{4}-\d{2}$/', $data->month)) {
+    // รูปแบบถูกต้องและมีค่าไม่ว่าง
+    $DATE_MONTH = date($data->month);
+} else {
+    // รูปแบบไม่ถูกต้องหรือมีค่าว่าง
+    http_response_code(200);
+    echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูลหรือรูปแบบไม่ถูกต้อง'));
+    exit;
+}
+
 
 $HOLIDAY=[];
 $datas = array();
