@@ -46,7 +46,13 @@ try{
     $query->execute();
     $vens = $query->fetchAll(PDO::FETCH_OBJ);
     
-    $sql = "SELECT * FROM ven_com WHERE ven_month='$DATE_MONTH' ORDER BY ven_com_num ASC";
+    $sql = "SELECT 
+                vn.`name` AS vn_name,
+                vc.*
+            FROM ven_com AS vc
+            INNER JOIN ven_name AS vn ON vc.vn_id = vn.id
+            WHERE ven_month='$DATE_MONTH' 
+            ORDER BY ven_com_num ASC";
     $query = $conn->prepare($sql);
     $query->execute();
     $ven_coms = $query->fetchAll(PDO::FETCH_OBJ);
@@ -88,7 +94,7 @@ try{
             $price_sum = 0;
             foreach($ven_coms as $vcs){
                 $vsc_id = $vcs->id;
-                $vsc_name = $vcs->ven_name;
+                $vsc_name = $vcs->vn_name;
                 $vsc_price = 0;
                 $v_count = 0;
 
@@ -185,7 +191,7 @@ try{
             "id"=>$vc->id,
             "ven_com_num"=>$vc->ven_com_num,
             "ven_com_date"=>$vc->ven_com_date,
-            "ven_name"=>$vc->ven_name,
+            "ven_name"=>$vc->vn_name,
             "price"=>Num_f($price),
         ));
         
@@ -205,7 +211,7 @@ try{
             "id"=>$vc->id,
             "ven_com_num"=>$vc->ven_com_num,
             "ven_com_date"=>$vc->ven_com_date,
-            "ven_name"=>$vc->ven_name,
+            "ven_name"=>$vc->vn_name,
             "price"=>Num_f($price),
         ));
 
@@ -213,7 +219,7 @@ try{
             "id"=>$vc->id,
             "ven_com_num"=>$vc->ven_com_num,
             "ven_com_date"=>$vc->ven_com_date,
-            "ven_name"=>$vc->ven_name,
+            "ven_name"=>$vc->vn_name,
             "price"=>Num_f($price_all_c),
         ));
     }

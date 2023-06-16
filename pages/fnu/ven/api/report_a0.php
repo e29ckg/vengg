@@ -43,7 +43,12 @@ $HOLIDAY=[];
 // exit;
 try{    
     
-    $sql = "SELECT id,ven_com_num, ven_com_name, ven_name, ven_month FROM `ven_com` WHERE id='$ven_com_id'";
+    $sql = "SELECT 
+                vn.`name` AS vn_name,
+                vc.*
+            FROM ven_com AS vc
+            INNER JOIN ven_name AS vn ON vc.vn_id = vn.id 
+            WHERE vc.id='$ven_com_id'";
     $query = $conn->prepare($sql);
     $query->execute();
     $ven_com_num  = $query->fetch(PDO::FETCH_OBJ);
@@ -146,7 +151,7 @@ try{
         'message' => 'ok', 
         'month'=>DateThai_ym($DATE_MONTH),
         'ven_com_num' => $ven_com_num->ven_com_num,
-        'ven_com_name' => $ven_com_num->ven_name . $time,
+        'ven_com_name' => $ven_com_num->vn_name . $time,
         'price_all' => $price_total_all,
         'price_all_text' => ReadNumber($price_total_all).'บาทถ้วน',
         // 'error'=>$error,

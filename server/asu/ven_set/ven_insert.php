@@ -1,10 +1,9 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-// header("'Access-Control-Allow-Credentials', 'true'");
-// header('Content-Type: application/javascript');
+header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Content-Type: application/json; charset=utf-8");
+
 include "../../connect.php";
 include "../../function.php";
 
@@ -53,8 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql_VU = "SELECT v.*, p.fname, p.name, p.sname 
                         FROM ven AS v
                         INNER JOIN `profile` AS p ON p.user_id = v.user_id
-                        WHERE v.user_id = $user_id AND v.ven_date >= '$ven_date_d1' AND v.ven_date <= '$ven_date_u1' AND (v.status=1 OR v.status=2)";
+                        WHERE v.user_id = :user_id AND v.ven_date >= :ven_date_d1 AND v.ven_date <= :ven_date_u1 AND (v.status = 1 OR v.status = 2)";
             $query_VU = $conn->prepare($sql_VU);
+            $query_VU->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $query_VU->bindParam(':ven_date_d1', $ven_date_d1);
+            $query_VU->bindParam(':ven_date_u1', $ven_date_u1);
             $query_VU->execute();
             $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
 
@@ -128,22 +130,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             /** จัดลำดับ */
             $sql = "SELECT 
-                    	ven.id,
-                        ven.u_role,
-                        ven.ven_time,	
-                        ven_name.srt AS vn_srt,
-                        ven_name_sub.srt AS vns_srt
-                    FROM ven
-                    INNER JOIN ven_name ON ven.vn_id = ven_name.id
-                    INNER JOIN ven_name_sub ON ven.vns_id = ven_name_sub.id
-                    WHERE ven_date='$ven_date' 
-                        AND (ven.`status` = 1 OR ven.`status` = 2)
+                        v.id,
+                        v.u_role,
+                        v.ven_time,	
+                        vn.srt AS vn_srt,
+                        vns.srt AS vns_srt
+                    FROM ven AS v
+                    INNER JOIN ven_name AS vn ON v.vn_id = vn.id
+                    INNER JOIN ven_name_sub AS vns ON v.vns_id = vns.id
+                    WHERE v.ven_date = :ven_date 
+                        AND (v.status = 1 OR v.status = 2)
                     ORDER BY 
                         vn_srt ASC,
                         vns_srt ASC,
-                        update_at ASC";
+                        v.update_at ASC";
             $query = $conn->prepare($sql);
+            $query->bindParam(':ven_date', $ven_date);
             $query->execute();
+
             $hours = 8;
             $seconds = 0;
             foreach ($query->fetchAll(PDO::FETCH_OBJ) as $rs) {

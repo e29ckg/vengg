@@ -36,52 +36,19 @@ $DATE_MONTH = date($data->month);
 // $DATE_MONTH = "2022-11";
 
 $HOLIDAY=[];
-// http_response_code(200);
-//         echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล', 'responseJSON' => $data));
-// exit;
+
 try{    
-    // $sql = "SELECT price FROM `ven_com` WHERE ven_month ='$DATE_MONTH' AND DN = 'กลางวัน';";
-    // $query = $conn->prepare($sql);
-    // $query->execute();
-    // $price_day = $query->fetchAll(PDO::FETCH_OBJ);
-    // foreach($price_day as $pd){
-    //     $DN_D_PRICE_DAY += $pd->price;
-    // }
-
-    // $sql = "SELECT price FROM `ven_com` WHERE ven_month ='$DATE_MONTH' AND DN = 'กลางคืน';";
-    // $query = $conn->prepare($sql);
-    // $query->execute();
-    // $price_day = $query->fetchAll(PDO::FETCH_OBJ);
-    // foreach($price_day as $pd){
-    //     $DN_N_PRICE_DAY += $pd->price;
-    // }
-
-    $sql = "SELECT id,ven_com_num, ven_com_name, ven_name, ven_month FROM `ven_com` WHERE ven_month='$DATE_MONTH'";
+    
+    $sql = "SELECT 
+            vn.`name` AS vn_name,
+            vc.*
+        FROM ven_com AS vc
+        INNER JOIN ven_name AS vn ON vc.vn_id = vn.id
+        WHERE ven_month='$DATE_MONTH'";
     $query = $conn->prepare($sql);
     $query->execute();
     $ven_com_nums  = $query->fetchAll(PDO::FETCH_OBJ);
-
-    // $sql = "SELECT ven_date FROM `ven` WHERE ven_month ='$DATE_MONTH' GROUP BY ven_date ORDER BY ven_date";
-    // $query = $conn->prepare($sql);
-    // $query->execute();
-    // $days = $query->fetchAll(PDO::FETCH_OBJ);
-    // $day_a = array(); 
-    // foreach($days as $ds){
-    //     array_push($day_a,$ds->ven_date);
-    // }
-
-    // $day_num = count($days);
-    
-    /** วันหยุด  $HLD */
-    // $sql = "SELECT ven_date FROM `ven` WHERE ven_month = '$DATE_MONTH' AND DN ='กลางวัน' GROUP BY `ven_date`;";
-    // $query = $conn->prepare($sql);
-    // $query->execute();
-    // $res_holiday = $query->fetchAll(PDO::FETCH_OBJ);
-    // $HLD = array();     
-    // foreach($res_holiday as $RH){
-    //     array_push($HLD,$RH->ven_date);
-    // }
-    
+        
     /** vens */
     $sql = "SELECT * FROM `ven` WHERE ven_month = '$DATE_MONTH' AND (status =1 OR status=2)";
     $query = $conn->prepare($sql);
@@ -93,7 +60,6 @@ try{
     $query = $conn->prepare($sql);
     $query->execute();
     $users = $query->fetchAll(PDO::FETCH_OBJ);
-
 
     if (count($users) > 0) { 
         foreach ($users as $user){           
@@ -209,14 +175,6 @@ try{
         'status' => true, 
         'message' => 'ok', 
         'month'=>DateThai_ym($DATE_MONTH),
-        // 'ven_com_num' => $ven_com_num->ven_com_num,
-        // 'ven_com_name' => $ven_com_num->ven_name . $time,
-        // 'price_all' => $price_total_all,
-        // 'price_all_text' => ReadNumber($price_total_all).'บาทถ้วน',
-        // // 'error'=>$error,
-        // 'day_num'=> count($days),
-        // 'day'=> $day_a,
-        // 'holiday'=> $HLD,
         'datas' => $datas
     ));
  

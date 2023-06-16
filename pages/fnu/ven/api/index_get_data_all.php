@@ -18,7 +18,7 @@ $error='';
 
 $data = json_decode(file_get_contents("php://input"));
 
-// $DATE_MONTH = date("2022-10");
+// $DATE_MONTH = date("2023-06");
 $DATE_MONTH = date($data->month);
 $users = array();
 $vens = array();
@@ -45,8 +45,13 @@ try{
     $query->execute();
     $vens = $query->fetchAll(PDO::FETCH_OBJ);
     
-    $sql = "SELECT * FROM ven_com WHERE ven_month='$DATE_MONTH' ORDER BY id ASC";
-    // $sql = "SELECT * FROM ven_com WHERE ven_month='$DATE_MONTH' ORDER BY ven_com_num ASC";
+    $sql = "SELECT 
+                vn.`name` AS vn_name,
+                vc.*
+            FROM ven_com AS vc
+            INNER JOIN ven_name AS vn ON vc.vn_id = vn.id
+            WHERE vc.ven_month='2023-06'
+            ORDER BY vc.id ASC";
     $query = $conn->prepare($sql);
     $query->execute();
     $ven_coms = $query->fetchAll(PDO::FETCH_OBJ);
@@ -96,7 +101,7 @@ try{
                 }    
                 array_push($vcs_arr,array(
                     "id"=>$vcs->id,
-                    "ven_name" => $vcs->ven_name,
+                    "ven_name" => $vcs->vn_name,
                     "price"=>$vsc_price,
                     "v_count"=>$v_count
                 ));

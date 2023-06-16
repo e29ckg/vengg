@@ -42,14 +42,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     try{
         
+        $sql = "UPDATE ven SET status = 1 WHERE status = 2 AND ven_com_idb = :ven_com_idb";
+        $query = $conn->prepare($sql);   
+        $query->bindParam(':ven_com_idb', $_ven_com_id, PDO::PARAM_STR);   
+        $query->execute();
+
+
         $sql = "SELECT v.*, p.fname, p.name, p.sname 
                 FROM ven AS v
                 INNER JOIN `profile` AS p ON v.user_id = p.id 
-                WHERE v.ven_com_idb='$_ven_com_id'
+                WHERE v.ven_com_idb=:ven_com_idb
                 AND (v.status=1 OR v.status=2)
                 AND (v.gcal_id IS NULL OR v.gcal_id='')
                 ORDER BY v.ven_date ASC, v.ven_time ASC";
-        $query = $conn->prepare($sql);  
+        $query = $conn->prepare($sql); 
+        $query->bindParam(':ven_com_idb', $_ven_com_id, PDO::PARAM_STR);    
         $query->execute();
         
         if($query->rowCount()){
@@ -68,10 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             FROM ven AS v
                             INNER JOIN `profile` AS p ON v.user_id = p.id 
                             INNER JOIN ven_name AS vn ON v.vn_id = vn.id
-                            WHERE v.ven_com_idb='$_ven_com_id'
+                            WHERE v.ven_com_idb=:ven_com_idb
                             AND (v.status=1 OR v.status=2)
                             ORDER BY v.ven_date ASC, v.ven_time ASC";
                 $query_v = $conn->prepare($sql_v);  
+                $query->bindParam(':ven_com_idb', $_ven_com_id, PDO::PARAM_STR);  
                 $query_v->execute();
                 $res_v    = $query_v->fetchAll(PDO::FETCH_OBJ);
 

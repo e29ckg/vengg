@@ -61,8 +61,8 @@ require_once('../../server/authen.php');
                                                 <tr>
                                                     <th colspan="2" class="text-start">
                                                         เวรเดือน {{cvg.ven_month_th}}
-                                                        <button type="button" class="btn btn-danger" :disabled='isLoading' @click="con_f(cvg.ven_month)">
-                                                            {{isLoading ? 'Londing..': 'เผยแพร่'}}</button>
+                                                        <!-- <button type="button" class="btn btn-danger" :disabled='isLoading' @click="con_f(cvg.ven_month)">
+                                                            {{isLoading ? 'Londing..': 'เผยแพร่'}}</button> -->
                                                     </th>
 
                                                 </tr>
@@ -72,14 +72,14 @@ require_once('../../server/authen.php');
                                                     <td>
                                                         เลขคำสั่งที่ {{vc.ven_com_num}} | ลงวันที่ {{vc.ven_com_date_th}} | {{vc.ven_com_name}} ({{vc.ven_name}})
                                                         <!-- | {{vc.ref}} | {{vc.status}} -->
-                                                        <button class="btn btn-warning btn-sm me-2" @click="uptogcal(vc.id)">up to google calendar</button>
+                                                        <button class="btn btn-danger btn-sm me-2" @click="uptogcal(vc.id)">เผยแพร่</button>
 
                                                     </td>
 
                                                     <td class="text-end col " style="width: 250px;">
                                                         <button class="btn btn-warning btn-sm me-2" @click="view(vc.id)">view</button>
                                                         <button class="btn btn-primary btn-sm m-2" @click="print(vc.id)">พิมพ์เอกสารแนบท้าย</button>
-                                                        <button class="btn btn-primary btn-sm m-2" @click="print2(vc.id)">แนบท้าย2</button>
+                                                        <!-- <button class="btn btn-primary btn-sm m-2" @click="print2(vc.id)">แนบท้าย2</button> -->
                                                     </td>
                                                 </tr>
                                             </tbody>

@@ -48,13 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->execute();
             $res  = $query->fetch(PDO::FETCH_OBJ);
             if($query->rowCount()){ 
-                // gcal_update($res->v1_gcal_id,$res->v1_name,$desc=null,$colerId=1);
-                // if(isset($res->v2_gcal_id)){
-                //     gcal_update($res->v2_gcal_id,$res->v2_name,$desc=null,$colerId=1);
-                // }
+                
                 if(__GOOGLE_CALENDAR__){
-                    $sql_V = "SELECT * FROM ven WHERE gcal_id = '$res->v1_gcal_id' AND (status=1 OR status=2)
-                                ORDER BY ven_time ASC";
+                    $sql_V = "SELECT v.*, p.fname, p.name, p.sname 
+                                FROM ven AS v 
+                                INNER JOIN `profile` AS p ON v.user_id = p.user_id 
+                                WHERE v.gcal_id = '$res->v1_gcal_id' AND (v.status=1 OR v.status=2)
+                                ORDER BY v.ven_time ASC";
                     $query_V = $conn->prepare($sql_V);
                     $query_V->execute();
                     if($query_V->rowCount()){
@@ -62,24 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $name = $res_V[0]->ven_com_name."\n";
                         $sms = '';
                         foreach($res_V as $v){
-                            $sms .= $v->u_name."\n";
+                            $sms .= $v->fname.$v->name.' '.$v->sname."\n";
                         }
                         gcal_update($res->v1_gcal_id, $name, $sms, 1);
                     }
         
-                    $sql_V = "SELECT * FROM ven WHERE gcal_id = '$res->v2_gcal_id' AND (status=1 OR status=2)
-                                ORDER BY ven_time ASC";
-                    $query_V = $conn->prepare($sql_V);
-                    $query_V->execute();
-                    // if($query_V->rowCount()){
-                    //     $res_V = $query_V->fetchAll(PDO::FETCH_OBJ);
-                    //     $name = $res_V[0]->ven_com_name."\n";
-                    //     $sms2 = '';
-                    //     foreach($res_V as $v){
-                    //         $sms2 .= $v->u_name."\n";
-                    //     }
-                    //     gcal_update($res->v2_gcal_id, $name, $sms2, 1);    
-                    // }        
+                           
                 }
             }
 
