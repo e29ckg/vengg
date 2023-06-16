@@ -71,17 +71,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if(count($_ven_dates) > 0){
-                $sql_v = "SELECT v.*,v.id, v.user_id, v.ven_com_idb, v.ven_date, v.ven_time, v.gcal_id, p.fname, p.name, p.sname, vn.`name` AS vn_name 
+                $sql_v = "SELECT v.*, v.id, v.user_id, v.ven_com_idb, v.ven_date, v.ven_time, v.gcal_id, p.fname, p.name, p.sname, vn.`name` AS vn_name 
                             FROM ven AS v
                             INNER JOIN `profile` AS p ON v.user_id = p.id 
                             INNER JOIN ven_name AS vn ON v.vn_id = vn.id
-                            WHERE v.ven_com_idb=:ven_com_idb
-                            AND (v.status=1 OR v.status=2)
+                            WHERE v.ven_com_idb = :ven_com_idb
+                            AND (v.status = 1 OR v.status = 2)
                             ORDER BY v.ven_date ASC, v.ven_time ASC";
-                $query_v = $conn->prepare($sql_v);  
-                $query->bindParam(':ven_com_idb', $_ven_com_id, PDO::PARAM_STR);  
+                $query_v = $conn->prepare($sql_v);
+                $query_v->bindParam(':ven_com_idb', $_ven_com_id, PDO::PARAM_STR);
                 $query_v->execute();
-                $res_v    = $query_v->fetchAll(PDO::FETCH_OBJ);
+                $res_v = $query_v->fetchAll(PDO::FETCH_OBJ);
+
 
                 
                 foreach($_ven_dates as $_vd){
