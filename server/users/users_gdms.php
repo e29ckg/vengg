@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "SELECT u.*
                 FROM users as u";
         $query = $conn_gdms->prepare($sql);
-        // $query->bindParam(':kkey',$data->kkey, PDO::PARAM_STR);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
@@ -62,34 +61,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
         if($query->rowCount() > 0){  
-            foreach($result as $rs){
-                if($rs->img != null && $rs->img != '' && file_exists('../../uploads/users/' . $rs->img)){
-                    $img_link = '../../uploads/users/'. $rs->img;
-
-                }else{
-                    $img_link = '../../assets/images/profiles/nopic.png';
+            foreach ($result as $rs) {
+                $img_link = '../../assets/images/profiles/nopic.png';
+                if ($rs->img && file_exists('../../uploads/users/' . $rs->img)) {
+                    $img_link = '../../uploads/users/' . $rs->img;
                 }
-                array_push($datas,array(
+                $data = [
                     'uid' => $rs->id,
-                    'name'  => $rs->fname.$rs->name.' '.$rs->sname,
-                    'dep'   => $rs->dep,
-                    'img'   => $img_link,
-                    'status'   => $rs->status,
-                    'st'    => $rs->st
-                ));
+                    'name' => $rs->fname . $rs->name . ' ' . $rs->sname,
+                    'dep' => $rs->dep,
+                    'img' => $img_link,
+                    'status' => $rs->status,
+                    'st' => $rs->st
+                ];
+                $datas[] = $data;
             }
 
+            $response = array(
+                'status' => true,
+                'message' => 'Success',
+                'respJSON' => $datas
+            );
 
-            http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
-            exit;
+            
+        }else {
+            $response = array(
+                'status' => false,
+                'message' => 'No data found'
+            );
         }
 
-
-        
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
+        header('Content-Type: application/json');
+        echo json_encode($response);
         exit;
+        
     }catch(PDOException $e){
         http_response_code(400);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));

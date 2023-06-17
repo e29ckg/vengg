@@ -9,51 +9,79 @@ include "../function.php";
 
 $data = json_decode(file_get_contents("php://input"));
 
-
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $q = $data->q;
-    $datas = array();
+    if (isset($data->q) && !empty($data->q)) {
+        $q = $data->q;
 
-    try{
-        $sql = "SELECT p.*
-                FROM profile as p 
-                -- INNER JOIN `user` as u ON u.id = p.user_id
-                WHERE p.name LIKE '%$q%' OR p.sname LIKE '%$q%'
-                ORDER BY p.name ASC";
-        $query = $conn->prepare($sql);
-        $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
+        $datas = array();
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
-            foreach($result as $rs){
-                if($rs->img != null && $rs->img != '' && file_exists('../../uploads/users/' . $rs->img )){
-                    $img_link =  '../../uploads/users/'. $rs->img;
+        try {
+            $sql = "SELECT p.*
+                    FROM profile AS p 
+                    LEFT JOIN user AS u ON p.user_id = u.id
+                    WHERE p.name LIKE :q OR p.sname LIKE :q2
+                    ORDER BY p.name ASC";
+            $query = $conn->prepare($sql);
+            $query->bindValue(':q', "%$q%", PDO::PARAM_STR);
+            $query->bindValue(':q2', "%$q%", PDO::PARAM_STR);
+            $query->execute();
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
 
-                }else{
+            if (!empty($result)) {
+                foreach ($result as $rs) {
                     $img_link = '../../assets/images/profiles/nopic.png';
+
+                    if ($rs['img'] != null && $rs['img'] != '' && file_exists('../../uploads/users/' . $rs['img'])) {
+                        $img_link = '../../uploads/users/' . $rs['img'];
+                    }
+
+                    $data = array(
+                        'uid' => $rs['user_id'],
+                        'name' => $rs['fname'] . $rs['name'] . ' ' . $rs['sname'],
+                        'dep' => $rs['dep'],
+                        'img' => $img_link,
+                        'status' => $rs['status']
+                    );
+
+                    $datas[] = $data;
                 }
-                array_push($datas,array(
-                    'uid' => $rs->user_id,
-                    // 'username' => $rs->username,
-                    'name'  => $rs->fname.$rs->name.' '.$rs->sname,
-                    'dep'   => $rs->dep,
-                    'img'   => $img_link,
-                    'status'   => $rs->status,
-                ));
+
+                $response = [
+                    'status' => true,
+                    'message' => 'Success',
+                    'data' => $datas
+                ];
+                http_response_code(200);
+                echo json_encode($response);
+                exit;
             }
+
+            $response = [
+                'status' => false,
+                'message' => 'No data found',
+                'data' => $datas
+            ];
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
+            echo json_encode($response);
+            exit;
+        } catch (PDOException $e) {
+            $response = [
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ];
+            http_response_code(500);
+            echo json_encode($response);
             exit;
         }
-     
+    } else {
+        $response = [
+            'status' => false,
+            'message' => 'No data provided'
+        ];
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล ','respJSON' => $datas));
-        exit;
-    
-    }catch(PDOException $e){
-        http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode($response);
         exit;
     }
 }
+?>

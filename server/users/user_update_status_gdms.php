@@ -9,18 +9,17 @@ include "../function.php";
 
 $data = json_decode(file_get_contents("php://input"));
 
-
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if($data->user_id ){
+    if (isset($data->user_id) && !empty($data->user_id)) {
         $user_id = $data->user_id;
-       
-    }else{
+    } else {
         http_response_code(200);
-        echo json_encode(array('staus' => false, 'message' => 'no-data'));
+        echo json_encode(array('status' => false, 'message' => 'no-data'));
         exit;
-    }    
+    } 
+      
     $datas = array();
     
     try{
@@ -36,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } 
         $date_time = Date("Y-m-d h:i:s");
-        $result->status == 10 ? $st = 77 : $st = 10;
+        $result->status == 10 ? $st = 1 : $st = 10;
         $st == 10 ? $str = 0 : $str = 9999 ;
 
         $sql = "UPDATE profile 

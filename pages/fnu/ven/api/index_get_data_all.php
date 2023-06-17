@@ -35,14 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ven_users = array();
     $ven_coms = array();
 
-
     $datas = array();
-    // $DATE_MONTH = '2022-11';
-
     $price_all = 0;
-    // http_response_code(200);
-    //         echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล', 'responseJSON' => $data->month));
-    // exit;
+
     try {
 
         $sql = "SELECT user_id,fname,name,sname,phone,bank_account,bank_comment FROM profile WHERE status=10 ORDER BY st";

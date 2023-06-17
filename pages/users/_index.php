@@ -89,11 +89,9 @@ require_once('../../server/authen.php');
                             </div>
                         </div>    
                     </div>
-                </section>                
-                
-            </div>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" ref="show_modal_user" hidden>
+                </section>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" ref="show_modal_user" hidden>
                     Launch static backdrop modal
                 </button>
 
@@ -419,10 +417,11 @@ require_once('../../server/authen.php');
 
                     </div>
                 </div>
+                
+            </div>
             <?php require_once('../includes/_footer.php') ?>
 
         </div>
-        
     </div>
     <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="../../assets/js/bootstrap.bundle.min.js"></script>

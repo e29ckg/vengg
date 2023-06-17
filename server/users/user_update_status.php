@@ -9,18 +9,17 @@ include "../function.php";
 
 $data = json_decode(file_get_contents("php://input"));
 
-
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if($data->user_id ){
+    if (isset($data->user_id) && !empty($data->user_id)) {
         $user_id = $data->user_id;
-       
-    }else{
+    } else {
         http_response_code(200);
-        echo json_encode(array('staus' => false, 'message' => 'no-data'));
+        echo json_encode(array('status' => false, 'message' => 'no-data'));
         exit;
-    }  
+    } 
+
     $datas = array();
     
     try{
@@ -37,15 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } 
         $date_time = Date("Y-m-d h:i:s");
         $result->status == 10 ? $st = 1 : $st = 10;
-        // $st == 10 ? $str = 1 : $str = 99 ;
+        $st == 10 ? $str = 0 : $str = 9999 ;
 
         $sql = "UPDATE profile 
                 SET status = :status, updated_at = :updated_at
                 WHERE user_id = :user_id";
         $query = $conn->prepare($sql);
         $query->bindParam(':status',$st, PDO::PARAM_STR);
-        $query->bindParam(':updated_at',$date_time, PDO::PARAM_STR);       
-        // $query->bindParam(':st',$str, PDO::PARAM_INT);       
+        $query->bindParam(':updated_at',$date_time, PDO::PARAM_STR);  
         $query->bindParam(':user_id',$user_id, PDO::PARAM_INT);       
         $query->execute();   
 

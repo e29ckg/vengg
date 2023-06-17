@@ -7,38 +7,43 @@ header("Content-Type: application/json; charset=utf-8");
 include "../connect.php";
 include "../function.php";
 
-// $data = json_decode(file_get_contents("php://input"));
-
-
-// The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-$datas = array();
-
-    try{
+    try {
         $sql = "SELECT name FROM `group` ORDER BY name ASC";
         $query = $conn->prepare($sql);
         $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
-            foreach($result as $rs){
-                array_push($datas,array(
-                    'name'  => $rs->name
-                ));
-            }
+        if (!empty($result)) {
+            $datas = array_map(function ($row) {
+                return ['name' => $row['name']];
+            }, $result);
+
+            $response = [
+                'status' => true,
+                'message' => 'Success',
+                'data' => $datas
+            ];
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
+            echo json_encode($response);
             exit;
         }
-     
+
+        $response = [
+            'status' => true,
+            'message' => 'No data found'
+        ];
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode($response);
         exit;
-    
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
+        $response = [
+            'status' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ];
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode($response);
         exit;
     }
 }
+?>

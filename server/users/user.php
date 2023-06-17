@@ -9,35 +9,44 @@ include "../function.php";
 
 $data = json_decode(file_get_contents("php://input"));
 
-// The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     $uid = $data->uid;
 
-    $datas = array();
-
-    try{
+    try {
         $sql = "SELECT p.*
-                FROM profile as p 
-                WHERE p.id = :uid ";
+                FROM profile AS p 
+                WHERE p.id = :uid";
         $query = $conn->prepare($sql);
-        $query->bindParam('uid',$uid, PDO::PARAM_STR);
+        $query->bindParam(':uid', $uid, PDO::PARAM_STR);
         $query->execute();
-        $result = $query->fetch(PDO::FETCH_OBJ);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
-            
+        if (!empty($result)) {
+            $response = [
+                'status' => true,
+                'message' => 'Success',
+                'data' => $result
+            ];
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
+            echo json_encode($response);
             exit;
         }
-     
+
+        $response = [
+            'status' => false,
+            'message' => 'No data found'
+        ];
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode($response);
         exit;
-    
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
+        $response = [
+            'status' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ];
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode($response);
+        exit;
     }
 }
+?>

@@ -34,9 +34,12 @@ Vue.createApp({
       },
 
       isLoading : false,
-    }
+  }
   },
   mounted(){
+    this.url_base = window.location.protocol + '//' + window.location.host;
+    this.url_base_app = window.location.protocol + '//' + window.location.host + '/adminphp/';
+    // const d = 
     this.get_users()    
     this.get_sel_fname()
     this.get_sel_dep()
@@ -51,9 +54,10 @@ Vue.createApp({
     get_users(){
       this.isLoading = true
       axios.post('../../server/users/users.php')
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
-              this.datas = response.data.data;
+              this.datas = response.data.respJSON;
           } 
       })
       .catch(function (error) {
@@ -66,9 +70,10 @@ Vue.createApp({
     get_user(uid){
       this.isLoading = true
       axios.post('../../server/users/user.php',{uid:uid})
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
-              this.user = response.data.data;
+              this.user = response.data.respJSON;
           } 
       })
       .catch(function (error) {
@@ -92,10 +97,13 @@ Vue.createApp({
       this.user_form.act = 'insert'
     },
     user_insert(){
+
+      // console.log('user_insert')
       if(this.user_form.username != '' && this.user_form.password != '' && this.user_form.repassword != '' && this.user_form.fname != '' 
         && this.user_form.name != '' && this.user_form.sname != '' && this.user_form.password == this.user_form.repassword){
           axios.post('../../server/users/user_insert.php',{user:this.user_form})
-            .then(response => {                
+            .then(response => {
+                
                 if (response.data.status) {
                   let icon = 'success' 
                   this.alert(icon,response.data.message,1000)
@@ -125,9 +133,10 @@ Vue.createApp({
     },
     get_sel_fname(){
       axios.post('../../server/users/get_sel_fname.php')
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
-            this.sel_fname = response.data.data;
+            this.sel_fname = response.data.respJSON;
           } 
       })
       .catch(function (error) {
@@ -136,9 +145,10 @@ Vue.createApp({
     },
     get_sel_dep(){
       axios.post('../../server/users/get_sel_dep.php')
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
-            this.sel_dep = response.data.data;
+            this.sel_dep = response.data.respJSON;
           } 
       })
       .catch(function (error) {
@@ -147,9 +157,10 @@ Vue.createApp({
     },
     get_sel_group(){
       axios.post('../../server/users/get_sel_group.php')
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
-            this.sel_workgroup = response.data.data;
+            this.sel_workgroup = response.data.respJSON;
           } 
       })
       .catch(function (error) {
@@ -157,7 +168,7 @@ Vue.createApp({
       })
     },
     alert(icon,message,timer=0){
-      swal.fire({
+        swal.fire({
         icon: icon,
         title: message,
         showConfirmButton: true,
@@ -168,12 +179,12 @@ Vue.createApp({
       this.$refs.close_modal_user.click()
       this.isLoading = true
       axios.post('../../server/users/user.php',{uid:uid})
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
-              this.user_form = response.data.data;
+              this.user_form = response.data.respJSON;
               this.$refs.show_modal_user_update_form.click()
           } 
-          this.get_users()
       })
       .catch(function (error) {
           console.log(error);
@@ -185,7 +196,8 @@ Vue.createApp({
     user_update_save(uid){
       this.isLoading = true
       axios.post('../../server/users/user_update_save.php',{user:this.user_form})
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
               this.get_users()
               this.$refs.close_modal_user_update_form.click()
@@ -210,7 +222,7 @@ Vue.createApp({
       axios.post('../../server/users/user_role.php',{uid:uid})
       .then(response => {          
           if (response.data.status) {
-              this.user_role_form = response.data.data;
+              this.user_role_form = response.data.respJSON;
               this.user_role_form.password = '';
               this.$refs.show_modal_user_u_r_form.click()
           } 
@@ -230,7 +242,8 @@ Vue.createApp({
       }
       this.isLoading = true
       axios.post('../../server/users/user_update_role_save.php',{user:this.user_role_form})
-      .then(response => {          
+      .then(response => {
+          
           if (response.data.status) {
               this.get_users()
               this.$refs.close_modal_user_u_r_form.click()
@@ -251,30 +264,40 @@ Vue.createApp({
       })  
     },
     user_status(id){
-      axios.post('../../server/users/user_update_status.php',{user_id:id})
-          .then(response => {              
-              if (response.data.status) {
-                  let icon = 'success'
-                  let message = response.data.message
-                  this.alert(icon,message,timer=1500)
-                  this.get_users()
-              }else{
-                let icon = 'error'
-                let message = response.data.message
-                this.alert(icon,message,timer=0)
-              }
-          })
-          .catch(function (error) {
-              console.log(error);
-          })        
+      // if(st == 1){
+        
+            // this.isLoading = true;
+            axios.post('../../server/users/user_update_status.php',{user_id:id})
+                .then(response => {
+                    
+                    if (response.data.status) {
+                        let icon = 'success'
+                        let message = response.data.message
+                        this.alert(icon,message,timer=1500)
+                        this.get_users()
+                    }else{
+                      let icon = 'error'
+                      let message = response.data.message
+                      this.alert(icon,message,timer=0)
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                // .finally(() => {
+                //   this.isLoading = false;
+                // })   
+        
     },
     ch_search_user(){
       console.log(this.q)
       if(this.q.length > 0){
         this.isLoading = true;
         axios.post('../../server/users/user_search.php',{q:this.q})
-          .then(response => {                
-              this.datas = response.data.data;                    
+          .then(response => {
+              // if (response.data.status){
+                this.datas = response.data.respJSON;                    
+              // }
           })
           .catch(function (error) {
               console.log(error);
@@ -286,6 +309,7 @@ Vue.createApp({
         this.get_users()
       }
     },
+
     b_user_img(uid,index){
       this.user_img.uid = uid;   
       this.user_img.img = this.datas[index].img;   
@@ -295,10 +319,13 @@ Vue.createApp({
       this.onUpload()
     },
     onUpload(){
+      // console.log(this.$refs.myFiles.files[0].name);
       var image = this.$refs.myFiles.files
       if (image.length > 0) {
         if(image[0].type == 'image/jpeg' || image[0].type =='image/png') {
           var formData = new FormData();
+          // var imagefile = document.querySelector('#file');
+          // var imagefile = document.querySelector('#file');
           formData.append("sendimage", image[0]);
           formData.append("uid", this.user_img.uid);
           axios.post('../../server/users/upload_img.php', 
@@ -333,8 +360,12 @@ Vue.createApp({
                 showConfirmButton: true,
                 timer: 1500
             });
-        }
+          }
       }
-    }
-  }
-}).mount('#app')
+
+    } ,
+  },
+  
+        
+
+}).mount('#usersIndex')
