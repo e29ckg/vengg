@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'data' => $datas
             );
         } else {
+            
             $response = array(
                 'status' => false,
                 'message' => 'No data found'
