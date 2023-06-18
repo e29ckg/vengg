@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // The request is using the POST method
     try{
-        $sql = "SELECT v.id, v.ven_date, v.ven_com_name, v.DN, v.u_name, p.dep, p.workgroup, vc.ven_com_num, vc.ven_com_date 
+        $sql = "SELECT v.id, v.ven_date, v.ven_com_name, v.DN, 
+                        p.fname, p.name, p.sname, p.dep, p.workgroup, vc.ven_com_num, vc.ven_com_date 
                 FROM ven as v 
                 INNER JOIN profile as p ON v.user_id = p.user_id
                 INNER JOIN ven_com as vc ON vc.id = v.ven_com_idb
@@ -53,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $ven_com_date = $rs->ven_com_date;
 
                 if($rs->workgroup == 'ผู้พิพากษา'){
-                    $users[0] = array("name" => $rs->u_name,"dep" => $rs->dep);
+                    $users[0] = array("name" => $rs->fname.$rs->name.' '.$rs->sname,"dep" => $rs->dep);
                 }else{
-                    $users[1] = array("name" => $rs->u_name,"dep" => $rs->dep);
+                    $users[1] = array("name" =>$rs->fname.$rs->name.' '.$rs->sname,"dep" => $rs->dep);
                 }
                 // array_push($users,array(
-                //     "name" => $rs->u_name,
+                //     "name" => $rs->fname.$rs->name.' '.$rs->sname,
                 //     "dep" => $rs->dep
                 // ));
             }
@@ -81,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         );
 
         /**สร้างเอกสาร docx */
-        $templateProcessor = new TemplateProcessor('../../uploads/ven_jk_tm.docx');//เลือกไฟล์ template ที่เราสร้างไว้
+        $templateProcessor = new TemplateProcessor('../../uploads/template_docx/ven_jk_tm.docx');//เลือกไฟล์ template ที่เราสร้างไว้
         $templateProcessor->setValue('ven_com_num', $ven_com_num);
         $templateProcessor->setValue('ven_com_date', $datas['ven_com_date']);
         $templateProcessor->setValue('ven_date_d', $datas['ven_date_d']);

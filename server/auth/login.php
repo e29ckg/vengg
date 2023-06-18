@@ -9,24 +9,18 @@ require_once('../function.php');
 
 $data = json_decode(file_get_contents("php://input"));
 
-// if (isset($_POST['authen'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // $username = cleanData($_POST['username']);
-    // $password = cleanData($_POST['password']);
-    $username = cleanData($data->username);
-    $password = cleanData($data->password);
+    $username = sanitize($data->username);
+    $password = sanitize($data->password);
     
-    // $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username AND status = 'true' ");
     $stmt = $conn->prepare("SELECT u.*, p.fname, p.name, p.sname, p.img, p.dep 
                             FROM user as u     
                             INNER JOIN profile as p ON p.user_id = u.id
                             WHERE u.username = :username AND u.status = 10 ");
     $stmt->execute(array(":username" => $username));
     $row = $stmt->fetch(PDO::FETCH_OBJ);
-    // $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
-    if( !empty($row) && password_verify($password, $row->password_hash) ) {
+    if (!empty($row) && password_verify($password, $row->password_hash)) {
         unset($row->password);
         empty($row->img) ?  $u_image = 'avatar.png' : $u_image = $row->img;
         $_SESSION['AD_ID'] = $row->id;
@@ -38,30 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['AD_STATUS'] = $row->status;
         $_SESSION['LOGIN_BY'] = 'vengg';
         
-        // header('Location: ../../pages/index.php');  
-
-        $sql = "SELECT * FROM line WHERE name = 'admin' AND status=1";
+        $sql = "SELECT * FROM line WHERE name = 'admin' AND status = 1";
 		$query = $conn->prepare($sql);
 		$query->execute();
 		$res = $query->fetch(PDO::FETCH_OBJ);
-        if($query->rowCount()){
+        if ($query->rowCount()) {
             $sToken     = $res->token;  
-            $sMessage   = $row->name.' '. $row->sname;
-            $sMessage   .=  ' เข้าสู่ระบบเวร ';
-            sendLine($sToken,$sMessage);
+            $sMessage   = $row->name.' '.$row->sname;
+            $sMessage   .= ' เข้าสู่ระบบเวร ';
+            sendLine($sToken, $sMessage);
         }
 
         http_response_code(200);
-        $response = array('status'=>true,'message' => 'success', 'ss_uid'=>$_SESSION['AD_ID']);
+        $response = array('status' => true, 'message' => 'success', 'ss_uid' => $_SESSION['AD_ID']);
         echo json_encode($response);
         exit;
 
     } else {
-        // echo "<script> alert('ไม่สามารถเข้าสู่ระบบได้')</script>";
-        // header("Refresh:0; url=../../login.php");
         http_response_code(200);
-        $response = array('status'=>false, 'message' => 'ไม่สามารถเข้าระบบได้');
+        $response = array('status' => false, 'message' => 'ไม่สามารถเข้าระบบได้');
         echo json_encode($response);
         exit;
     }
 }
+?>

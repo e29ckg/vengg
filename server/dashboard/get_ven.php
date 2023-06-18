@@ -104,15 +104,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vfu_arr =array(); 
         foreach($res_vfu as $rsvfu){
 
-            $img_link = $_SERVER['REQUEST_SCHEME'].'://'. $_SERVER['HTTP_HOST'] ;
-            $img_link .= $rsvfu->img != null && $rsvfu->img != '' && file_exists('../../uploads/users/' . $rsvfu->img ) 
-                            ? '/vengg/uploads/users/'. $rsvfu->img 
-                            : '/vengg/assets/images/profiles/nopic.png';
+           // กำหนดเส้นทางสมัยเต็มไว้ในตัวแปรหรือค่าคงที่
+        // $base_path = '../..'; // เปลี่ยนเส้นทางตามที่เหมาะสม
+
+        // $img_link = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        // $img_link .= $rsvfu->img != null && $rsvfu->img != '' && file_exists($base_path . '/uploads/users/' . $rsvfu->img)
+        //     ? '/vengg/uploads/users/' . $rsvfu->img
+        //     : '/vengg/assets/images/profiles/nopic.png';
 
             array_push($vfu_arr,array(
                 "id" => $rsvfu->id,
                 "DN" => $rsvfu->DN,
-                "img" => $img_link,
+                // "img" => $img_link,
                 "price" => $rsvfu->price,
                 "status" => $rsvfu->status,
                 "u_name" => $rsvfu->fname.$rsvfu->name.' '.$rsvfu->sname,

@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 ));
             }
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $datas));
+            echo json_encode(array('status' => true, 'message' => 'success', 'respJSON' => $datas));
             exit;
         }
 
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         exit;
     } catch (PDOException $e) {
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'message' => 'Error: ' . $e->getMessage()));
         exit;
     }
 }

@@ -7,14 +7,13 @@ header("Content-Type: application/json; charset=utf-8");
 include "../connect.php";
 include "../function.php";
 
+// Get JSON data from the request
 $data = json_decode(file_get_contents("php://input"));
+
 
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    $ch_v1      = $data->ch_v1;
-    $user_id2   = $data->user_id2;
-    $u_name2    = $data->u_name2;
 
     $datas = array();    
 
@@ -217,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     }catch(PDOException $e){
         $conn->rollback();
-        http_response_code(400);
+        http_response_code(500);
         echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;
     }

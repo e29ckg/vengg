@@ -9,6 +9,21 @@ function cleanData($input){
     return $data;
 }
 
+// Function to sanitize input data
+function sanitize($data) {
+    // Remove leading and trailing whitespaces
+    $data = trim($data);
+
+    // Remove backslashes
+    $data = stripslashes($data);
+
+    // Convert special characters to HTML entities
+    $data = htmlspecialchars($data);
+
+    return $data;
+}
+
+
 /** Method สำหรับการเช็ครูปภาพ Mime Image */
 function isMimeValid($tmp_name){
     $finfo = finfo_open( FILEINFO_MIME_TYPE );

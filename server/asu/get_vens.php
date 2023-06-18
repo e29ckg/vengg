@@ -31,17 +31,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 ));
             }
             http_response_code(200);
-            echo json_encode(array('status' => true, 'massege' => 'สำเร็จ', 'respJSON' => $datas));
+            echo json_encode(array('status' => true, 'massege' => 'success', 'respJSON' => $datas));
             exit;
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'massege' => 'ไม่พบข้อมูล ', 'respJSON' => $datas));
+        echo json_encode(array('status' => false, 'massege' => 'No data found ', 'respJSON' => $datas));
         exit;
 
     }catch(PDOException $e){
         http_response_code(400);
-        echo json_encode(array('status' => false, 'massege' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'massege' => 'Error: ' . $e->getMessage()));
         exit;
     }
 }

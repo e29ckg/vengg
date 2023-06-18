@@ -10,7 +10,7 @@ require_once('../../server/authen.php');
     
 </head>
 <body>
-    <div id="app" v-cloak>
+    <div id="app">
         <?php require_once('../includes/_sidebar.php') ?>
         <div id="main">
             <header class="mb-3">
@@ -22,7 +22,7 @@ require_once('../../server/authen.php');
             <div class="page-heading">
                 <h3>จัดการสมาชิก</h3>
             </div>
-            <div class="page-content" id="usersIndex" >
+            <div class="page-content" id="usersIndex" v-cloak>
                 <section class="row">
                     <div class="col-12 col-lg-12">
                         <div class="row">
@@ -89,11 +89,9 @@ require_once('../../server/authen.php');
                             </div>
                         </div>    
                     </div>
-                </section>                
-                
-            </div>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" ref="show_modal_user" hidden>
+                </section>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" ref="show_modal_user" hidden>
                     Launch static backdrop modal
                 </button>
 
@@ -314,8 +312,8 @@ require_once('../../server/authen.php');
                                             <input type="text" class="form-control" id="bank_comment_uff" v-model="user_form.bank_comment">
                                         </div>                                           
                                         <div class="col mb-3">
-                                            <label for="st-f" class="form-label">ลำดับที่</label>
-                                            <input type="text" class="form-control" id="st-f" v-model="user_form.st">
+                                            <label for="ust" class="form-label">ลำดับที่</label>
+                                            <input type="text" class="form-control" id="ust" v-model="user_form.st">
                                         </div>                                           
                                     </div>
                                     <div class="row">
@@ -404,7 +402,7 @@ require_once('../../server/authen.php');
                                     <input type="hidden" name="pro_id" :value="user_img.id">
                                     <div class="input-group">
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="file" name="file" @change="onChangeInput()" ref="myFiles" :value="user_img.val">
+                                            <input type="file" class="custom-file-input" id="file" name="file" accept="image/jpeg, image/png" @change="onChangeInput()" ref="myFiles" :value="user_img.val">
                                             <label class="custom-file-label" for="exampleInputFile" > </label>
                                         </div>
                                         <div class="input-group-append">
@@ -419,10 +417,11 @@ require_once('../../server/authen.php');
 
                     </div>
                 </div>
+                
+            </div>
             <?php require_once('../includes/_footer.php') ?>
             
         </div>
-        
     </div>
     <?php require_once('../includes/_footer_sc.php') ?>
     <!-- <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>

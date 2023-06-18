@@ -28,33 +28,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $res_v->user_id;
         $DN      = $res_v->DN;
 
-        $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
-        $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
-
-        $sql_VU = "SELECT v.*, p.fname, p.name, p.sname 
-                    FROM ven AS v
-                    INNER JOIN `profile` AS p ON p.user_id = v.user_id
-                    WHERE v.user_id = $user_id AND v.ven_date >= '$ven_date_d1' AND v.ven_date >= '$ven_date_d1' AND (v.status=1 OR v.status=2)";
-        $query_VU = $conn->prepare($sql_VU);
-        $query_VU->execute();
-        $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
-
-        if ($query_VU->rowCount()) {
-            foreach ($res_VU as $ru) {
-                if ($ru->ven_date == $ven_date) {
-                    http_response_code(200);
-                    echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->sname . ' ' . $ru->name . "\n มีเวรวันนี้แล้ว"));
-                    exit;
-                }
-                if ($DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน') {
-                    http_response_code(200);
-                    echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางคืน \nวันก่อนหน้านี้(" . DateThai($ven_date_u1) . ")"));
-                    exit;
-                }
-                if ($DN == 'กลางคืน'  && $ru->ven_date == $ven_date_u1 && $ru->DN == 'กลางวัน') {
-                    http_response_code(200);
-                    echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางวัน \nวันถัดไป(" . DateThai($ven_date_u1) . ")"));
-                    exit;
+        if($price > 0){
+            /** เช็ควันเวลาที่อยู่เวรไม่ได้ */
+            $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
+            $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
+    
+            $sql_VU = "SELECT v.*, p.fname, p.name, p.sname 
+                        FROM ven AS v
+                        INNER JOIN `profile` AS p ON p.user_id = v.user_id
+                        WHERE v.user_id = $user_id AND v.ven_date >= '$ven_date_d1' AND v.ven_date >= '$ven_date_d1' AND (v.status=1 OR v.status=2)";
+            $query_VU = $conn->prepare($sql_VU);
+            $query_VU->execute();
+            $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
+    
+            if ($query_VU->rowCount()) {
+                foreach ($res_VU as $ru) {
+                    if ($ru->ven_date == $ven_date) {
+                        http_response_code(200);
+                        echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->sname . ' ' . $ru->name . "\n มีเวรวันนี้แล้ว"));
+                        exit;
+                    }
+                    if ($DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน') {
+                        http_response_code(200);
+                        echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางคืน \nวันก่อนหน้านี้(" . DateThai($ven_date_u1) . ")"));
+                        exit;
+                    }
+                    if ($DN == 'กลางคืน'  && $ru->ven_date == $ven_date_u1 && $ru->DN == 'กลางวัน') {
+                        http_response_code(200);
+                        echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางวัน \nวันถัดไป(" . DateThai($ven_date_u1) . ")"));
+                        exit;
+                    }
                 }
             }
         }
@@ -72,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $sql = "SELECT 
             ven.id,
+            ven.DN,
             ven.u_role,
             ven.ven_time,	
             ven_name.srt AS vn_srt,
@@ -90,10 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->bindParam(':ven_date', $ven_date, PDO::PARAM_STR);
         $query->execute();
 
-        $hours = 8;
         $seconds = 0;
         foreach ($query->fetchAll(PDO::FETCH_OBJ) as $rs) {
-            if ($DN == 'กลางคืน') {
+            $hours = 8;
+            if ($rs->DN == 'กลางคืน') {
                 $hours = 16;
             }
             ++$seconds;
@@ -109,11 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /**end เรียงลำดับเวลาา ven_time */
 
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'สำเร็จ'));
+        echo json_encode(array('status' => true, 'message' => 'success'));
         exit;
     } catch (PDOException $e) {
         http_response_code(400);
-        echo json_encode(array('status' => false, 'massege' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'massege' => 'Error: ' . $e->getMessage()));
         exit;
     }
 }

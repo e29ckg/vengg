@@ -28,12 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $query->fetch(PDO::FETCH_OBJ);
  
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'ไม่พบข้อมูล ', 'respJSON' => $result));
+        echo json_encode(array('status' => true, 'message' => 'No data found ', 'respJSON' => $result));
         exit;
     
     }catch(PDOException $e){
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'message' => 'Error: ' . $e->getMessage()));
         exit;
     }
 }

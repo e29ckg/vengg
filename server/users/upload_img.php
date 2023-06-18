@@ -7,11 +7,9 @@ header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type
 require_once "../connect.php";
 require_once "../function.php";
 
-$data = json_decode(file_get_contents("php://input"));
-
 $upload_path = '../../uploads/users/';
 
-$uid = $data->uid;
+$uid = $_POST['uid'];
 $file = $_FILES['sendimage'];
 
 if (empty($uid)) {
@@ -20,11 +18,13 @@ if (empty($uid)) {
     exit;
 }
 
-if (empty($file)) {
+if (empty($file) || !isset($file['tmp_name'])) {
     $errorMSG = json_encode(array("message" => "Please select an image", "status" => false));
     echo $errorMSG;
     exit;
-} else {
+}
+
+ 
     $fileName = $file['name'];
     $tempPath = $file['tmp_name'];
     $fileSize = $file['size'];
@@ -48,6 +48,7 @@ if (empty($file)) {
     $fileName = 'user_' . $uid . '_' . date("His") . '.' . $fileExt;
 
     try {
+        // ตรวจสอบความถูกต้องของ $uid และป้องกันการโจมตีแบบ SQL Injection
         $sql = "SELECT img FROM profile WHERE id = :uid";
         $query = $conn->prepare($sql);
         $query->bindParam(':uid', $uid, PDO::PARAM_INT);
@@ -63,17 +64,18 @@ if (empty($file)) {
 
         move_uploaded_file($tempPath, $upload_path . $fileName);
 
+        // อัปเดตชื่อไฟล์ภาพในฐานข้อมูล
         $sql = "UPDATE profile SET img = :img WHERE id = :uid";
         $query = $conn->prepare($sql);
         $query->bindParam(':img', $fileName, PDO::PARAM_STR);
         $query->bindParam(':uid', $uid, PDO::PARAM_INT);
         $query->execute();
 
-        $img_link = '../../uploads/users/' . $fileName;
+        $img_link = $upload_path . $fileName;
         echo json_encode(array("message" => "Image uploaded successfully", "status" => true, "img" => $img_link));
     } catch (PDOException $e) {
         $errorMSG = json_encode(array("message" => "Error occurred: " . $e->getMessage(), "status" => false));
         echo $errorMSG;
     }
-}
+
 ?>

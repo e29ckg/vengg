@@ -89,12 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $sql = "SELECT id, create_at
                     FROM ven_change 
-                    WHERE (ven_id1 = :ven_id1_old) OR (ven_id2 = :ven_id1_old) 
-                    OR (ven_id1 = :ven_id2_old) OR (ven_id2 = :ven_id2_old)";
+                    WHERE (ven_id1 = :ven_id1_old) OR (ven_id2 = :ven_id11_old) 
+                    OR (ven_id1 = :ven_id2_old) OR (ven_id2 = :ven_id22_old)";
             
             $query = $conn->prepare($sql);
             $query->bindParam(':ven_id1_old', $res->ven_id1_old, PDO::PARAM_INT);
+            $query->bindParam(':ven_id11_old', $res->ven_id1_old, PDO::PARAM_INT);
             $query->bindParam(':ven_id2_old', $res->ven_id2_old, PDO::PARAM_INT);
+            $query->bindParam(':ven_id22_old', $res->ven_id2_old, PDO::PARAM_INT);
             $query->execute();
     
             $res_vc_old = $query->fetchAll(PDO::FETCH_OBJ);
@@ -108,9 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             /**สร้างเอกสาร docx */
-            $name_doc = '../../uploads/ven_tm.docx';
-            if($res->DN =='กลางวัน'){ $name_doc = '../../uploads/venholiday_tm.docx';}
-            if($res->DN =='กลางคืน'){ $name_doc = '../../uploads/vennight_tm.docx';}
+            $path = '../../uploads';
+            $name_doc = $path.'/template_docx/ven_tm.docx';
+            if($res->DN =='กลางวัน'){ $name_doc = $path.'/template_docx/venholiday_tm.docx';}
+            if($res->DN =='กลางคืน'){ $name_doc = $path.'/template_docx/vennight_tm.docx';}
 
             $templateProcessor = new TemplateProcessor($name_doc);//เลือกไฟล์ template ที่เราสร้างไว้
             $templateProcessor->setValue('doc_date', $doc_date);//อัดตัวแปร รายตัว
@@ -128,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $templateProcessor->setValue('ven_date1', $ven_date1);
             $templateProcessor->setValue('ven_date2', $ven_date2);   
 
-            $templateProcessor->saveAs('../../uploads/ven.docx');//สั่งให้บันทึกข้อมูลลงไฟล์ใหม่
+            $templateProcessor->saveAs($path.'/ven.docx');//สั่งให้บันทึกข้อมูลลงไฟล์ใหม่
            
             http_response_code(200);
             echo json_encode(array(
