@@ -314,8 +314,8 @@ require_once('../../server/authen.php');
                                             <input type="text" class="form-control" id="bank_comment_uff" v-model="user_form.bank_comment">
                                         </div>                                           
                                         <div class="col mb-3">
-                                            <label for="st" class="form-label">ลำดับที่</label>
-                                            <input type="text" class="form-control" id="st" v-model="user_form.st">
+                                            <label for="st-f" class="form-label">ลำดับที่</label>
+                                            <input type="text" class="form-control" id="st-f" v-model="user_form.st">
                                         </div>                                           
                                     </div>
                                     <div class="row">
@@ -420,14 +420,15 @@ require_once('../../server/authen.php');
                     </div>
                 </div>
             <?php require_once('../includes/_footer.php') ?>
-
+            
         </div>
         
     </div>
-    <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <?php require_once('../includes/_footer_sc.php') ?>
+    <!-- <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 
-    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/main.js"></script> -->
     <!--  -->
     <script src="../../node_modules/vue/dist/vue.global.js"></script>
     <script src="../../node_modules/vue/dist/vue.global.prod.js"></script>

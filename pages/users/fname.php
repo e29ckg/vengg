@@ -56,7 +56,6 @@ require_once('../../server/authen.php');
                                                     <th scope="row">{{index+1}}</th>                                                    
                                                     <td>
                                                         <p >
-                                                            <i class="bi bi-person-circle me-1"></i> 
                                                             <b class="me-1"> {{d.name}} </b>                                                            
                                                             
                                                         </p>
@@ -125,10 +124,11 @@ require_once('../../server/authen.php');
             <?php require_once('../includes/_footer.php') ?>
         </div>
     </div>
-    <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <?php require_once('../includes/_footer_sc.php') ?>
+    <!-- <script src="../../assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 
-    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/main.js"></script> -->
     <!--  -->
     <script src="../../node_modules/vue/dist/vue.global.js"></script>
     <script src="../../node_modules/vue/dist/vue.global.prod.js"></script>

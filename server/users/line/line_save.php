@@ -6,81 +6,84 @@ header("Content-Type: application/json; charset=utf-8");
 
 include "../../connect.php";
 include "../../function.php";
-require_once('../../authen.php'); 
+require_once('../../authen.php');
 
 $data = json_decode(file_get_contents("php://input"));
 
-
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
     $act = $data->act;
-       
     $datas = array();
-    try{
-        if($act =='insert'){
-            $line = $data->line;
 
-            $sql = "INSERT INTO line(name, token, status) 
-                    VALUE('$line->name', '$line->token', 1);";   
-            $query = $conn->prepare($sql);
+    try {
+        switch ($act) {
+            case 'insert':
+                $line = $data->line;
 
-            if($query->execute()){ 
-                http_response_code(200);
-                echo json_encode(array('status' => true, 'message' => 'บันทึกข้อมูลสำเร็จ'));
-                exit;            
-            }
-        }
+                $sql = "INSERT INTO line(name, token, status) 
+                        VALUE(:name, :token, 1)";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':name', $line->name, PDO::PARAM_STR);
+                $query->bindParam(':token', $line->token, PDO::PARAM_STR);
 
-        if($act == 'update'){ 
-            $line = $data->line;
+                if ($query->execute()) {
+                    http_response_code(200);
+                    echo json_encode(array('status' => true, 'message' => 'บันทึกข้อมูลสำเร็จ'));
+                    exit;
+                }
+                break;
 
-            $sql = "UPDATE line SET 
-                        name = :name,
-                        token = :token
-                        WHERE id = :id";
-            $query = $conn->prepare($sql);
-            $query->bindParam('name',$line->name, PDO::PARAM_STR);
-            $query->bindParam('token',$line->token, PDO::PARAM_STR);
-            $query->bindParam('id',$line->id, PDO::PARAM_INT);
-            
-            if($query->execute()){ 
-                http_response_code(200);
-                echo json_encode(array('status' => true, 'message' => 'บันทึกข้อมูลสำเร็จ'));
-                exit;            
-            }
-        }
-        if($act == 'set_st'){            
-            $sql = "UPDATE line SET 
-                        status = :status
-                        WHERE id = :id";
-            $query = $conn->prepare($sql);
-            $query->bindParam('status',$data->st, PDO::PARAM_INT);
-            $query->bindParam('id',$data->id, PDO::PARAM_INT);
-            $query->execute();
-            if($query->execute()){ 
-                http_response_code(200);
-                echo json_encode(array('status' => true, 'message' => 'บันทึกข้อมูลสำเร็จ'));
-                exit;            
-            }
-        }
-        if($act == 'del'){            
-            $sql = "DELETE FROM line WHERE id = :id";
-            $query = $conn->prepare($sql);
-            $query->bindParam('id',$data->id, PDO::PARAM_INT);
-            $query->execute();
-            if($query->execute()){ 
-                http_response_code(200);
-                echo json_encode(array('status' => true, 'message' => 'ลบข้อมูลสำเร็จ'));
-                exit;            
-            }
+            case 'update':
+                $line = $data->line;
+
+                $sql = "UPDATE line SET 
+                            name = :name,
+                            token = :token
+                            WHERE id = :id";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':name', $line->name, PDO::PARAM_STR);
+                $query->bindParam(':token', $line->token, PDO::PARAM_STR);
+                $query->bindParam(':id', $line->id, PDO::PARAM_INT);
+
+                if ($query->execute()) {
+                    http_response_code(200);
+                    echo json_encode(array('status' => true, 'message' => 'บันทึกข้อมูลสำเร็จ'));
+                    exit;
+                }
+                break;
+
+            case 'set_st':
+                $sql = "UPDATE line SET 
+                            status = :status
+                            WHERE id = :id";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':status', $data->st, PDO::PARAM_INT);
+                $query->bindParam(':id', $data->id, PDO::PARAM_INT);
+
+                if ($query->execute()) {
+                    http_response_code(200);
+                    echo json_encode(array('status' => true, 'message' => 'บันทึกข้อมูลสำเร็จ'));
+                    exit;
+                }
+                break;
+
+            case 'del':
+                $sql = "DELETE FROM line WHERE id = :id";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':id', $data->id, PDO::PARAM_INT);
+
+                if ($query->execute()) {
+                    http_response_code(200);
+                    echo json_encode(array('status' => true, 'message' => 'ลบข้อมูลสำเร็จ'));
+                    exit;
+                }
+                break;
         }
 
         http_response_code(200);
         echo json_encode(array('status' => true, 'message' => '------'));
         exit;
-       
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
         http_response_code(400);
         echo json_encode(array('status' => false, 'message' => 'ERROR เกิดข้อผิดพลาด..' . $e->getMessage()));
         exit;

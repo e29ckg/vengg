@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
 header("Access-Control-Allow-Headers: Content-Type, Accept");
@@ -12,29 +13,26 @@ $data = json_decode(file_get_contents("php://input"));
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $datas = array();   
-
-    try{
-        $sql = "SELECT l.*
-                FROM line as l ORDER BY l.name ASC";
+    try {
+        $sql = "SELECT * FROM line ORDER BY name ASC";
         $query = $conn->prepare($sql);
         $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
-            
+        if ($result) {
             http_response_code(200);
-            echo json_encode(array('status' => true, 'message' => 'สำเร็จ', 'respJSON' => $result));
+            echo json_encode(array('status' => true, 'message' => 'Success', 'data' => $result));
             exit;
         }
-     
+
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
+        echo json_encode(array('status' => false, 'message' => 'No data found'));
         exit;
-    
-    }catch(PDOException $e){
+
+    } catch (PDOException $e) {
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'message' => 'Error occurred: ' . $e->getMessage()));
         exit;
     }
 }
+?>

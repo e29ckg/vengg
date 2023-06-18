@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
 header("Access-Control-Allow-Headers: Content-Type, Accept");
@@ -16,54 +17,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $data->user_id;
     } else {
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'no-data'));
+        echo json_encode(array('status' => false, 'message' => 'No data'));
         exit;
     } 
       
-    $datas = array();
-    
-    try{
+    try {
         $sql = "SELECT id, profile.status FROM profile WHERE user_id = :user_id";
         $query = $conn->prepare($sql);
-        $query->bindParam(':user_id',$user_id, PDO::PARAM_INT);
+        $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $query->execute();
         $result = $query->fetch(PDO::FETCH_OBJ);
 
-        if(empty($result)){
+        if (empty($result)) {
             http_response_code(200);
-            echo json_encode(array('status' => false, 'message' => 'ไม่มี user นี้อยู่ในระบบ'));
+            echo json_encode(array('status' => false, 'message' => 'User does not exist'));
             exit;
         } 
-        $date_time = Date("Y-m-d h:i:s");
-        $result->status == 10 ? $st = 1 : $st = 10;
-        $st == 10 ? $str = 0 : $str = 9999 ;
+
+        $date_time = date("Y-m-d H:i:s");
+        $st = ($result->status == 10) ? 1 : 10;
+        $str = ($st == 10) ? 0 : 9999;
 
         $sql = "UPDATE profile 
-                SET status = :status, updated_at = :updated_at, st=:st
+                SET status = :status, updated_at = :updated_at, st = :st
                 WHERE user_id = :user_id";
         $query = $conn->prepare($sql);
-        $query->bindParam(':status',$st, PDO::PARAM_STR);
-        $query->bindParam(':updated_at',$date_time, PDO::PARAM_STR);  
-        $query->bindParam(':st',$str, PDO::PARAM_INT);  
-        $query->bindParam(':user_id',$user_id, PDO::PARAM_INT);       
+        $query->bindParam(':status', $st, PDO::PARAM_INT);
+        $query->bindParam(':updated_at', $date_time, PDO::PARAM_STR);  
+        $query->bindParam(':st', $str, PDO::PARAM_INT);  
+        $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);       
         $query->execute();   
 
-        // $sql = "UPDATE user 
-        //         SET status = :status, updated_at = :updated_at
-        //         WHERE id = :id";
-        // $query = $conn->prepare($sql);
-        // $query->bindParam(':status',$st, PDO::PARAM_STR);
-        // $query->bindParam(':updated_at',$date_time, PDO::PARAM_STR);       
-        // $query->bindParam(':id',$user_id, PDO::PARAM_INT);       
-        // $query->execute();   
-
         http_response_code(200);
-        echo json_encode(array('status' => true, 'message' => 'สำเร็จ'));
+        echo json_encode(array('status' => true, 'message' => 'Success'));
         exit;
        
-    }catch(PDOException $e){
+    } catch(PDOException $e) {
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'ERROR เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'message' => 'Error occurred: ' . $e->getMessage()));
         exit;
     }
 }
+?>
