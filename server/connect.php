@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 define("__GOOGLE_CALENDAR__", true);           // true : false
 define("__LOGIN_BY__", "");                     // vengg : gdms
-define("__VERSION__", "V 2.0.9");               // version
+define("__VERSION__", "V 2.1.9");               // version
 
 date_default_timezone_set("Asia/Bangkok");
 

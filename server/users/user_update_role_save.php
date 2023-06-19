@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    if (!isset($data->user) || empty($data->user) || !isset($data->user->user_id) || empty($data->user->user_id)) {
+    if (!isset($data->user) || empty($data->user) || !isset($data->user->id) || empty($data->user->id)) {
         http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'No data'));
         exit;

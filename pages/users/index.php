@@ -114,7 +114,7 @@ require_once('../../server/authen.php');
                                     <tbody>
                                         <tr>
                                             <th scope="row">name</th>
-                                            <td>{{user.name}}</td>
+                                            <td>{{user.fname + user.name + ' ' + user.sname}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">ตำแหน่ง</th>
@@ -313,7 +313,7 @@ require_once('../../server/authen.php');
                                         </div>                                           
                                         <div class="col mb-3">
                                             <label for="ust" class="form-label">ลำดับที่</label>
-                                            <input type="text" class="form-control" id="ust" v-model="user_form.st">
+                                            <input type="number" class="form-control" id="ust" v-model="user_form.st">
                                         </div>                                           
                                     </div>
                                     <div class="row">

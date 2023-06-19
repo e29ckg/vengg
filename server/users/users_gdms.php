@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);
 
-        if($query->rowCount() > 0){                        //count($result)  for odbc
+        if($query->rowCount() > 0){                        
             foreach($result as $rs){
                 $res_profile = '';
                 $sql = "SELECT p.*
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     }catch(PDOException $e){
         http_response_code(400);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        echo json_encode(array('status' => false, 'message' => 'Error: ' . $e->getMessage()));
         exit;
     }
 }
