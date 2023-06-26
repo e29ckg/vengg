@@ -99,7 +99,7 @@ Vue.createApp({
     user_insert(){
 
       // console.log('user_insert')
-      if(this.user_form.username != '' && this.user_form.password != '' && this.user_form.repassword != '' && this.user_form.fname != '' 
+      if(this.user_form.username != '' && this.user_form.password != '' && this.user_form.repassword != '' 
         && this.user_form.name != '' && this.user_form.sname != '' && this.user_form.password == this.user_form.repassword){
           axios.post('../../server/users/user_insert.php',{user:this.user_form})
             .then(response => {
@@ -364,7 +364,38 @@ Vue.createApp({
         }
       }
 
-    } ,
+    },
+    profile_del(uid){
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, is it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+          axios.post('../../server/users/user_del_user.php',{user_id:uid})
+          .then(response => {          
+              if (response.data.status) {
+                  let icon = 'success'
+                  let message = response.data.message
+                  this.alert(icon,message,timer=1500)
+                  this.get_users()
+              }else{
+                let icon = 'error'
+                let message = response.data.message
+                this.alert(icon,message,timer=0)
+              }
+          })
+          .catch(function (error) {
+              console.log(error);
+          })
+        }
+      }) 
+    },
   },
   
         

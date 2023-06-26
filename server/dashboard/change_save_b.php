@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try{  
         
+        $ch_v1  = $data->ch_v1;
+        $user_id2 = $data->user_id2;
         $idv1   = time();
         $idv2   = null;
         $ref    =  generateRandomString();

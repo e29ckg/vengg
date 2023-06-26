@@ -3,7 +3,7 @@ session_start();
 error_reporting(E_ALL);
 // error_reporting(0);
 
-define("__GOOGLE_CALENDAR__", true);           // true : false
+define("__GOOGLE_CALENDAR__", false);           // true : false
 define("__LOGIN_BY__", "");                     // vengg : gdms
 define("__VERSION__", "V 2.1.9");               // version
 

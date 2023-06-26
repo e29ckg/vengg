@@ -20,7 +20,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $data->user_id;
 
     try {
+        $sql = "SELECT id, img FROM profile WHERE user_id = :user_id";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $query->execute();
+        $result = $query->fetch(PDO::FETCH_OBJ);
+
+        if ($result->id == 1) {
+            http_response_code(200);
+            echo json_encode(array('status' => false, 'message' => 'User does not exist'));
+            exit;
+        }
+
+        if (!empty($result->img) && file_exists('../../uploads/users/' . $result->img)) {
+            unlink('../../uploads/users/' . $result->img);
+        }
+
         $sql = "DELETE FROM profile WHERE user_id = :user_id";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $query->execute();
+
+        $sql = "DELETE FROM ven WHERE user_id = :user_id";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $query->execute();
+
+        $sql = "DELETE FROM ven_user WHERE user_id = :user_id";
         $query = $conn->prepare($sql);
         $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $query->execute();

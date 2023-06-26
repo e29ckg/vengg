@@ -184,8 +184,7 @@ require_once('../../server/authen.php');
                                     <div class="row">
                                         <div class="col-5">
                                             <div class="card">
-                                                <img v-if="ch_v1.img" :src="ch_v1.img" class="img-fluid rounded-start" alt="ch_v1.img">
-                                                <!-- <img v-else :src="'../../assets/images/profiles/nopic.png'" class="img-fluid rounded-start" alt="data_event.img"> -->
+                                                <img :src="ch_v1.img" class="img-fluid rounded-start" alt="ch_v1.img">
                                                 <div class="card-body">
                                                     <h5 class="card-title">{{ch_v1.u_name}}</h5>
                                                     <p class="card-text">

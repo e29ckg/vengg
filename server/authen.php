@@ -24,13 +24,33 @@ function pathCurrent() {
     return $moduleName . "/" . $basename;
 }
 
-if( !isset($_SESSION['AD_ID']) || !isset($_SESSION['AD_ROLE']) ){
+if( !isset($_SESSION['AD_ID']) || !isset($_SESSION['AD_ROLE']) ){    
     if(__LOGIN_BY__ == "gdms"){
         header('Location: ../../login_gdms.php'); 
         exit();
     }
+    
     header('Location: ../../login.php'); 
     exit(); 
+}
+
+/*** ตรวจสอบ user ว่ามีอยู่หรอไม่ */
+if(isset($_SESSION['AD_ID'])){
+    $idToCheck = $_SESSION['AD_ID'];
+
+    // Prepare and execute the SQL query
+    $stmt = $conn->prepare("SELECT * FROM user WHERE id = :id AND user.status = 10");
+    $stmt->bindParam(':id', $idToCheck);
+    $stmt->execute();
+
+    // Fetch the result
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check if the user exists
+    if (!$user) {
+        header('Location: ../../login.php'); 
+        exit(); 
+    }
 }
 
 /** หน้าที่ Member เข้าไม่ได้ */

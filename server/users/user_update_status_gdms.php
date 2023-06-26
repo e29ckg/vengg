@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } 
 
         $date_time = date("Y-m-d H:i:s");
-        $st = ($result->status == 10) ? 1 : 10;
+        $st = ($result->status == 10) ? 0 : 10;
         $str = ($st == 10) ? 0 : 9999;
 
         $sql = "UPDATE profile 

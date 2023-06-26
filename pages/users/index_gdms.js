@@ -73,7 +73,7 @@ Vue.createApp({
       .then(response => {
           
           if (response.data.status) {
-              this.user = response.data.respJSON;
+              this.user = response.data.data;
           } 
       })
       .catch(function (error) {
@@ -136,7 +136,7 @@ Vue.createApp({
       .then(response => {
           
           if (response.data.status) {
-            this.sel_fname = response.data.respJSON;
+            this.sel_fname = response.data.data;
           } 
       })
       .catch(function (error) {
@@ -148,7 +148,7 @@ Vue.createApp({
       .then(response => {
           
           if (response.data.status) {
-            this.sel_dep = response.data.respJSON;
+            this.sel_dep = response.data.data;
           } 
       })
       .catch(function (error) {
@@ -160,7 +160,7 @@ Vue.createApp({
       .then(response => {
           
           if (response.data.status) {
-            this.sel_workgroup = response.data.respJSON;
+            this.sel_workgroup = response.data.data;
           } 
       })
       .catch(function (error) {
@@ -182,7 +182,7 @@ Vue.createApp({
       .then(response => {
           
           if (response.data.status) {
-              this.user_form = response.data.respJSON;
+              this.user_form = response.data.data;
               this.$refs.show_modal_user_update_form.click()
           } 
       })
@@ -222,7 +222,7 @@ Vue.createApp({
       axios.post('../../server/users/user_role.php',{uid:uid})
       .then(response => {          
           if (response.data.status) {
-              this.user_role_form = response.data.respJSON;
+              this.user_role_form = response.data.data;
               this.user_role_form.password = '';
               this.$refs.show_modal_user_u_r_form.click()
           } 
@@ -328,7 +328,7 @@ Vue.createApp({
         axios.post('../../server/users/user_search.php',{q:this.q})
           .then(response => {
               if (response.data.status){
-                this.datas = response.data.respJSON;                    
+                this.datas = response.data.data;                    
               }
           })
           .catch(function (error) {

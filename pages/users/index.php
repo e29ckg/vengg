@@ -77,7 +77,9 @@ require_once('../../server/authen.php');
                                                     <td>
                                                         <!-- <button class="btn btn-primary btn-sm me-2 mb-1" @click="view(d.uid)">view</button>     -->
                                                         <button class="btn btn-warning btn-sm me-2 mb-1" @click="user_update(d.uid)">แก้ไข</button>    
-                                                        <button class="btn btn-primary btn-sm me-2 mb-1" @click="user_update_role(d.uid)">แก้ไขสิทธ์</button>    
+                                                        <button class="btn btn-primary btn-sm me-2 mb-1" @click="user_update_role(d.uid)">แก้ไขสิทธ์</button> 
+                                                        <button v-if="d.status == 0" class="btn btn-danger btn-sm me-2 mb-1" @click="profile_del(d.uid)">ลบ</button>    
+                                                        
                                                     </td>
                                                 </tr>                                                
                                             </tbody>
