@@ -64,7 +64,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         gcal_update($res->v1_gcal_id, $name, $sms, 1);
                     }
-        
+                    if($res->v2_gcal_id){
+
+                        $sql_V = "SELECT v.*, p.fname, p.name, p.sname 
+                                    FROM ven AS v 
+                                    INNER JOIN `profile` AS p ON v.user_id = p.user_id 
+                                    WHERE v.gcal_id = '$res->v2_gcal_id' AND (v.status=1 OR v.status=2)
+                                    ORDER BY v.ven_time ASC";
+                        $query_V = $conn->prepare($sql_V);
+                        $query_V->execute();
+                        if($query_V->rowCount()){
+                            $res_V = $query_V->fetchAll(PDO::FETCH_OBJ);
+                            $name = $res_V[0]->ven_com_name."\n";
+                            $sms = '';
+                            foreach($res_V as $v){
+                                $sms .= $v->fname.$v->name.' '.$v->sname."\n";
+                            }
+                            gcal_update($res->v2_gcal_id, $name, $sms, 1);
+                        }
+                    }
                            
                 }
             }

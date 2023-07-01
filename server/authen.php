@@ -35,23 +35,23 @@ if( !isset($_SESSION['AD_ID']) || !isset($_SESSION['AD_ROLE']) ){
 }
 
 /*** ตรวจสอบ user ว่ามีอยู่หรอไม่ */
-if(isset($_SESSION['AD_ID'])){
-    $idToCheck = $_SESSION['AD_ID'];
+// if(isset($_SESSION['AD_ID'])){
+//     $idToCheck = $_SESSION['AD_ID'];
 
-    // Prepare and execute the SQL query
-    $stmt = $conn->prepare("SELECT * FROM user WHERE id = :id AND user.status = 10");
-    $stmt->bindParam(':id', $idToCheck);
-    $stmt->execute();
+//     // Prepare and execute the SQL query
+//     $stmt = $conn->prepare("SELECT * FROM user WHERE id = :id AND user.status = 10");
+//     $stmt->bindParam(':id', $idToCheck);
+//     $stmt->execute();
 
-    // Fetch the result
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+//     // Fetch the result
+//     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if the user exists
-    if (!$user) {
-        header('Location: ../../login.php'); 
-        exit(); 
-    }
-}
+//     // Check if the user exists
+//     if (!$user) {
+//         header('Location: ../../login.php'); 
+//         exit(); 
+//     }
+// }
 
 /** หน้าที่ Member เข้าไม่ได้ */
 $menuAdmin = array("asu/index", "asu/work_name", "asu/user_ven", "asu/ven_com", "asu/ven_set","asu/report","asu/ven_approve","users/index");

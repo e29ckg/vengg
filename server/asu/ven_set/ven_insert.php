@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             http_response_code(200);
                             echo json_encode(array(
                                 'status' => false, 
-                                'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรกลางคืน \nวันก่อนหน้านี้(".DateThai($ven_date_u1).")"
+                                'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรกลางคืน \nวันก่อนหน้านี้(".DateThai($ven_date_d1).")"
                             ));
                             exit;
                         }

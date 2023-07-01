@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     if ($DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน') {
                         http_response_code(200);
-                        echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางคืน \nวันก่อนหน้านี้(" . DateThai($ven_date_u1) . ")"));
+                        echo json_encode(array('status' => false, 'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางคืน \nวันก่อนหน้านี้(" . DateThai($ven_date_d1) . ")"));
                         exit;
                     }
                     if ($DN == 'กลางคืน'  && $ru->ven_date == $ven_date_u1 && $ru->DN == 'กลางวัน') {
