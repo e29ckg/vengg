@@ -29,8 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	if($query->rowCount()){
 		$sToken = $res->token;
 		$sMessage .= 'ตารางเวร '.DateThai($date_now)."\n";	
-		$sql = "SELECT v.*
+		$sql = "SELECT v.*,p.fname, p.name, p.sname
 				FROM ven as v
+				INNER JOIN `profile` AS p ON v.user_id = p.id
 				WHERE v.ven_date = '$date_now' AND (v.status=1 OR v.status=2)
 				ORDER BY v.ven_time ASC";
 		$query = $conn->prepare($sql);
@@ -38,16 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$result = $query->fetchAll(PDO::FETCH_OBJ);
 
 		foreach($result as $rs){
-			$rs->DN == 'กลางวัน' ? $sMessage .= "☀️ ": $sMessage .= "🌙 " ; 
-			$sMessage .= $rs->u_name;
-			// if(count( json_decode($rs->ven_com_id)) > 1){
-			// 	$sMessage .= '*';
-			// }  
-			$sMessage .= "\n";
+			if(date("H:i:s") < $rs->ven_time){
+				$rs->DN == 'กลางวัน' ? $sMessage .= "☀️ ": $sMessage .= "🌙 " ; 
+				$sMessage .= $rs->fname.$rs->name.$rs->sname.;
+				// if(count( json_decode($rs->ven_com_id)) > 1){
+				// 	$sMessage .= '*';
+				// }  
+				$sMessage .= "\n";
+
+			}
 		}
 		
 		http_response_code(200);
 		echo sendLine($sToken,$sMessage);
+		exit;
 
 	}else{
 		$sql = "SELECT * FROM line WHERE name = 'admin'";
@@ -59,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$sMessage = 'ไม่สามารถแจ้งผ่านกลุ่ม ven ได้';
 		http_response_code(200);
 		echo sendLine($sToken,$sMessage);
+		exit;
 	}
 	    
 }    
