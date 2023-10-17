@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $ch_v1  = $data->ch_v1;
         $user_id2 = $data->user_id2;
+        $u_name2  = $data->u_name2;
         $idv1   = time();
         $idv2   = null;
         $ref    =  generateRandomString();
@@ -41,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
+        $u_name = $rsv1->fname.$rsv1->name.' '.$rsv1->sname;
+
         /** เช็ควันเวลาที่อยู่เวรไม่ได้ */  
         $ven_date = $rsv1->ven_date;
         $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
@@ -52,7 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE v.user_id = $user_id2 
                         AND v.ven_date >= '$ven_date_d1' 
                         AND v.ven_date <= '$ven_date_u1' 
-                        AND (v.status=1 OR v.status=2)";
+                        AND (v.status=1 OR v.status=2)
+                        AND price  > 0";
         $query_VU = $conn->prepare($sql_VU);
         $query_VU->execute();
         $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
@@ -206,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if($query_line->rowCount()){
             $sToken = $res->token;
             $sMessage = 'มีการเปลี่ยนเวร '.$chid."\n";
-            $sMessage .= $rsv1->u_name.'>>'.$u_name2."\n";
+            $sMessage .= $u_name.'>>'.$u_name2."\n";
             $sMessage .= $rsv1->ven_date."\n";
             $sMessage .= '('.$create_at.')';
             $res_line = sendLine($sToken,$sMessage);

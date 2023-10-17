@@ -20,7 +20,7 @@
             </li>
             <li class="nav-item">
                 
-                    <select class="form-select" name="month" id="month" v-model="month">
+                    <select class="form-select" name="month" id="month" v-model="month" @change="loadData()">
                         <option value="01">มกราคม</option>
                         <option value="02">กุมภาพันธ์</option>
                         <option value="03">มีนาคม</option>
@@ -36,13 +36,8 @@
                     </select>                
             </li>
             <li class="nav-item">
-                <select class="form-select" name="year" id="year" v-model="year">
-                    <option value="2022">2565</option>
-                    <option value="2023">2566</option>
-                    <option value="2024">2567</option>
-                    <option value="2025">2568</option>
-                    <option value="2026">2569</option>
-                    <option value="2027">2570</option>
+                <select class="form-select" name="year" id="year" v-model="year" @change="loadData()">
+                    <option v-for="y in year_select" :value="y">{{y+543}}</option>
                 </select>
             </li>
             <li class="nav-item">
@@ -53,7 +48,6 @@
             <div class="col-12 text-center p-2">
                 <h3>
                     เวรเดือน {{month_text}} จำนวน {{datas.length}} ราย
-
                 </h3>
             </div>
             <div class="col-8">
@@ -111,14 +105,14 @@
                             <td colspan="2"></td>
                             <td ><a :href="'./report_x1.html?month='+year+'-'+month" target="_blank">หน้างบประกอบ(ทุกคำสั่ง)</a></td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td colspan="2"></td>
                             <td ><a :href="'./report_x2.html?month='+year+'-'+month" target="_blank">รายละเอียดการเงิน(ศจ.ชัยนาท)</a></td>
-                        </tr>
-                        <tr>
+                        </tr> -->
+                        <!-- <tr>
                             <td colspan="2"></td>
                             <td ><a :href="'./report_x3.html?month='+year+'-'+month" target="_blank">รายละเอียดการเงิน(ศาลอาญาคดีทุจริต.7)</a></td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <td colspan="2"></td>
                             <td ><a href="#" @click="download_docx()">บันทึกขออนุมัติเบิกเงิน(.docx)</a></td>
@@ -158,6 +152,7 @@
                 DN_total        : 0,
                 month           : '',
                 year            : '',
+                year_select     : [],
                 month_text      : '',
                 isLoading       : false
             }
@@ -165,6 +160,7 @@
         mounted: function() {
             this.getYM();
             this.loadData();
+            this.yearSelect();
         },
         
         methods: {
@@ -264,6 +260,14 @@
                 this.year = MyDate.getFullYear();
                 this.month = ("0" + (MyDate.getMonth()+1)).slice(-2);
                 // console.log(MyDateString);
+            },
+            yearSelect(){
+                let MyDate = new Date();
+                for (let i = -1; i <= 5; i++) {
+                    console.log(i);
+                    this.year_select.push(MyDate.getFullYear() + i) 
+                }
+
             },
             formatCurrency(number) {
                 number = parseFloat(number);

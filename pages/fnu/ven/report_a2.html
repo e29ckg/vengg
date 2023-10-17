@@ -61,12 +61,16 @@ td, th {
     white-space: nowrap;
     margin-bottom: 15px;
 }
-</style>
-<style type="text/css" media="print">
-    @page
-    {
-        size: auto; /* auto is the initial value */
-        margin: 8mm 4mm 4mm 4mm; /* this affects the margin in the printer settings */
+@media print {
+        body {
+            size: A4;
+            font-size: 10pt;
+            margin: 8mm 4mm 4mm 8mm;
+        }
+        .no-page-break {
+            page-break-before: avoid;
+            page-break-after: avoid;
+        }
     }
     thead
     {
@@ -77,6 +81,7 @@ td, th {
         display: table-footer-group;
     }
 </style>
+
 </head>
 
 <body>

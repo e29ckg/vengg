@@ -93,6 +93,42 @@ Vue.createApp({
           });
 
     }, 
+    print3(ven_month){
+      axios.post('../../server/asu/report/report3.php',{ven_month:ven_month})    
+          .then(response => {
+              if (response.data.status) {
+                var print = JSON.stringify(response.data);    
+                localStorage.setItem("print",print);
+                window.open('./report-print3.php','_blank')
+              }else{
+                this.alert('warning',response.data.message,0)
+              } 
+          })
+          .catch(function (error) {
+              console.log(error);
+          });
+
+    }, 
+    print4(ven_month,ven_com_num,ven_com_date){
+      axios.post('../../server/asu/report/report4.php',{
+          ven_month:ven_month,
+          ven_com_num:ven_com_num,
+          ven_com_date:ven_com_date,
+        })    
+          .then(response => {
+              if (response.data.status) {
+                var print = JSON.stringify(response.data);    
+                localStorage.setItem("print",print);
+                window.open('./report-print4.php','_blank')
+              }else{
+                this.alert('warning',response.data.message,0)
+              } 
+          })
+          .catch(function (error) {
+              console.log(error);
+          });
+
+    }, 
 
     view(vcid){
       axios.post('../../server/asu/report/report.php',{vcid:vcid})    

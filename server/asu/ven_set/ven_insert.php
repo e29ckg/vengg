@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $updateQuery->bindParam(':id', $rs->id, PDO::PARAM_INT);
                 $updateQuery->execute();
             }
-
+            /** จัดลำดับ */
 
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'success', 'responseJSON' => $data, 'ven_time' => $ven_time));

@@ -190,7 +190,7 @@ Vue.createApp({
     get_ven_month(){
       let   m = new Date();
       let y = m.getFullYear().toString()
-      for (let i = 0; i < 5; i++) {  
+      for (let i = -1; i < 5; i++) {  
         const d = new Date(y,m.getMonth()+i);
         this.sel_ven_month.push({'ven_month':this.convertToYearMonthNum(d),'name': this.convertToDateThai(d)})
       }

@@ -68,7 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($rsv2->ven_date)));
         $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($rsv2->ven_date)));
 
-        $sql_VU = "SELECT * FROM ven WHERE user_id = $rsv1->user_id  AND ven_date >= '$ven_date_d1' AND ven_date <= '$ven_date_u1' AND (status=1 OR status=2)";
+        $sql_VU = "SELECT * 
+                    FROM ven 
+                    WHERE user_id = $rsv1->user_id  
+                        AND ven_date >= '$ven_date_d1' 
+                        AND ven_date <= '$ven_date_u1' 
+                        AND (status=1 OR status=2)
+                        AND price > 0";
         $query_VU = $conn->prepare($sql_VU);
         $query_VU->execute();
         $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);

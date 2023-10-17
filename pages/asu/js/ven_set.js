@@ -248,12 +248,7 @@ Vue.createApp({
           // console.log(response.data);
           if (response.data.status) {
 
-            swal.fire({
-              icon: 'success',
-              title: response.data.message,
-              showConfirmButton: true,
-              timer: 1000
-            });
+            this.alert('success', response.data.message, 1000)
           } else {
             this.alert('warning', response.data.message, 0)
           }
@@ -274,17 +269,11 @@ Vue.createApp({
             this.datas = response.data.respJSON;
             this.get_vens()
             this.cal_render()
-            swal.fire({
-              icon: 'success',
-              title: response.data.message,
-              showConfirmButton: true,
-              timer: 1000
-            });
+            
+            this.alert('success', response.data.message, 1000)
             return true
           } else {
-            icon = 'warning'
-            message = response.data.message;
-            this.alert(icon, message, timer = 0)
+            this.alert('warning', response.data.message, 0)
             return false
           }
         })
@@ -442,7 +431,7 @@ Vue.createApp({
       let m = new Date();
       let y = m.getFullYear().toString()
       console.log(y)
-      for (let i = 0; i < 10; i++) {
+      for (let i = -1; i < 10; i++) {
         const d = new Date(y, m.getMonth() + i);
         this.months.push({ 'ven_month': this.convertToYearMonthNum(d), 'name': this.convertToDateThai(d) })
       }

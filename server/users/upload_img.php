@@ -73,6 +73,7 @@ if (empty($file) || !isset($file['tmp_name'])) {
 
         $img_link = $upload_path . $fileName;
         echo json_encode(array("message" => "Image uploaded successfully", "status" => true, "img" => $img_link));
+        exit;
     } catch (PDOException $e) {
         $errorMSG = json_encode(array("message" => "Error occurred: " . $e->getMessage(), "status" => false));
         echo $errorMSG;

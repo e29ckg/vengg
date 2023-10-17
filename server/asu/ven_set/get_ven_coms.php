@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     vn.DN
                 FROM ven_com AS vc
                 INNER JOIN ven_name AS vn ON vc.vn_id = vn.id 
-                WHERE ven_month = :ven_month;";
+                WHERE ven_month = :ven_month
+                ORDER BY ven_month DESC, CAST(ven_com_num AS DECIMAL);";
         $query = $conn->prepare($sql);
         $query->bindParam(':ven_month', $ven_month, PDO::PARAM_STR);
         $query->execute();

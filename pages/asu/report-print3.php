@@ -25,65 +25,102 @@ require_once('../../server/authen.php');
             font-size   : small;
         }
         th {
-          height: 50px;
+          /* height: 50px; */
           vertical-align: middle;
+        }
+        .text-sm {
+          font-size: 10px;
+        }
+        .text-md {
+          font-size: 14px;
+        }
+        td {
+          font-size: 16px;
+        }
+        .table-bordered  {
+          border-color: black;
+
+        }
+        .table-success {
+          border-color: black;
+
+        }
+        .table-info {
+          border-color: black;
+
         }
     </style>  
     </head>
   <body>
     <div id="appReports" v-cloak>
         <div class="text-center">
-            <h4>ตารางการปฎิบัติหน้าที่ในการออกหมายจับ หมายค้น นอกเวลาราชการ</h4>
-            <h5>ประจำเดือน {{datas.vc.ven_month_th}}</h5>
-            <h5>แนบท้ายคำสั่งที่ {{datas.vc.ven_com_num}} ลงวันที่ {{date_thai(datas.vc.ven_com_date)}}</h5>
+          <h5>ตารางการปฎิบัติงานในวันหยุดราชการและนอกเวลาราชการ</h5>
+          <h5>ประจำเดือน {{date_thai_my(datas.ven_month)}}</h5>
+          <h5>แนบท้ายคำสั่งที่ {{datas.ven_com}}</h5>
+            
             <!-- {{datas.vc}} -->
         </div>
         <table class="table table-bordered d-print-inline d-print-table ">
-            <thead>
+            <thead class="text-nowrap table-info">
                 <tr class="text-center">
-                  <th>วัน</th>
-                  <th>วัน/เดือน/ปี</th>
+                    <th colspan="1" rowspan="2">
+                      <span class="text-md">วัน</span>
+                    </th>
+                    <th colspan="1" rowspan="2">
+                      <span class="text-md">วันที่</span>
+                    </th>
+                    <th colspan="1" rowspan="2">
+                      <span class="text-md">ฟื้นฟู/จับ-ค้น</span><br>
+                      <span class="text-md">ตรวจสอบการจับ</span><br>
+                      <span class="text-md">ผู้พิพากษา</span><br><br><br>
+                      <span class="text-md">(08.30-16.30)</span>
+                    </th>
+                    <th colspan="1" rowspan="2">
+                      <span class="text-md">จับ-ค้น</span><br>
+                      <span class="text-md">ผู้พิพากษา</span><br><br><br><br>
+                      <span class="text-md">(16.30-08.30)</span></th>
+                    <th colspan="3">
+                      <span class="text-md">ฟื้นฟู/ตรวจสอบการจับ (08.30-16.30)</span>
+                    </th>
+                    <th colspan="1" rowspan="2">
+                      <span class="text-md">จนท.</span><br>
+                      <span class="text-md">หมายจับ-ค้น</span><br><br><br><br>
+                      <span class="text-md">(16.30-08.30)</span></th>
+                    <th colspan="1" rowspan="2">หมายเหตุ</th>
+                    
+                  </tr>
+                  <tr class="text-center">
                     <th>
-                      ข้าราชการตุลาการ<br><br>
-                      ผู้อยู่เวรหมายจับ-ค้น<br>
-                      (16.30-08.30)
+                      <span class="text-md">ผอ./แทน</span><br>
+                      <span class="text-sm">(กรรมการเก็บรักษาเงินและลงนาม)</span><br><br>
+                      <span class="text-md">งานประชาสัมพันธ์</span>
                     </th>
                     <th>
-                      ข้าราชการศาลยุติธรรม <br>ลูกจ้างและพนักงานราชการ<br>
-                      ผู้อยู่เวรหมายจับ-ค้น<br>
-                      (16.30-08.30)
+                      <span class="text-md">จนท. คนที่1</span><br>
+                      <span class="text-sm">(กรรมการเก็บรักษาเงินและลงนาม)</span><br>หมายจับ-ค้น<br>
+                      <span class="text-sm">งานรับฟ้อง/งานหมายอาญา/งานหน้าบัลลังก์/งานการเงิน</span>
                     </th>
-                    <!-- <th>หมายเหตุ</th> -->
+                    <th>
+                      <span class="text-md">จนท. คนที่2</span><br>
+                      <span class="text-sm">(กรรมการเก็บรักษาเงินและลงนาม)</span><br><br>
+                      <span class="text-sm">งานรับฟ้อง/งานหมายอาญา/งานหน้าบัลลังก์/งานการเงิน</span>
+                    </th>                    
                 </tr>
+               
             </thead>
             <tbody>
-                <tr v-for="d in datas.respJSON">
-                    <td>{{date_thai_day(d.ven_date)}}</td>
-                    <td>
-                        {{date_thai_dt(d.ven_date)}}
-                        <!-- <li class="list-group-item" v-for="dvt in d.ven_time">
-                            {{dvt == '08:30' ? '8.30 - 16.30 น.' : '16.30 - 8.30 น.'}}
-                        </li> -->
+                <tr v-for="d in datas.respJSON" >
+                    <td :class="d.hld +' text-center text-nowrap'">{{date_thai_day(d.ven_date)}}</td>
+                    <td :class="d.hld +' text-center text-nowrap'">{{date_thai_d(d.ven_date)}}</td>
+                    <td v-for="dun in d.u_name" :class="'text-center text-nowrap ' + d.hld">
+                      {{dun}}
                     </td>
-                    <td>
-                        <li class="list-group-item" v-for="dunj in d.u_namej"> {{dunj}}</li>
-                    </td>
-                    <td> 
-                        <li class="list-group-item" v-for="dun in d.u_name">{{dun}}</li>
-                    </td>
-                    <!-- <td>
-                       <li class="list-group-item" v-for="dur in d.cmt">{{dur}}</li>
-                    </td> -->
-                </tr>
+                </tr>                
             </tbody>
+            
         </table> 
-        <div class="text-end mt-5 me-5 ">
-          <br>
-          <br>
-          <br>
-          <h5>ลงชื่อ.............................................</h5>
-          <h5>(นายประยุทธ แก้วภักดี)</h5>
-        </div>
+        
+        
 <!-- {{datas}} -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
@@ -100,7 +137,7 @@ require_once('../../server/authen.php');
     },
     mounted(){   
       this.datas = JSON.parse(localStorage.getItem("print"))
-      localStorage.removeItem("print")
+      // localStorage.removeItem("print")
       // window.print()
     },
     methods: {    
@@ -133,7 +170,15 @@ require_once('../../server/authen.php');
           var dayNamesEng = ['Sunday','Monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
           var d = new Date(day);
           return d.getDate() + ' ' + monthNamesThai[d.getMonth()] + "  " + (d.getFullYear() + 543)
-        },    
+        },
+        date_thai_d(day){
+          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
+          var monthNamesEng = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+          var dayNamesEng = ['Sunday','Monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+          var d = new Date(day);
+          return d.getDate() 
+        },
         date_thai_day(day){
           var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
           var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
@@ -141,7 +186,7 @@ require_once('../../server/authen.php');
           var dayNamesEng = ['Sunday','Monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
           var d = new Date(day);
           return dayNames[d.getDay()]
-        },    
+        },     
         date_thai_my(day){
           var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
           var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];

@@ -63,6 +63,7 @@ require_once('../../server/authen.php');
                                                         เวรเดือน {{cvg.ven_month_th}}
                                                         <!-- <button type="button" class="btn btn-danger" :disabled='isLoading' @click="con_f(cvg.ven_month)">
                                                             {{isLoading ? 'Londing..': 'เผยแพร่'}}</button> -->
+                                                            <button class="btn btn-warning btn-sm ms-2" @click="print3(cvg.ven_month)">ใบขวางสรุป</button>
                                                     </th>
 
                                                 </tr>
@@ -77,9 +78,13 @@ require_once('../../server/authen.php');
                                                     </td>
 
                                                     <td class="text-end col " style="width: 250px;">
-                                                        <button class="btn btn-warning btn-sm me-2" @click="view(vc.id)">view</button>
-                                                        <button class="btn btn-primary btn-sm m-2" @click="print(vc.id)">พิมพ์เอกสารแนบท้าย</button>
+                                                        <!-- <button class="btn btn-warning btn-sm me-2" @click="view(vc.id)">view</button>
+                                                        <button class="btn btn-primary btn-sm m-2" @click="print(vc.id)">พิมพ์เอกสารแนบท้าย</button> -->
                                                         <!-- <button class="btn btn-primary btn-sm m-2" @click="print2(vc.id)">แนบท้าย2</button> -->
+                                                        <button v-if="vc.ven_name == 'ฟื้นฟู/ตรวจสอบการจับ'" class="btn btn-primary btn-sm m-2" @click="print2(vc.id)">แนบท้าย({{vc.ven_name}})</button>
+                                                        <button v-if="vc.ven_name == 'หมายจับ-ค้น'" class="btn btn-primary btn-sm m-2" @click="print(vc.id)">แนบท้าย({{vc.ven_name}})</button>
+                                                        <button v-if="vc.ven_name == 'ผู้ตรวจ(กลางคืน)'" class="btn btn-primary btn-sm m-2" @click="print4(vc.ven_month,vc.ven_com_num,vc.ven_com_date)">แนบท้าย รักษาการณ์({{vc.ven_name}})</button>
+                                                    
                                                     </td>
                                                 </tr>
                                             </tbody>

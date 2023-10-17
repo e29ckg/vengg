@@ -16,6 +16,7 @@ include "../../function.php";
 $data = json_decode(file_get_contents("php://input"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	// $date_now 		= "2023-07-1";	
 	$date_now 		= date("Y-m-d");	
 
 	$sToken = "";
@@ -38,8 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$query->execute();
 		$result = $query->fetchAll(PDO::FETCH_OBJ);
 
+		$ven_name = '';
 		foreach($result as $rs){
 			if(date("H:i:s") < $rs->ven_time){
+				if($ven_name !== $rs->ven_com_name){
+					$sMessage .= "---เวร".$rs->ven_com_name . "---\n";
+				}
+				$ven_name = $rs->ven_com_name;
 				$rs->DN == 'กลางวัน' ? $sMessage .= "☀️ ": $sMessage .= "🌙 " ; 
 				$sMessage .= $rs->fname.$rs->name.' '.$rs->sname;
 				// if(count( json_decode($rs->ven_com_id)) > 1){

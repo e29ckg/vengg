@@ -40,12 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
 
-        $sql = "SELECT user_id,fname,name,sname,phone,bank_account,bank_comment FROM profile WHERE status=10 ORDER BY st";
+        $sql = "SELECT user_id,fname,name,sname,phone,bank_account,bank_comment 
+                FROM profile 
+                WHERE status=10 
+                ORDER BY st";
         $query = $conn->prepare($sql);
         $query->execute();
         $users = $query->fetchAll(PDO::FETCH_OBJ);
 
-        $sql = "SELECT * FROM ven WHERE ven_month = :date_month AND (status = 1 OR status = 2) ORDER BY user_id";
+        $sql = "SELECT * 
+                FROM ven 
+                WHERE ven_month = :date_month 
+                    AND (status = 1 OR status = 2) 
+                ORDER BY user_id";
         $query = $conn->prepare($sql);
         $query->bindParam(':date_month', $DATE_MONTH, PDO::PARAM_STR);
         $query->execute();
@@ -59,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             FROM ven_com AS vc
             INNER JOIN ven_name AS vn ON vc.vn_id = vn.id
             WHERE vc.ven_month=:date_month
-            ORDER BY vc.id ASC";
+            ORDER BY CAST(vc.ven_com_num AS DECIMAL)";
+            // ORDER BY vc.id ASC";
         $query = $conn->prepare($sql);
         $query->bindParam(':date_month', $DATE_MONTH, PDO::PARAM_STR);
         $query->execute();

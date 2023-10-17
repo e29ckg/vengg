@@ -1,27 +1,30 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT");
-header("Access-Control-Allow-Headers: Content-Type, Accept");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+// header("'Access-Control-Allow-Credentials', 'true'");
+// header('Content-Type: application/javascript');
 header("Content-Type: application/json; charset=utf-8");
 
 include "../../connect.php";
 include "../../function.php";
 
-$data = json_decode(file_get_contents("php://input"));
-
 // The request is using the POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    $data = json_decode(file_get_contents("php://input"));
     $vcid = $data->vcid;
 
     $datas = array();
 
     try{
+
         $sql = "SELECT * FROM ven_com WHERE id = $vcid";
         $query = $conn->prepare($sql);
         $query->execute();
         $vc = $query->fetch(PDO::FETCH_OBJ);
 
-        $sql = "SELECT v.ven_date, v.ven_time, v.ven_com_id, v.u_name, v.user_id, v.u_role, p.dep 
+        $sql = "SELECT v.ven_date, v.ven_time, v.ven_com_id, p.fname, p.name, p.sname, v.user_id, v.u_role, p.dep 
                 FROM ven AS v
                 INNER JOIN `profile` AS p ON p.id = v.user_id
                 WHERE v.ven_com_idb = '$vcid' AND (v.status=1 OR v.status=2) 
@@ -61,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $OLD_VT = '';
                 $OLD_UNAME = '';
                 foreach($result as $rs){
+                    $name = $rs->fname.$rs->name.' '.$rs->sname;
                     if($rs->ven_date == $r){
                         // if(count($rs->ven_com_id) > 0){
 
@@ -73,18 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $OLD_VT = $vt_s;
                                     }
             
-                                    if($OLD_UNAME != $rs->u_name){
+                                    if($OLD_UNAME != $name){
                                         $st_ul      = strlen($rs->u_role);
                                         $st_urlo    = $rs->u_role;
                                         if($st_ul > 30){
                                             $st_urlo = substr($st_urlo, 0, 30);
                                         }
                                         
-                                        array_push($u_name,$rs->u_name);
+                                        array_push($u_name,$name);
                                         array_push($u_dep,$rs->dep);
                                         array_push($cmt,$rs->u_role);
                                     
-                                        $OLD_UNAME = $rs->u_name;
+                                        $OLD_UNAME = $name;
                                     }
                                 }
     
@@ -96,7 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 array_push($datas,array(
                     'ven_date'  => $r,
-                    'ven_date_th'  => DateThai_N_full($r),
                     'u_name'    => $u_name,
                     'u_dep'    => $u_dep,
                     'cmt'       => $cmt,
@@ -109,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
      
         http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล'));
+        echo json_encode(array('status' => false, 'message' => 'ไม่พบข้อมูล '));
         exit;
     
     }catch(PDOException $e){

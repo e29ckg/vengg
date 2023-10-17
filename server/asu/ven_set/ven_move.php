@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $res_v->user_id;
         $DN      = $res_v->DN;
 
-        if($price > 0){
+        if($res_v->price > 0){
             /** เช็ควันเวลาที่อยู่เวรไม่ได้ */
             $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
             $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
@@ -36,7 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql_VU = "SELECT v.*, p.fname, p.name, p.sname 
                         FROM ven AS v
                         INNER JOIN `profile` AS p ON p.user_id = v.user_id
-                        WHERE v.user_id = $user_id AND v.ven_date >= '$ven_date_d1' AND v.ven_date >= '$ven_date_d1' AND (v.status=1 OR v.status=2)";
+                        WHERE v.user_id = $user_id 
+                            AND v.ven_date >= '$ven_date_d1' 
+                            AND v.ven_date >= '$ven_date_d1' 
+                            AND (v.status=1 OR v.status=2)";
             $query_VU = $conn->prepare($sql_VU);
             $query_VU->execute();
             $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);

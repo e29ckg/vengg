@@ -61,16 +61,7 @@ td, th {
 .hd{
     background-color: #dddddd;
 }
-</style>
-<style type="text/css" media="print">
-    @page
-    {
-        /* size: A4; */
-        size: A4 landscape;
-        font-size: 14px;
-        margin: 8mm 4mm 4mm 8mm; /* this affects the margin in the printer settings */
-    }
-    thead
+thead
     {
         display: table-header-group;
     }
@@ -78,7 +69,19 @@ td, th {
     {
         display: table-footer-group;
     }
+@media print {
+    body {
+        size: A4;
+        font-size: 10pt;
+        margin: 8mm 4mm 4mm 8mm;
+    }
+    .no-page-break {
+        page-break-before: avoid;
+        page-break-after: avoid;
+    }
+}
 </style>
+
 </head>
 
 <body>

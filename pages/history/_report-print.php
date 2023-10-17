@@ -23,29 +23,24 @@ require_once('../../server/authen.php');
         * {
             font-family : Sarabun;
             /* font-size   : small; */
-            font-size   : 12px;
+            font-size   : 14px;
         }
         .udl {
             border-bottom: 1px solid #aaa;
         }
-        body {
-          margin-left : 50px;
-          margin-right : 50px;
-          margin-top : 50px;
-        }
     </style>  
     </head>
   <body>
-    <div class="d-print" id="appReports" v-cloak>
+    <div id="appReports" v-cloak>
       <div class="row mt-3 ">
         <div class="col">
                     
         </div>
-        <div class="col text-center">
+        <div class="col text-center ">
             <h3>ใบขอเปลี่ยนเวร</h3>          
         </div>
-        <div class="col text-end">          
-          <span class="d-block ">{{datas.id}}</span>
+        <div class="col text-end">
+            <h5>{{datas.id}}</h5>          
         </div>
       </div>
       <div class="row mt-5">
@@ -75,11 +70,8 @@ require_once('../../server/authen.php');
           <div class="col-1 text-start mt-1">            
             เรียน
           </div>
-          <div class="col text-start mt-1" v-if="datas.u_role1 =='ผู้พิพากษา'">
-            ผู้พิพากษาหัวหน้าศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์
-          </div>
-          <div class="col text-start mt-1" v-else>
-            ผู้อำนวยการสำนักงานประจำศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์
+          <div class="col text-start mt-1">
+            ผู้อำนวยการสำนักงานปรระจำศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์
           </div>
         </div>
 
@@ -90,24 +82,27 @@ require_once('../../server/authen.php');
             ตามคำสั่งศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ที่ 
           </div>
           <div class="col text-center udl">
-            <!-- {{datas.ven_com_num_all}} -->
-            {{datas.ven_com_name_idb}}
+            {{datas.ven_com_num_all}}
           </div>
         </div>
 
-        <div class="row mb-2" v-if="datas.comment">
+        <div class="row mb-2" v-if="datas.vcod">
           <div class="col-2" >            
            ลงวันที่ 
           </div>
           <div class="col-10 text-center udl">
             {{datas.ven_com_date}}
           </div>
-          <div class="col-2" > 
 
+          <div class="row mt-2 mb-2" v-for="da in datas.vcod">
+            <div class="col-2" > 
+              
+            </div>
+            <div class="col-10 text-center udl" >
+              {{da}}
+            </div>
           </div>
-          <div class="col-10 udl" >
-            {{datas.comment}}
-          </div>
+
           <div class="col-1 text-start">
             ให้ 
           </div>
@@ -134,19 +129,19 @@ require_once('../../server/authen.php');
         
 
         <div class="row mb-3">
-          <div class="col-1 text-start">            
+          <div class="col-2 text-start">            
            อยู่เวร 
           </div>
           <div class="col-4 text-center udl">
             {{datas.ven_com_name}}
-          </div>
-          <div class="col-1 text-center">
-            วันที่ 
-          </div>
-          <div class="col-6 text-center udl">
+      </div>
+      <div class="col-1 text-center">
+        วันที่
+      </div>
+        
+        <div class="col-5 text-center udl">
             {{datas.ven_date1}}
           </div>
-          
         </div>
 
         <div class="row  mb-2 ">
@@ -154,7 +149,7 @@ require_once('../../server/authen.php');
            เนื่องจาก 
           </div>
           <div class="col-11 text-center mt-1 udl">
-            ติดภารกิจจำเป็น
+            {{datas.comment == null || datas.comment == '' ? 'ติดภาระกิจจำเป็น' : datas.comment}}
           </div>          
         </div>
 
@@ -162,27 +157,27 @@ require_once('../../server/authen.php');
           <div class="col-3 text-start">            
            จึงขอเปลี่ยนเวรกับ 
           </div>
-          <div class="col-6 text-center udl">
+          <div class="col-9 text-center udl">
             {{datas.name2}}
           </div>          
-          <div class="col-3 text-start udl">            
+          <!-- <div class="col-3 text-start udl">            
            
-          </div>
+          </div> -->
         </div>
 
-        <div class="row mb-5 ">
-          <div class="col-7 text-start">            
-           เป็นผู้ปฎิบัติหน้าที่แทน และข้าพเจ้าจะมาปฎิบัติหน้าที่แทนในวันที่
+        <div class="row mb-4 ">
+          <div class="col-8 text-start">            
+            เป็นผู้ปฎิบัติหน้าที่แทน และข้าพเจ้าจะมาปฎิบัติหน้าที่แทนในวันที่
           </div>
-          <div class="col-5 text-center udl">            
+          <div class="col-4 text-center udl">            
           {{datas.ven_date2}}
           </div>
          
         </div>
-        <div class="row mb-5">
-          <div class="col-2 text-end">            
+        <div class="row mb-4">
+          <div class="col-3 text-start">            
             </div>
-            <div class="col-10 text-start ">
+            <div class="col-6 text-center ">
             จึงเรียนมาเพื่อโปรดพิจารณา
           </div>         
           
@@ -211,80 +206,16 @@ require_once('../../server/authen.php');
           </div>         
           
         </div>
-        <div class="row ">
+        <div class="row">
           <div class="col-6 text-start">            
             </div>
             <div class="col-6 text-start">
             ({{datas.name2}})
           </div> 
         </div>
-
-        <div class="row mt-5">
-          <div class="col-6 text-start">            
-            <div class="row">
-              <div class="text-center  mb-5">                
-              [ / ] อนุญาต         
-              </div>
-              <div class="text-center">  
-             
-              .................................         
-              </div>
-              <div class="text-center" v-if="sbn[0]">  
-                ({{sbn[0].name}})<br>
-                {{sbn[0].dep1}}<br>
-                {{sbn[0].dep2}}<br>
-                {{sbn[0].dep3}}
-                <!-- (นางสาววราภรณ์ คริศณุ)         -->
-                <!-- </div> -->
-                <!-- <div class="text-center">   -->
-              
-                <!-- ผู้พิพากษาหัวหน้าศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์        -->
-              </div>
-             
-            </div>     
-          </div>
-          <div class="col-6 text-start">            
-            <div class="row" v-if="datas.u_role1 !='ผู้พิพากษา'">
-              <div class="text-center mb-5">  
-              ขอประทานเสนอ ผู้พิพากษาหัวหน้าศาล<br>
-                - เพื่อโปรดพิจารณา
-    
-              </div>
-              <div class="text-center">  
-             
-              .................................         
-              </div>
-              <div class="text-center" v-if="sbn[1]">  
-                ({{sbn[1].name}})<br>
-                {{sbn[1].dep1}}<br>
-                {{sbn[1].dep2}}<br>
-                {{sbn[1].dep3}}
-                <!-- (นางสาววนิดา พิพัฒน์นภาพร)         -->
-                <!-- (นางสายฝน กุญชร ณ อยุธยา)         -->
-                <!-- </div>
-                <div class="text-center">   -->
-              
-                <!-- ผู้อำนวยการสำนักงานประจำศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์     -->
-                <!-- นิติกรชำนาญการพิเศษ<br>
-                รักษาราชการแทน ผู้อำนวยการสำนักงานประจำ<br>
-                ศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ -->
-              </div>
-             
-            </div>     
-          </div>
-          <div class="text-center">
-            <button class="d-print-none btn btn-warning" onclick="window.print()">print</button>
-          </div>
-          <br>
-        <div class="text-center mt-5 w-25" v-if="qr_link + datas.id">          
-          <span class="d-block "><img :src="qr_link + datas.id" alt=""></span>
-          <span class="d-block ">{{datas.id}}</span>
-        </div>
-    </div>
         
         
-        
-<!-- {{datas.u_role1}} -->
+<!-- {{datas}} -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="../../node_modules/vue/dist/vue.global.js"></script>
@@ -295,36 +226,15 @@ require_once('../../server/authen.php');
   Vue.createApp({
     data() {
       return {
-        datas:'',
-        sbn:'', 
-        qr_link:'https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=http://10.37.64.01/vengg/pages/asu/ven_approve_id.php?ref='    
+        datas:''     
       }
     },
     mounted(){   
       this.datas = JSON.parse(localStorage.getItem("print"))
-      this.get_sbn()
       // localStorage.removeItem("print")
       // window.print()
     },
-    methods: { 
-       
-      get_sbn(){
-        this.isLoading = true;
-        axios.get('/main/api/vengg/get_sign.php')
-        .then(response => {
-            // console.log(response.data.respJSON);
-            if (response.data.status) {
-                this.sbn = response.data.respJSON;
-                
-            } 
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        })      
-      }, 
+    methods: {    
       
       formatCurrency(number) {
           number = parseFloat(number);
@@ -340,24 +250,24 @@ require_once('../../server/authen.php');
             return ("0" + MyDate.getDate()).slice(-2)+ '-' + ("0" + (MyDate.getMonth()+1)).slice(-2) + '-' + (MyDate.getFullYear() + 543)
         },
         date_thai(day){
-          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
+          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤษจิกายน","ธันวาคม"];
+          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุทธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
           var monthNamesEng = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           var dayNamesEng = ['Sunday','Monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
           var d = new Date(day);
           return d.getDate() + ' ' + monthNamesThai[d.getMonth()] + "  " + (d.getFullYear() + 543)
         },    
         date_thai_dt(day){
-          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
+          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤษจิกายน","ธันวาคม"];
+          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุทธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
           var monthNamesEng = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           var dayNamesEng = ['Sunday','Monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
           var d = new Date(day);
           return dayNames[d.getDay()] + ' '+ d.getDate() + ' ' + monthNamesThai[d.getMonth()] + "  " + (d.getFullYear() + 543)
         },    
         date_thai_my(day){
-          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
+          var monthNamesThai = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤษจิกายน","ธันวาคม"];
+          var dayNames = ["วันอาทิตย์ที่","วันจันทร์ที่","วันอังคารที่","วันพุทธที่","วันพฤหัสบดีที่","วันศุกร์ที่","วันเสาร์ที่"];
           var monthNamesEng = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           var dayNamesEng = ['Sunday','Monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
           var d = new Date(day);
