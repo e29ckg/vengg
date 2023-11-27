@@ -191,34 +191,35 @@ function thainumDigit($num){
 
 
 function sendLine($sToken,$sMessage){
-    
-    $access_token = $sToken;
-    $message = $sMessage;
-  
-    $data = array(
-      'message' => $message
-    );
-  
-    $options = array(
-      'http' => array(
-        'method' => 'POST',
-        'header' => "Authorization: Bearer {$access_token}\r\n" .
-                    "Content-Type: application/x-www-form-urlencoded\r\n",
-        'content' => http_build_query($data),
-      ),
-    );
-  
-    $context = stream_context_create($options);
-    $response = file_get_contents('https://notify-api.line.me/api/notify', false, $context);
-    $response_decoded = json_decode($response, true);
-  
-    if ($response_decoded['status'] == 200) {
-      // notification was sent successfully
-      return true;
-    } else {
-      // an error occurred
-      return $response_decoded['message'];
-    }
+    if(isInternetAvailable('https://notify-bot.line.me')){
+        $access_token = $sToken;
+        $message = $sMessage;
+      
+        $data = array(
+          'message' => $message
+        );
+      
+        $options = array(
+          'http' => array(
+            'method' => 'POST',
+            'header' => "Authorization: Bearer {$access_token}\r\n" .
+                        "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query($data),
+          ),
+        );
+      
+        $context = stream_context_create($options);
+        $response = file_get_contents('https://notify-api.line.me/api/notify', false, $context);
+        $response_decoded = json_decode($response, true);
+      
+        if ($response_decoded['status'] == 200) {
+          // notification was sent successfully
+          return true;
+        } else {
+          // an error occurred
+          return $response_decoded['message'];
+        }
+    }    
 }
 
 function gcal_insert($name,$start,$desc=null){
@@ -274,6 +275,22 @@ function gcal_send_date($message_data){
     // // close the connection, release resources used
     curl_close($ch);
     return $res ? $res : false;
+}
+
+function isInternetAvailable($url = 'https://www.google.com') {
+    $headers = @get_headers($url);
+    
+    // Check if there are headers
+    if ($headers && is_array($headers)) {
+        // Iterate through headers and look for the "200 OK" status
+        foreach ($headers as $header) {
+            if (strpos($header, '200 OK') !== false) {
+                return true; // Internet is available
+            }
+        }
+    }
+    
+    return false; // Internet is not available
 }
 
 ?>

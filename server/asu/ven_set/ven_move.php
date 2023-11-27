@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $res_v->user_id;
         $DN      = $res_v->DN;
 
-        if($res_v->price > 0){
+        if($res_v->price > 0 && ($DN == 'กลางวัน' || $DN == 'กลางคืน')){
             /** เช็ควันเวลาที่อยู่เวรไม่ได้ */
             $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
             $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));

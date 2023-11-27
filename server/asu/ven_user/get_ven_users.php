@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     "vns_id" => $rs_wn->vns_id,
                     "vn_name" => $rs_wn->vn_name,
                     "vns_name" => $rs_wn->vns_name,
+                    "DN" => $rs_wn->DN,
                     "color" => $rs_wn->color,
                     "users" => $users,
 

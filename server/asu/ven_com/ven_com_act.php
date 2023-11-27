@@ -70,6 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query->bindParam(':id',$id, PDO::PARAM_INT);
             $query->execute();
 
+            $sql = "UPDATE ven
+                    SET 
+                        ven_com_num_all=:ven_com_num_all,
+                        ven_month=:ven_month
+                    WHERE ven_com_idb = :ven_com_idb";   
+
+            $query = $conn->prepare($sql);
+            $query->bindParam(':ven_com_num_all',$ven_com_num, PDO::PARAM_STR);
+            $query->bindParam(':ven_month',$ven_month, PDO::PARAM_STR);
+            $query->bindParam(':ven_com_idb',$id, PDO::PARAM_INT);
+            $query->execute();
            
             http_response_code(200);
             echo json_encode(array('status' => true, 'message' => 'ok', 'responseJSON' => $datas));

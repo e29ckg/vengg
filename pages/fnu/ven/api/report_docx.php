@@ -61,6 +61,9 @@ try{
     $query->execute();
     $ven_com_nums = $query->fetchAll(PDO::FETCH_OBJ);
 
+    //ที่เพิ่มเติม
+    $ven_com_num = $ven_com_nums[0]->ven_com_num;
+    $ven_com_date = DateThai_full($ven_com_nums[0]->ven_com_date);
         
     /** vens */
     $sql = "SELECT * FROM `ven` WHERE ven_month = :date_month AND (status = 1 OR status = 2)";
@@ -156,6 +159,10 @@ try{
     $templateProcessor->setValue('count', $count);
     $templateProcessor->setValue('price_all', $price_all_thai);
     $templateProcessor->setValue('price_all_text', $price_all_text);
+    
+    //ที่เพิ่มเติม
+    $templateProcessor->setValue('ven_com_nums', $ven_com_num);
+    $templateProcessor->setValue('ven_com_date', $ven_com_date);
 
     for($x = 0; $x <= count($datas); $x++){
         $no = 'n' . $x;
@@ -190,7 +197,9 @@ try{
         'status' => true, 
         'message' => 'ok', 
         'month'=>DateThai_ym($DATE_MONTH),
-        'datas' => $datas
+        'datas' => $datas,
+        "ven_com_num" => $ven_com_num,
+        "ven_com_date" => $ven_com_date
     ));
  
 

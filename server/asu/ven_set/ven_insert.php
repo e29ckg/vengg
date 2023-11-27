@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $create_at      = '';
 
 
-            if($price > 0){
+            if($price > 0 && ($DN == 'กลางวัน' || $DN == 'กลางคืน')){
 
                 /** เช็ควันเวลาที่อยู่เวรไม่ได้ */
                 $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));

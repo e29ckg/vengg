@@ -16,13 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	// $seconds = 100;
 	// echo date("H:i:s", mktime(16, 30, $seconds)); // แสดงผลเป็นเวลาที่มีวินาทีเป็น 1
 
-	function generateRandomNumber($min = 1000, $max = 9999) {
-		return rand($min, $max);
-	}
+	// function generateRandomNumber($min = 1000, $max = 9999) {
+	// 	return rand($min, $max);
+	// }
 	
-	// ตัวอย่างการใช้งาน
-	$randomNumber = generateRandomNumber();
-	echo time() . $randomNumber;
+	// // ตัวอย่างการใช้งาน
+	// $randomNumber = generateRandomNumber();
+	// echo time() . $randomNumber;
 
 	// $name = '2222222';
 	// $start = '2022-12-29 22:29:00';
@@ -162,4 +162,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 // echo number_format("1000000",2);
 
+function isInternetAvailable() {
+    $headers = @get_headers('https://www.google.com');
+    
+    // Check if there are headers
+    if ($headers && is_array($headers)) {
+        // Iterate through headers and look for the "200 OK" status
+        foreach ($headers as $header) {
+            if (strpos($header, '200 OK') !== false) {
+                return true; // Internet is available
+            }
+        }
+    }
+    
+    return false; // Internet is not available
+}
+
+// ใช้ฟังก์ชันเพื่อตรวจสอบสถานะของการเชื่อมต่ออินเทอร์เน็ต
+if (isInternetAvailable()) {
+    echo "Internet is available.";
+} else {
+    echo "Internet is not available.";
+}
 ?>

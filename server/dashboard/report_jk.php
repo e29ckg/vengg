@@ -41,7 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 FROM ven as v 
                 INNER JOIN profile as p ON v.user_id = p.user_id
                 INNER JOIN ven_com as vc ON vc.id = v.ven_com_idb
-                WHERE v.ven_date = '$ven_date' AND v.DN = '$DN' AND (v.`status` =1 OR v.`status` =2)
+                WHERE v.ven_date = '$ven_date' 
+                        AND v.DN = '$DN' 
+                        AND (v.`status` =1 OR v.`status` =2)
+                        -- AND (v.`ven_com_name` = 'หมายค้น-หมายจับ')
+
                 ORDER BY v.ven_time ASC";
         $query = $conn->prepare($sql);
         $query->execute();

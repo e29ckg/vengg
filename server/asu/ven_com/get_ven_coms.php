@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'id'  => $rs->id,
                         'ven_month'    => $rs->ven_month,
                         'ven_com_num'  => $rs->ven_com_num,
+                        'DN'  => $rs->DN,
                         'ven_com_date' => $rs->ven_com_date,
                         'ven_com_date_th' => DateThai_full($rs->ven_com_date),
                         'ven_name'  => $rs->vn_name,
