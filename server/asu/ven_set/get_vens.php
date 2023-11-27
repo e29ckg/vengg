@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 LEFT JOIN ven_name_sub AS vns ON v.vns_id = vns.id
                 WHERE v.status IN (1, 2, 5) 
                 ORDER BY v.ven_date DESC, v.ven_time ASC
-                LIMIT 500";
+                LIMIT 1000";
         $query = $conn->prepare($sql);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);

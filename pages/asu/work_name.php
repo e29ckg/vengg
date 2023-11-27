@@ -129,8 +129,8 @@ require_once('../../server/authen.php');
                                             <!-- <input type="text" class="form-control" id="DN" v-model="ven_name_form.DN"> -->
                                             <select class="form-select" aria-label="Default select example" v-model="ven_name_form.DN">
                                                 <option value="กลางวัน">กลางวัน(08.30-16.30)</option>
-                                                <option value="กลางคืน">กลางคืน(18.30-08.30)</option>
-                                                <option value="nightCourt">nightCourt</option>
+                                                <option value="กลางคืน">กลางคืน(16.30-08.30)</option>
+                                                <option value="nightCourt">nightCourt(16.30-20.00)</option>
                                             </select>
                                         </div>
                                     </div>

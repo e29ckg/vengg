@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $seconds = 0;
         foreach ($query->fetchAll(PDO::FETCH_OBJ) as $rs) {
             $hours = 8;
-            if ($rs->DN == 'กลางคืน') {
+            if ($rs->DN == 'กลางคืน' || $rs->DN == 'nightCourt') {
                 $hours = 16;
             }
             ++$seconds;

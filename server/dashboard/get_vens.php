@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 INNER JOIN `profile` AS p ON v.user_id = p.id
                 WHERE v.status = 1 OR v.status = 2
                 ORDER BY v.ven_date DESC, v.ven_time ASC
-                LIMIT 800";
+                LIMIT 1000";
         $query = $conn->prepare($sql);
         $query->execute();
         
