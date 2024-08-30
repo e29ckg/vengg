@@ -1,5 +1,8 @@
 โปรแกรมบริหารจัดการเวรนอกเวลาราชการ 
 
+#requit#
+php8-> zip
+
 ปรับการดึงข้อมูลจากฐาน
 server/asu/workname/get_work.php
 
