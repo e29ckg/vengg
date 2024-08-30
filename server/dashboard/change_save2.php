@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             v.status,
                             vc.ven_month,
                             vn.DN,
+                            vns.price,
                             p.fname, p.name, p.sname 
                     FROM ven AS v
                     INNER JOIN ven_com AS vc ON v.ven_com_idb = vc.id              
@@ -67,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             v.status,
                             vc.ven_month,
                             vn.DN,
+                            vns.price,
                             p.fname, p.name, p.sname 
                     FROM ven AS v
                     INNER JOIN ven_com AS vc ON v.ven_com_idb = vc.id              
@@ -122,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 //     echo json_encode(array('status' => false, 'message' => $rsv1->fname . $rsv1->name . ' ' . $rsv1->sname . "\n" . 'วันที่ ' . DateThai($rsv2->ven_date) . ' มีเวรอยู่แล้ว.'));
                 //     exit;
                 // }
+
                 if ($rsv2->DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน') {
                     http_response_code(200);
                     echo json_encode(array('status' => false, 'message' => $rsv1->fname . $rsv1->name . ' ' . $rsv1->sname . "\n" . 'วันที่ ' . DateThai($ven_date_d1) . ' มีเวรกลางคืน'));
@@ -156,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     WHERE v.user_id = $rsv2->user_id  
                         AND v.ven_date >= '$ven_date_d1' 
                         AND v.ven_date <= '$ven_date_u1' 
+                        AND vns.price > 0 
                         AND (v.status=1 OR v.status=2)";
         $query_VU = $conn->prepare($sql_VU);
         $query_VU->execute();
@@ -287,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             AND (v.status=1 OR v.status=2)
                         ORDER BY v.ven_time ASC";
             $query_V = $conn->prepare($sql_V);
-            $query_V->bindParam(':gcal_id',$rsv1->gcal_id , PDO::PARAM_STR);
+            $query_V->bindParam(':gcal_id', $rsv1->gcal_id, PDO::PARAM_STR);
             $query_V->execute();
             if ($query_V->rowCount()) {
                 $res_V  = $query_V->fetchAll(PDO::FETCH_OBJ);
@@ -310,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             AND (v.status=1 OR v.status=2)
                         ORDER BY v.ven_time ASC";
             $query_V = $conn->prepare($sql_V);
-            $query_V->bindParam(':gcal_id',$rsv2->gcal_id , PDO::PARAM_STR);
+            $query_V->bindParam(':gcal_id', $rsv2->gcal_id, PDO::PARAM_STR);
             $query_V->execute();
             if ($query_V->rowCount()) {
                 $res_V  = $query_V->fetchAll(PDO::FETCH_OBJ);
@@ -341,7 +345,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(array(
             'status'    => true,
             'message'   => 'ok',
-            'v_id' => $idv1, 
+            'v_id' => $idv1,
             "uid" => $rsv2->user_id
             // 'responseJSON' => $res_line
         ));

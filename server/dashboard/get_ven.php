@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ckMyNot = checkMYNot(getVenForUsersNot($result->ven_date, $result->DN), $user_id);
             if (!$ckMyNot['status']) {
                 $btnVensForChange = false;
-                $resp_text = ' --- เวรนี้ไม่สามารถเปลี่ยนได้ (' . $ckMyNot['status'] . ')---  ';
+                $resp_text = ' --- เวรนี้ไม่สามารถเปลี่ยนได้ (' . $ckMyNot['text'] . ')---  ';
             }
 
             if ($result->price == 0) {

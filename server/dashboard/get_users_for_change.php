@@ -7,6 +7,10 @@ header("Content-Type: application/json; charset=utf-8");
 include "../connect.php";
 include "../function.php";
 
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+$baseURL = $protocol . $host . '/vengg/';
+
 $data = json_decode(file_get_contents("php://input"));
 
 // ยกให้
@@ -32,28 +36,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /** user ที่จะยกให้ */
         $users = array();
-        $sql = "SELECT vu.vu_id, vu.user_id, p.fname,p.name,p.sname, p.img
+
+        $sql = "SELECT vu.vu_id, vu.user_id, vns.price, p.fname,p.name,p.sname, p.img
                 FROM ven_user as vu   
-                INNER JOIN profile as p
-                ON vu.user_id = p.user_id 
+                INNER JOIN profile as p ON vu.user_id = p.user_id 
+                INNER JOIN ven_name_sub as vns ON vu.vns_id = vns.id
                 WHERE vu.vns_id = :vns_id AND p.user_id <> :user_id";
         $query = $conn->prepare($sql);
         $query->bindParam(':vns_id', $vns_id, PDO::PARAM_INT);
         $query->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_OBJ);
-
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
-        $host = $_SERVER['HTTP_HOST'];
-        $baseURL = $protocol . $host . '/vengg/';
-
         if ($query->rowCount() > 0) {                        //count($result)  for odbc
             foreach ($result as $rs) {
-
                 $img_link = ($rs->img != null && $rs->img != '' && file_exists('../../uploads/users/' . $rs->img))
                     ? 'uploads/users/' . $rs->img
                     : 'assets/images/profiles/nopic.png';
-                $changeStatus  =  checkUserNotDate($venIsNot, $rs->user_id);
+
+                $changeStatus = ["status" => true, "text" => "Ok"];
+                if ($rs->price > 0) {
+                    $changeStatus  =  checkUserNotDate($venIsNot, $rs->user_id);
+                }
                 array_push($users, array(
                     'vu_id'    => $rs->vu_id,
                     'user_id' => $rs->user_id,

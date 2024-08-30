@@ -32,8 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $img_link = ($rs->img != null && $rs->img != '' && file_exists('../../uploads/users/' . $rs->img))
                 ? 'uploads/users/' . $rs->img
                 : 'assets/images/profiles/nopic.png';
-            $venIsNot = getVenForUsersNot($rs->ven_date, $ven_cerrent->DN);
-            $changeStatus = checkUserNotDate($venIsNot, $ven_cerrent->user_id);
+
+            $changeStatus = ["status" => true, "text" => "Ok"];
+            if ($ven_cerrent->price > 0) {
+                $venIsNot = getVenForUsersNot($rs->ven_date, $ven_cerrent->DN);
+                $changeStatus = checkUserNotDate($venIsNot, $ven_cerrent->user_id);
+            }
 
             array_push($my_ven, array(
                 'id'    => $rs->id,
@@ -261,7 +265,8 @@ function getVen($ven_id)
                         v.vns_id,
                         v.status,
                         vc.ven_month,
-                        vn.DN
+                        vn.DN,
+                        vns.price
                 FROM ven AS v
                 INNER JOIN ven_com AS vc ON v.ven_com_idb = vc.id              
                 INNER JOIN ven_name AS vn ON v.vn_id = vn.id  

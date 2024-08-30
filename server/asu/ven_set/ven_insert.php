@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            if($price > 0 && $DN == 'nightCourt'){
+            if ($price > 0 && $DN == 'nightCourt') {
                 $ven_date_d = date("Y-m-d", strtotime($ven_date));
                 $sql_VU = "SELECT 
                                     v.id, 
@@ -74,19 +74,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($query_VU->rowCount()) {
                     http_response_code(200);
                     echo json_encode(array(
-                        'status' => false, 
-                        'message' => $res_VU->fname.$res_VU->name.' '.$res_VU->sname. "\n มีเวรกลางคืนหรือnightCourt"
+                        'status' => false,
+                        'message' => $res_VU->fname . $res_VU->name . ' ' . $res_VU->sname . "\n มีเวรกลางคืนหรือnightCourt"
                     ));
                     exit;
                 }
             }
-            
-            if($price > 0 && ($DN == 'กลางวัน' || $DN == 'กลางคืน')){
+
+            if ($price > 0 && ($DN == 'กลางวัน' || $DN == 'กลางคืน')) {
 
                 /** เช็ควันเวลาที่อยู่เวรไม่ได้ */
                 $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven_date)));
                 $ven_date_d1 = date("Y-m-d", strtotime('-1 day', strtotime($ven_date)));
-    
+
                 $sql_VU = "SELECT 
                                     v.id,
                                     v.ven_date,
@@ -95,11 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     p.fname, p.name, p.sname 
                             FROM ven AS v
                             INNER JOIN `ven_name` AS vn ON v.vn_id = vn.id
+                            INNER JOIN `ven_name_sub` AS vns ON v.vns_id = vns.id
                             INNER JOIN `profile` AS p ON p.user_id = v.user_id
                             WHERE v.user_id = :user_id 
                                 -- AND (v.DN = 'กลางวัน' OR v.DN = 'กลางคืน') 
                                 AND v.ven_date >= :ven_date_d1 
                                 AND v.ven_date <= :ven_date_u1 
+                                AND vns.price > 0 
                                 AND (v.status = 1 OR v.status = 2)";
                 $query_VU = $conn->prepare($sql_VU);
                 $query_VU->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -107,37 +109,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $query_VU->bindParam(':ven_date_u1', $ven_date_u1);
                 $query_VU->execute();
                 $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
-    
+
                 if ($query_VU->rowCount()) {
                     foreach ($res_VU as $ru) {
                         if ($ru->ven_date == $ven_date) {
                             http_response_code(200);
                             echo json_encode(array(
-                                'status' => false, 
-                                'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรวันนี้แล้ว"
+                                'status' => false,
+                                'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรวันนี้แล้ว"
                             ));
                             exit;
                         }
-                        if ($DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน' ) {
+                        if ($DN == 'กลางวัน' && $ru->ven_date == $ven_date_d1 && $ru->DN == 'กลางคืน') {
                             http_response_code(200);
                             echo json_encode(array(
-                                'status' => false, 
-                                'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรกลางคืน \nวันก่อนหน้านี้(".DateThai($ven_date_d1).")"
+                                'status' => false,
+                                'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางคืน \nวันก่อนหน้านี้(" . DateThai($ven_date_d1) . ")"
                             ));
                             exit;
                         }
-                        if ($DN == 'กลางคืน'  && $ru->ven_date == $ven_date_u1 && $ru->DN == 'กลางวัน')  {
+                        if ($DN == 'กลางคืน'  && $ru->ven_date == $ven_date_u1 && $ru->DN == 'กลางวัน') {
                             http_response_code(200);
                             echo json_encode(array(
-                                'status' => false, 
-                                'message' => $ru->fname.$ru->name.' '.$ru->sname. "\n มีเวรกลางวัน \nวันถัดไป(".DateThai($ven_date_u1).")"
+                                'status' => false,
+                                'message' => $ru->fname . $ru->name . ' ' . $ru->sname . "\n มีเวรกลางวัน \nวันถัดไป(" . DateThai($ven_date_u1) . ")"
                             ));
                             exit;
                         }
-                       
                     }
                 }
-            } 
+            }
 
 
             $ref1           = generateRandomString();
@@ -182,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         http_response_code(200);
         echo json_encode(array('status' => false, 'message' => 'Database Error: ' . $e->getMessage()));
         exit;
-    }catch (Exception $e) {
+    } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array('status' => false, 'message' => 'Error: ' . $e->getMessage()));
         exit;
@@ -207,7 +208,7 @@ function updateVenTime(PDO $conn, string $ven_date)
                 vn_srt ASC,
                 vns_srt ASC,
                 v.update_at ASC";
-    
+
     $query = $conn->prepare($sql);
     $query->bindParam(':ven_date', $ven_date);
     $query->execute();
@@ -215,7 +216,7 @@ function updateVenTime(PDO $conn, string $ven_date)
     $seconds = 0;
     foreach ($query->fetchAll(PDO::FETCH_OBJ) as $rs) {
         $hours = ($rs->DN == 'กลางคืน' || $rs->DN == 'nightCourt') ? 16 : 8;
-        
+
         ++$seconds;
         $ven_time = date("H:i:s", mktime($hours, 30, $seconds));
 
