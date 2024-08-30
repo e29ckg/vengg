@@ -32,9 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$sMessage .= 'ตารางเวร '.DateThai($date_now)."\n";	
 	try{
 
-		$sql = "SELECT v.*,p.fname, p.name, p.sname
+		$sql = "SELECT v.*, vn.name AS ven_com_name, vn.DN AS DN, p.fname, p.name, p.sname
 				FROM ven as v
 				INNER JOIN `profile` AS p ON v.user_id = p.id
+				INNER JOIN `ven_name` AS vn ON v.vn_id = vn.id
 				WHERE v.ven_date = '$date_now' AND (v.status=1 OR v.status=2)
 				ORDER BY v.ven_time ASC";
 		$query = $conn->prepare($sql);
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		foreach($result as $rs){
 			if(date("H:i:s") < $rs->ven_time){
 				if($ven_name !== $rs->ven_com_name){
-					$sMessage .= "---".$rs->ven_com_name . "---\n";
+					$sMessage .= "#".$rs->ven_com_name . "\n";
 				}
 				$ven_name = $rs->ven_com_name;
 				$d = '';
