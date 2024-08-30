@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($response);
             exit;
         }
-        
+
         $response = [
             'status' => false,
             'message' => 'No data found'
@@ -49,4 +49,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-?>

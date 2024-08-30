@@ -7,6 +7,10 @@ header("Content-Type: application/json; charset=utf-8");
 include "../connect.php";
 include "../function.php";
 
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+$baseURL = $protocol . $host . '/vengg/';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"));
     $datas = array();
@@ -18,22 +22,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 INNER JOIN `user` AS u ON u.id = p.user_id
                 WHERE u.status <> 77
                 ORDER BY p.st ASC";
-                    $query = $conn->prepare($sql);
-        if($workgroup == 'ผู้พิพากษา' || $workgroup == 'ผู้พิพากษาสมทบ'){
+        $query = $conn->prepare($sql);
+        if ($workgroup == 'ผู้พิพากษา' || $workgroup == 'ผู้พิพากษาสมทบ') {
             $sql = "SELECT u.username, u.status, p.*
                 FROM profile AS p 
                 INNER JOIN `user` AS u ON u.id = p.user_id
                 WHERE workgroup = :workgroup AND u.status <> 77
                 ORDER BY p.st ASC";
-                    $query = $conn->prepare($sql);
-                    $query->bindParam(':workgroup', $workgroup, PDO::PARAM_STR);
-        }elseif($workgroup == 'จนท' ){
+            $query = $conn->prepare($sql);
+            $query->bindParam(':workgroup', $workgroup, PDO::PARAM_STR);
+        } elseif ($workgroup == 'จนท') {
             $sql = "SELECT u.username, u.status, p.*
             FROM profile AS p 
             INNER JOIN `user` AS u ON u.id = p.user_id
             WHERE (workgroup <> 'ผู้พิพากษา' AND workgroup <> 'ผู้พิพากษาสมทบ') AND u.status <> 77
             ORDER BY p.st ASC";
-                $query = $conn->prepare($sql);
+            $query = $conn->prepare($sql);
         }
 
         $query->execute();
@@ -42,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($query->rowCount() > 0) {
             $datas = array();
             foreach ($result as $rs) {
-                $img_link = '../../assets/images/profiles/nopic.png';
+                $img_link = 'assets/images/profiles/nopic.png';
                 if ($rs->img && file_exists('../../uploads/users/' . $rs->img)) {
-                    $img_link = '../../uploads/users/' . $rs->img;
+                    $img_link = 'uploads/users/' . $rs->img;
                 }
                 $data = array(
                     'uid' => $rs->user_id,
@@ -52,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'name' => $rs->fname . $rs->name . ' ' . $rs->sname,
                     'dep' => $rs->dep,
                     'phone' => $rs->phone,
-                    'img' => $img_link,
+                    'img' => $baseURL . $img_link,
                     'status' => $rs->status,
                     'st' => $rs->st,
                 );
@@ -64,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'data' => $datas
             );
         } else {
-            
+
             $response = array(
                 'status' => false,
                 'message' => 'No data found',
@@ -81,4 +85,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-?>
