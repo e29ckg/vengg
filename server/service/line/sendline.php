@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 			exit;
 		}
 
+		$ven_name = "";
 		foreach ($result as $rs) {
 			if (date("H:i:s") < $rs->ven_time) {
 				if ($ven_name !== $rs->ven_com_name) {
