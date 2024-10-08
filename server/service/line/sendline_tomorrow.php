@@ -12,13 +12,11 @@ header("Content-Type: application/json; charset=utf-8");
 include "../../connect.php";
 include "../../function.php";
 
-
 $data = json_decode(file_get_contents("php://input"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-	// $date_now 		= "2023-07-1";	
 	$date_now = date("Y-m-d");
-
+	$date_tomorrow = date("Y-m-d", strtotime("+1 day"));
 	$sToken = "";
 	$sMessage = "";
 
@@ -29,27 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 	if ($query->rowCount()) {
 		$sToken = $res->token;
-		$sMessage .= 'ตารางเวร ' . DateThai($date_now) . "\n";
-		try {
-
-			$sql = "SELECT v.*, vn.name AS ven_com_name, vn.DN AS DN, p.fname, p.name, p.sname
+		$sMessage .= 'ตารางเวรวันพรุ้งนี้ ' . DateThai($date_tomorrow) . "\n";
+		$sql = "SELECT v.*, vn.name AS ven_com_name, vn.DN AS DN, p.fname, p.name, p.sname
 				FROM ven as v
 				INNER JOIN `profile` AS p ON v.user_id = p.id
 				INNER JOIN `ven_name` AS vn ON v.vn_id = vn.id
-				WHERE v.ven_date = '$date_now' AND (v.status=1 OR v.status=2)
+				WHERE v.ven_date = '$date_tomorrow' AND (v.status=1 OR v.status=2)
 				ORDER BY v.ven_time ASC";
-			$query = $conn->prepare($sql);
-			$query->execute();
-			$result = $query->fetchAll(PDO::FETCH_OBJ);
-		} catch (PDOException $e) {
-			http_response_code(400);
-			echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
-			exit;
-		}
+		$query = $conn->prepare($sql);
+		$query->execute();
+		$result = $query->fetchAll(PDO::FETCH_OBJ);
 
 		$ven_name = "";
 		foreach ($result as $rs) {
-			// if (date("H:i:s") < $rs->ven_time) {
 			if ($ven_name !== $rs->ven_com_name) {
 				$sMessage .= "#" . $rs->ven_com_name . "\n";
 				$ven_name = $rs->ven_com_name;
@@ -67,13 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 			}
 			$sMessage .= $d . ' ' . $rs->fname . $rs->name . ' ' . $rs->sname;
 			$sMessage .= "\n";
-			// }
 		}
 
 		http_response_code(200);
 		echo sendLine($sToken, $sMessage);
 		echo $sMessage;
 		exit;
+
 	} else {
 		$sql = "SELECT * FROM line WHERE name = 'admin'";
 		$query = $conn->prepare($sql);
@@ -86,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		echo sendLine($sToken, $sMessage);
 		exit;
 	}
+
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -123,4 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	http_response_code(200);
 	echo sendLine($sToken, $sMessage);
+
 }
+?>
