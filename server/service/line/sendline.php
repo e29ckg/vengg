@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 			}
 			$sMessage .= $d . ' ' . $rs->fname . $rs->name . ' ' . $rs->sname;
 			$sMessage .= "\n";
+			$ven_name = $rs->ven_com_name;
 			// }
 		}
 
