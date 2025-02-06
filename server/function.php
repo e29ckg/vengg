@@ -253,6 +253,7 @@ function thainumDigit($num)
 function sendLine($sToken, $sMessage)
 {
     $chat_id = '-1002281262112';
+    $botToken = '7785178042:AAHGfC4wPtdlMLCPHwpR_Y12CkELO5FaOUI';
     sendTelegram($sMessage, $chat_id);
 
     if (isInternetAvailable()) {
@@ -363,9 +364,9 @@ function isInternetAvailable($url = 'https://www.google.com')
 
 
 
-function sendTelegram($sMessage, $chat_id = 787363591)
+function sendTelegram($sMessage, $chat_id = 787363591, $botToken = '7785178042:AAHGfC4wPtdlMLCPHwpR_Y12CkELO5FaOUI')  // Replace with your actual token
 {
-    $botToken = '7785178042:AAHGfC4wPtdlMLCPHwpR_Y12CkELO5FaOUI';  // Replace with your actual token
+    
 
     $curl = curl_init();
 
