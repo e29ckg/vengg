@@ -256,36 +256,36 @@ function sendLine($sToken, $sMessage)
     $botToken = '7785178042:AAHGfC4wPtdlMLCPHwpR_Y12CkELO5FaOUI';
     sendTelegram($sMessage, $chat_id);
 
-    if (isInternetAvailable()) {
-        $access_token = $sToken;
-        $message = $sMessage;
+    // if (isInternetAvailable()) {
+    //     $access_token = $sToken;
+    //     $message = $sMessage;
 
 
-        $data = array(
-            'message' => $message
-        );
+    //     $data = array(
+    //         'message' => $message
+    //     );
 
-        $options = array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => "Authorization: Bearer {$access_token}\r\n" .
-                    "Content-Type: application/x-www-form-urlencoded\r\n",
-                'content' => http_build_query($data),
-            ),
-        );
+    //     $options = array(
+    //         'http' => array(
+    //             'method' => 'POST',
+    //             'header' => "Authorization: Bearer {$access_token}\r\n" .
+    //                 "Content-Type: application/x-www-form-urlencoded\r\n",
+    //             'content' => http_build_query($data),
+    //         ),
+    //     );
 
-        $context = stream_context_create($options);
-        $response = file_get_contents('https://notify-api.line.me/api/notify', false, $context);
-        $response_decoded = json_decode($response, true);
+    //     $context = stream_context_create($options);
+    //     $response = file_get_contents('https://notify-api.line.me/api/notify', false, $context);
+    //     $response_decoded = json_decode($response, true);
 
-        if ($response_decoded['status'] == 200) {
-            // notification was sent successfully
-            return true;
-        } else {
-            // an error occurred
-            return $response_decoded['message'];
-        }
-    }
+    //     if ($response_decoded['status'] == 200) {
+    //         // notification was sent successfully
+    //         return true;
+    //     } else {
+    //         // an error occurred
+    //         return $response_decoded['message'];
+    //     }
+    // }
 }
 
 function gcal_insert($name, $start, $desc = null)
