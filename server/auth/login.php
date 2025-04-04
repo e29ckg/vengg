@@ -75,18 +75,8 @@ function loginUser($row, $admin_login ) {
     $_SESSION['AD_ROLE'] = $row->role;
     $_SESSION['AD_STATUS'] = $row->status;
     $_SESSION['LOGIN_BY'] = !$admin_login ? 'PhoneNumber' : 'vengg';
-    
-    $sql = "SELECT * FROM line WHERE name = 'admin' AND status = 1";
-    $query = $conn->prepare($sql);
-    $query->execute();
-    $res = $query->fetch(PDO::FETCH_OBJ);
-    if ($query->rowCount()) {
-        $sToken = $res->token;  
-        $sMessage = $row->name.' '.$row->sname;
-        $sMessage .= !$admin_login ? ' เข้าสู่ระบบเวร-(phone)' : ' เข้าสู่ระบบเวร ';
-        sendLine($sToken, $sMessage);
-    }
-
+   
+   
     http_response_code(200);
     echo json_encode(array('status' => true, 'message' => 'success', 'ss_uid' => $_SESSION['AD_ID']));
     exit;
