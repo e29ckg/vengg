@@ -54,7 +54,7 @@ if( !isset($_SESSION['AD_ID']) || !isset($_SESSION['AD_ROLE']) ){
 // }
 
 /** หน้าที่ Member เข้าไม่ได้ */
-$menuAdmin = array("asu/index", "asu/work_name", "asu/user_ven", "asu/ven_com", "asu/ven_set","asu/report","asu/ven_approve","users/index");
+$menuAdmin = array("asu/index", "asu/work_name", "asu/user_ven", "asu/ven_com", "asu/ven_set","asu/report","asu/ven_approve","users/index","users/ven_report");
 
 if($_SESSION['AD_ROLE'] == '1'){
     if(in_array(pathCurrent(), $menuAdmin)){

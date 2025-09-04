@@ -508,6 +508,31 @@ Vue.createApp({
           this.isLoading = false;
         });
     },
+
+    report_vn(ven_date, vn_id, vns_id, user_id) {
+      this.isLoading = true;
+      axios
+        .post("../../server/dashboard/report_vn.php", { 
+          ven_date: ven_date, 
+          vn_id: vn_id, 
+          vns_id: vns_id, 
+          user_id: user_id
+        })
+        .then((response) => {
+          if (response.data.status) {
+            this.alert("success", response.data.message, (timer = 1000));
+            window.open("../../uploads/ven_vn.docx", "_blank");
+          } else {
+            this.alert("warning", response.data.message, (timer = 0));
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
     async getUsersForChange(data_event) {
       await axios
         .post("../../server/dashboard/get_users_for_change.php", {

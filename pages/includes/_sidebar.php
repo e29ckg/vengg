@@ -88,6 +88,9 @@
                             <li class="submenu-item <?php echo isActiveFile('sign_name') ?>">
                                 <a href="../users/sign_name.php">ตั้งค่าทั่วไป,ผู้ลงนาม</a>
                             </li>
+                            <li class="submenu-item <?php echo isActiveFile('sign_name') ?>">
+                                <a href="../users/ven_report.php">ตั้งค่า รายงาน</a>
+                            </li>
                             <li class="submenu-item <?php echo isActiveFile('line') ?>">
                                 <a href="../users/line.php">ตั่งค่า Line</a>
                             </li>

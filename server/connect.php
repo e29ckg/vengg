@@ -6,6 +6,32 @@ error_reporting(E_ALL);
 define("__GOOGLE_CALENDAR__", false);           // true : false
 define("__LOGIN_BY__", "");                     // vengg : gdms
 define("__VERSION__", "V 2.2.1");               // version
+define("__COPYRIGHT__", "2023");          // copyright
+define("__COMPANY__", "VENGG");          // company
+define("__WEBSITE__", "www.vengg.com");          // website
+define("__NAMEPROJECT__", "ระบบจัดการเวร"); // name project
+define("__EMAIL__", "pkkjc@oj.go.th");          // email
+define("__TEL__", "080-1234567");               // tel  
+
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+define("__HOSTNAME__", $_SERVER['HTTP_HOST']); // hostname
+define("__BASEPATH__", "/vengg/");              // basepath
+define("__FULLPATH__", $protocol . __HOSTNAME__ . __BASEPATH__); // fullpath
+
+$config = [
+    'GOOGLE_CALENDAR' => false,
+    'LOGIN_BY' => '',
+    'VERSION' => 'V 2.2.1',
+    'COPYRIGHT' => '2023',
+    'COMPANY' => 'VENGG',
+    'WEBSITE' => 'https://www.vengg.com',
+    'NAMEPROJECT' => 'ระบบจัดการเวร',
+    'EMAIL' => 'pkkjc@oj.go.th',
+    'TEL' => '080-1234567',
+    'HOSTNAME' => $_SERVER['HTTP_HOST'],
+    'BASEPATH' => '/vengg/',
+    'FULLPATH' => $protocol . $_SERVER['HTTP_HOST'] . '/vengg/'
+];
 
 date_default_timezone_set("Asia/Bangkok");
 
