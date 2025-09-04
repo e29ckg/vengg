@@ -16,120 +16,93 @@ $data = json_decode(file_get_contents("php://input"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ven_date   = $data->ven_date;
-    $ven_id     = $data->vn_id;
+    $vn_id     = $data->vn_id;
     $vns_id     = $data->vns_id;
     $user_id    = $data->user_id;
-
     $datas = array();
 
-    $vn_doc_name = '';
-    // $ven_com_num = '';
-    // $ven_com_date = '';
-    // $ven_date_d = '';
-    // $ven_date_m = '';
-    // $ven_date_y = '';
-    // $ven_date_time = '16:30';
-    // $ven_date_next_d = '';
-    // $ven_date_next_m = '';
-    // $ven_date_next_y = '';
-    // $ven_date_next_time = '08:30';
-    // $users = [];
+    $docx_template = "";
+    
+    $sql = "SELECT id, word FROM ven_name WHERE id='$vn_id'";
+    $query = $conn->prepare($sql);
+    $query->execute();
+    $result = $query->fetch(PDO::FETCH_OBJ);
+    if ($query->rowCount() > 0) {
+        $docx_template = $result->word;
+    } else {
+        $response = array(
+            'status' => 'error',
+            'message' => 'ไม่พบแบบฟอร์มรายงาน'
+        );
+        echo json_encode($response);
+        exit;
+    }
+    if ($docx_template == '') {
+        $response = array(
+            'status' => 'error',
+            'message' => 'ไม่พบแบบฟอร์มรายงาน'
+        );
+        echo json_encode($response);
+        exit;
+    }
 
     // The request is using the POST method
     try {
-        $sql = "SELECT 
-                        v.id, v.ven_date, 
-                        vn.name AS ven_com_name, 
-                        vn.DN, 
-                        p.fname, p.name, p.sname, p.dep, p.workgroup, 
-                        vc.ven_com_num, vc.ven_com_date 
-                FROM ven_name as vn
-                WHERE vn.id = '$ven_id';
+        // $sql = "SELECT 
+        //                 v.id, v.ven_date, 
+        //                 vn.name AS ven_com_name, 
+        //                 p.fname, p.name, p.sname, p.dep, p.workgroup, 
+        //                 vc.ven_com_num, vc.ven_com_date 
+        //         FROM ven as v 
+        //         INNER JOIN profile as p ON v.user_id = p.user_id
+        //         INNER JOIN ven_com as vc ON vc.id = v.ven_com_idb
+        //         INNER JOIN ven_name as vn ON v.vn_id = vn.id
+        //         WHERE v.ven_date = '$ven_date' 
+        //                 AND v.vn_id = '$vn_id'
+        //                 AND (v.`status` =1 OR v.`status` =2)
+        //         ORDER BY v.ven_time ASC";
+        // $query = $conn->prepare($sql);
+        // $query->execute();
+        // $result = $query->fetchAll(PDO::FETCH_OBJ); 
 
-        $query = $conn->prepare($sql);
-        $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
 
-        $sql = "SELECT 
-                        v.id, v.ven_date, 
-                        vn.name AS ven_com_name, 
-                        vn.DN, 
-                        p.fname, p.name, p.sname, p.dep, p.workgroup, 
-                        vc.ven_com_num, vc.ven_com_date 
-                FROM ven as v 
-                INNER JOIN profile as p ON v.user_id = p.user_id
-                INNER JOIN ven_com as vc ON vc.id = v.ven_com_idb
-                INNER JOIN ven_name as vn ON v.vn_id = vn.id
-                WHERE v.ven_date = '$ven_date' 
-                        AND vn.DN = '$DN' 
-                        AND (v.`status` =1 OR v.`status` =2)
-                ORDER BY v.ven_time ASC";
-        $query = $conn->prepare($sql);
-        $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
-
-        if ($query->rowCount() > 0) {
-            foreach ($result as $rs) {
-
-                $ven_com_num = $rs->ven_com_num;
-                $ven_com_date = $rs->ven_com_date;
-
-                // if ($rs->workgroup == 'ผู้พิพากษา') {
-                $users[] = array("name" => $rs->fname . $rs->name . ' ' . $rs->sname, "dep" => $rs->dep);
-                // } else {
-                // $users[1] = array("name" => $rs->fname . $rs->name . ' ' . $rs->sname, "dep" => $rs->dep);
-                // }
-            }
-        }
-        $ven_date_next = date('Y-m-d', strtotime($ven_date . ' +1 day'));
-
-        $datas = array(
-            "ven_com_num" => $ven_com_num,
-            "ven_com_date" => DateThai_full($ven_com_date),
-            "ven_date_d" => date_d($ven_date),
-            "ven_date_m" => date_m($ven_date),
-            "ven_date_y" => date_y($ven_date),
-            "ven_date_time" => '16:30',
-            "ven_date_next_d" => date_d($ven_date_next),
-            "ven_date_next_m" => date_m($ven_date_next),
-            "ven_date_next_y" => date_y($ven_date_next),
-            "ven_date_next_time" => '08:30',
-            "users" => $users
+    $docx_template_path = '../../uploads/template_docx/'.$docx_template;
+    if (!file_exists($docx_template_path)) {
+        $response = array(
+            'status' => 'error',
+            'message' => 'ไม่พบไฟล์แบบฟอร์มรายงาน'
         );
-
-        /**สร้างเอกสาร docx */
-        $templateProcessor = new TemplateProcessor('../../uploads/template_docx/ven_jk_tm.docx'); //เลือกไฟล์ template ที่เราสร้างไว้
-        $templateProcessor->setValue('ven_com_num', $ven_com_num);
-        $templateProcessor->setValue('ven_com_date', $datas['ven_com_date']);
-        $templateProcessor->setValue('ven_date_d', $datas['ven_date_d']);
-        $templateProcessor->setValue('ven_date_m', $datas['ven_date_m']);
-        $templateProcessor->setValue('ven_date_y', $datas['ven_date_y']);
-        $templateProcessor->setValue('ven_date_next_d', $datas['ven_date_next_d']);
-        $templateProcessor->setValue('ven_date_next_m', $datas['ven_date_next_m']);
-        $templateProcessor->setValue('ven_date_next_y', $datas['ven_date_next_y']);
-        $templateProcessor->setValue('name1', $users[0]['name']);
-        $templateProcessor->setValue('name2', $users[1]['name']);
-        $templateProcessor->setValue('name3', $users[2]['name']);
-        $templateProcessor->setValue('name4', $users[3]['name']);
-        $templateProcessor->setValue('name5', $users[4]['name']);
-        $templateProcessor->setValue('dep1', $users[0]['dep']);
-        $templateProcessor->setValue('dep2', $users[1]['dep']);
-        $templateProcessor->setValue('dep3', $users[2]['dep']);
-        $templateProcessor->setValue('dep4', $users[3]['dep']);
-        $templateProcessor->setValue('dep5', $users[4]['dep']);
-        $templateProcessor->saveAs('../../uploads/ven_jk.docx');
-
-
-        http_response_code(200);
-        echo json_encode(array(
-            'status' => true,
-            'message' => 'OK',
-            'resp' => $datas
-        ));
+        echo json_encode($response);
         exit;
+    }
+    $reportDir = '../../uploads/report_docx/';
+
+    // ตรวจสอบและสร้างโฟลเดอร์ถ้ายังไม่มี
+    if (!is_dir($reportDir)) {
+        mkdir($reportDir, 0755, true); // สร้างโฟลเดอร์พร้อมสิทธิ์ และสร้างโฟลเดอร์ซ้อนถ้ามี
+    }
+
+    $templateProcessor = new TemplateProcessor($docx_template_path);
+
+    foreach ($datas as $key => $value) {
+        $templateProcessor->setValue($key, $value);
+    }
+
+    $outputFileName = 'report_' . $vn_id . '_' . date('Ymd_His') . '.docx';
+    $outputFilePath = $reportDir . $outputFileName;
+
+    $templateProcessor->saveAs($outputFilePath);
+
+    echo json_encode($outputFilePath);
+    exit;
+
+    
     } catch (PDOException $e) {
-        http_response_code(200);
-        echo json_encode(array('status' => false, 'message' => 'เกิดข้อผิดพลาด..' . $e->getMessage()));
+        $response = array(
+            'status' => 'error',
+            'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()
+        );
+        echo json_encode($response);
         exit;
     }
 }
