@@ -81,6 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!is_dir($reportDir)) {
         mkdir($reportDir, 0755, true); // สร้างโฟลเดอร์พร้อมสิทธิ์ และสร้างโฟลเดอร์ซ้อนถ้ามี
     }
+    // ลบไฟล์ทั้งหมดในโฟลเดอร์ก่อนบันทึกใหม่
+    $files = glob($reportDir . '*'); // ดึงรายการไฟล์ทั้งหมด
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            unlink($file); // ลบเฉพาะไฟล์ ไม่ลบโฟลเดอร์
+        }
+    }
 
     $templateProcessor = new TemplateProcessor($docx_template_path);
 
