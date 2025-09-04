@@ -79,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->bindParam(':vnid', $vnid, PDO::PARAM_INT);
         $query->execute();
 
-        $word_link = $upload_path . $fileName;
+        $relativePath = str_replace('../../../', '', $upload_path);
+        $word_link = __FULLPATH__ . $relativePath . $fileName;
         http_response_code(200);
         echo json_encode([
             "message" => "File uploaded successfully",

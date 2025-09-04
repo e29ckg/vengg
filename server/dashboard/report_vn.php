@@ -8,6 +8,9 @@ include '../../vendor/autoload.php';
 
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
+// use PhpOffice\PhpWord\Settings;
+// Settings::setZipClass(Settings::PCLZIP); // fallback ถ้า ZipArchive มีปัญหา
+
 
 include "../connect.php";
 include "../function.php";
@@ -15,39 +18,106 @@ include "../function.php";
 $data = json_decode(file_get_contents("php://input"));
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $ven_date   = $data->ven_date;
-    $vn_id     = $data->vn_id;
-    $vns_id     = $data->vns_id;
-    $user_id    = $data->user_id;
-    $datas = array();
+    $ven_date = $data->ven_date;
+    $vn_id = $data->vn_id;
+    $vns_id = $data->vns_id;
+    $user_id = $data->user_id;
+
+    $datas = [
+        'Court_Name' => 'ศาล...',
+        'Date_Th' => DateThai_full($ven_date),
+        'Just1' => '',
+        'Just2' => '',
+        'Just3' => '',
+        'Just4' => '',
+        'CSM1' => '',
+        'CSM2' => '',
+        'CSM3' => '',
+        'CSM4' => '',
+
+    ];
+
+
 
     $docx_template = "";
-    
-    $sql = "SELECT id, word FROM ven_name WHERE id='$vn_id'";
-    $query = $conn->prepare($sql);
-    $query->execute();
-    $result = $query->fetch(PDO::FETCH_OBJ);
-    if ($query->rowCount() > 0) {
-        $docx_template = $result->word;
-    } else {
-        $response = array(
-            'status' => 'error',
-            'message' => 'ไม่พบแบบฟอร์มรายงาน'
-        );
-        echo json_encode($response);
-        exit;
-    }
-    if ($docx_template == '') {
-        $response = array(
-            'status' => 'error',
-            'message' => 'ไม่พบแบบฟอร์มรายงาน'
-        );
-        echo json_encode($response);
-        exit;
-    }
 
     // The request is using the POST method
     try {
+        $sql = "SELECT id, word FROM ven_name WHERE id = :vnid";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':vnid', $vn_id, PDO::PARAM_INT);
+        $query->execute();
+        $result = $query->fetch(PDO::FETCH_OBJ);
+
+        if ($query->rowCount() > 0) {
+            $docx_template = $result->word;
+        } else {
+            $response = array(
+                'status' => 'error',
+                'message' => 'ไม่พบแบบฟอร์มรายงาน'
+            );
+            echo json_encode($response);
+            exit;
+        }
+        if ($docx_template == '') {
+            $response = array(
+                'status' => 'error',
+                'message' => 'ไม่พบแบบฟอร์มรายงาน'
+            );
+            echo json_encode($response);
+            exit;
+        }
+        $docx_template_path = realpath('../../uploads/template_docx/' . $result->word);
+        if (!$docx_template_path || !file_exists($docx_template_path)) {
+            echo json_encode(['status' => 'error', 'message' => 'ไม่พบไฟล์ template']);
+            exit;
+        }
+
+        $reportDir = '../../uploads/report_docx/';
+        if (!is_dir($reportDir))
+            mkdir($reportDir, 0755, true);
+        array_map('unlink', glob($reportDir . '*'));
+
+        //Court_Name
+        $sql = "SELECT id, name,dep,dep2,dep3,role FROM sign_name";
+        $query = $conn->prepare($sql);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_OBJ);
+        foreach ($results as $row) {
+            if ($row->role == 'Court_Name') {
+                $datas['Court_Name'] = $row->name;
+            }
+        }
+
+        //just
+        $sql = "SELECT v.id, v.user_id, CONCAT(p.fname,  p.name, ' ', p.sname) AS fullname, p.workgroup
+                FROM ven AS v
+                JOIN profile AS p ON v.user_id = p.user_id
+                WHERE ven_date = :ven_date
+                AND vn_id = :vn_id ";
+
+        $query = $conn->prepare($sql);
+        $query->bindParam(':ven_date', $ven_date, PDO::PARAM_STR);
+        $query->bindParam(':vn_id', $vn_id, PDO::PARAM_INT);
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_OBJ);
+
+        $index = 1;
+        $index_C = 1;
+        foreach ($result as $row) {
+            if ($index <= 4 && $row->workgroup == 'ผู้พิพากษา') { // จำกัดแค่ Just1-Just4                
+                $datas["Just{$index}"] = $row->fullname;
+                $index++;
+            } elseif ($index_C <= 4) {
+                $datas["CSM{$index_C}"] = $row->fullname;
+                $index_C++;
+            }
+        }
+
+
+
+
+
         // $sql = "SELECT 
         //                 v.id, v.ven_date, 
         //                 vn.name AS ven_com_name, 
@@ -66,44 +136,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // $result = $query->fetchAll(PDO::FETCH_OBJ); 
 
 
-    $docx_template_path = '../../uploads/template_docx/'.$docx_template;
-    if (!file_exists($docx_template_path)) {
-        $response = array(
-            'status' => 'error',
-            'message' => 'ไม่พบไฟล์แบบฟอร์มรายงาน'
-        );
-        echo json_encode($response);
-        exit;
-    }
-    $reportDir = '../../uploads/report_docx/';
 
-    // ตรวจสอบและสร้างโฟลเดอร์ถ้ายังไม่มี
-    if (!is_dir($reportDir)) {
-        mkdir($reportDir, 0755, true); // สร้างโฟลเดอร์พร้อมสิทธิ์ และสร้างโฟลเดอร์ซ้อนถ้ามี
-    }
-    // ลบไฟล์ทั้งหมดในโฟลเดอร์ก่อนบันทึกใหม่
-    $files = glob($reportDir . '*'); // ดึงรายการไฟล์ทั้งหมด
-    foreach ($files as $file) {
-        if (is_file($file)) {
-            unlink($file); // ลบเฉพาะไฟล์ ไม่ลบโฟลเดอร์
+
+
+
+        $templateProcessor = new TemplateProcessor($docx_template_path);
+
+        foreach ($datas as $key => $value) {
+            $templateProcessor->setValue($key, $value);
         }
-    }
 
-    $templateProcessor = new TemplateProcessor($docx_template_path);
+        $outputFileName = 'report_' . $vn_id . '_' . date('Ymd_His') . '.docx';
+        $outputFilePath = $reportDir . $outputFileName;
 
-    foreach ($datas as $key => $value) {
-        $templateProcessor->setValue($key, $value);
-    }
+        $templateProcessor->saveAs($outputFilePath);
+        $relativePath = str_replace('../../', '', $outputFilePath);
+        $fileUrl = __FULLPATH__ . $relativePath;
 
-    $outputFileName = 'report_' . $vn_id . '_' . date('Ymd_His') . '.docx';
-    $outputFilePath = $reportDir . $outputFileName;
+        http_response_code(200);
+        echo json_encode(['status' => 'success', 'fileUrl' => $fileUrl, 'datas' => $datas]);
 
-    $templateProcessor->saveAs($outputFilePath);
+        exit;
 
-    echo json_encode($outputFilePath);
-    exit;
 
-    
     } catch (PDOException $e) {
         $response = array(
             'status' => 'error',

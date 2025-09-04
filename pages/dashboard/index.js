@@ -512,16 +512,16 @@ Vue.createApp({
     report_vn(ven_date, vn_id, vns_id, user_id) {
       this.isLoading = true;
       axios
-        .post("../../server/dashboard/report_vn.php", { 
-          ven_date: ven_date, 
-          vn_id: vn_id, 
-          vns_id: vns_id, 
-          user_id: user_id
+        .post("../../server/dashboard/report_vn.php", {
+          ven_date: ven_date,
+          vn_id: vn_id,
+          vns_id: vns_id,
+          user_id: user_id,
         })
         .then((response) => {
-          if (response.data.status) {
+          if (response.data.status == "success") {
             this.alert("success", response.data.message, (timer = 1000));
-            window.open("../../uploads/ven_vn.docx", "_blank");
+            // window.open(response.data.fileUrl, "_blank");
           } else {
             this.alert("warning", response.data.message, (timer = 0));
           }
