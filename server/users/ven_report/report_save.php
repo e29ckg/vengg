@@ -14,9 +14,9 @@ $data = json_decode(file_get_contents("php://input"));
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $file = $_FILES['sendfile'] ?? null;
     $vnid = $_POST['vnid'] ?? '';
-           
+
     $upload_path = '../../../uploads/template_docx/';
-        if (!is_dir($upload_path)) {
+    if (!is_dir($upload_path)) {
         echo json_encode(["message" => "upload_path ไม่ถูกต้อง ", "status" => false]);
         exit;
     }
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-   $fileName = 'ven_report_' . $vnid . '_' . time() . '.' . $fileExt;
+    $fileName = 'ven_report_' . $vnid . '_' . time() . '.' . $fileExt;
 
     try {
         $sql = "SELECT word FROM ven_name WHERE id = :vnid";
@@ -80,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query->execute();
 
         $word_link = $upload_path . $fileName;
+        http_response_code(200);
         echo json_encode([
             "message" => "File uploaded successfully",
             "status" => true,
@@ -90,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         exit;
     } catch (PDOException $e) {
+        http_response_code(500);
         echo json_encode(["message" => "Error occurred: " . $e->getMessage(), "status" => false]);
         exit;
     }
