@@ -1,0 +1,4 @@
+# .gitignore
+*.log
+uploads/report_docx/
+uploads/temp_change/
