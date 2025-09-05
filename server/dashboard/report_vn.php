@@ -26,17 +26,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $datas = [
         'Court_Name' => 'ศาล...',
         'Date_Th' => DateThai_full($ven_date),
+        'DateTomorrow_Th' => DateThai_full(date('Y-m-d', strtotime($ven_date . ' +1 day'))),
+        'Just_Count' => '0',
         'Just1' => '',
         'Just2' => '',
         'Just3' => '',
         'Just4' => '',
+        'Just1_Dep' => '',
+        'Just2_Dep' => '',
+        'Just3_Dep' => '',
+        'Just4_Dep' => '',
+        'CSM_Count' => '0',
         'CSM1' => '',
         'CSM2' => '',
         'CSM3' => '',
         'CSM4' => '',
+        'CSM5' => '',
+        'CSM6' => '',
+        'CSM7' => '',
+        'CSM8' => '',
+        'CSM1_Dep' => '',
+        'CSM2_Dep' => '',
+        'CSM3_Dep' => '',
+        'CSM4_Dep' => '',
+        'CSM5_Dep' => '',
+        'CSM6_Dep' => '',
+        'CSM7_Dep' => '',
+        'CSM8_Dep' => '',
+        'Boss' => '',
+        'Boss_Dep1' => '',
+        'Boss_Dep2' => '',
+        'Boss_Dep3' => '',
+        'Po' => '',
+        'Po_Dep1' => '',
+        'Po_Dep2' => '',
+        'Po_Dep3' => '',
+        'ven_com_num' => '',
+        'ven_com_date' => '', 
+
 
     ];
-
 
 
     $docx_template = "";
@@ -78,8 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mkdir($reportDir, 0755, true);
         array_map('unlink', glob($reportDir . '*'));
 
-        //Court_Name
-        $sql = "SELECT id, name,dep,dep2,dep3,role FROM sign_name";
+        //Court_Name Boss Po
+        $sql = "SELECT id, name,dep,dep2,dep3,role FROM sign_name WHERE st = 1 ORDER BY FIELD(role, 'Court_Name', 'Chief_Judge', 'Director')";
         $query = $conn->prepare($sql);
         $query->execute();
         $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -88,13 +117,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $datas['Court_Name'] = $row->name;
             }
         }
+        foreach ($results as $row) {
+            if ($row->role == 'Chief_Judge') {
+                $datas['Boss'] = $row->name;
+                $datas['Boss_Dep1'] = $row->dep;
+                $datas['Boss_Dep2'] = $row->dep2;
+                $datas['Boss_Dep3'] = $row->dep3;
+            }
+        }
+        foreach ($results as $row) {
+            if ($row->role == 'Director') {
+                $datas['Po'] = $row->name;
+                $datas['Po_Dep1'] = $row->dep;
+                $datas['Po_Dep2'] = $row->dep2;
+                $datas['Po_Dep3'] = $row->dep3;
+            }
+        }
 
-        //just
-        $sql = "SELECT v.id, v.user_id, CONCAT(p.fname,  p.name, ' ', p.sname) AS fullname, p.workgroup
+        //ven_com_num ven_com_date
+        $sql = "SELECT vc.ven_com_num, vc.ven_com_date 
+                FROM ven AS v 
+                JOIN ven_com AS vc ON v.ven_com_idb = vc.id 
+                WHERE v.ven_date = :ven_date 
+                AND v.vn_id = :vn_id 
+                LIMIT 1";   
+        $query = $conn->prepare($sql);
+        $query->bindParam(':ven_date', $ven_date, PDO::PARAM_STR);
+        $query->bindParam(':vn_id', $vn_id, PDO::PARAM_INT);
+        $query->execute();
+        $result = $query->fetch(PDO::FETCH_OBJ);
+        if ($query->rowCount() > 0) {
+            $datas['ven_com_num'] = $result->ven_com_num;
+            $datas['ven_com_date'] = DateThai_full($result->ven_com_date);
+        }
+
+
+        //just and csm
+        $sql = "SELECT v.id, v.user_id, CONCAT(p.fname,  p.name, ' ', p.sname) AS fullname, p.workgroup, p.dep
                 FROM ven AS v
                 JOIN profile AS p ON v.user_id = p.user_id
                 WHERE ven_date = :ven_date
-                AND vn_id = :vn_id ";
+                AND vn_id = :vn_id and (v.`status` =1 OR v.`status` =2)
+                ORDER BY v.ven_time ASC";
 
         $query = $conn->prepare($sql);
         $query->bindParam(':ven_date', $ven_date, PDO::PARAM_STR);
@@ -107,38 +171,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         foreach ($result as $row) {
             if ($index <= 4 && $row->workgroup == 'ผู้พิพากษา') { // จำกัดแค่ Just1-Just4                
                 $datas["Just{$index}"] = $row->fullname;
+                $datas["Just{$index}_Dep"] = $row->dep;
                 $index++;
-            } elseif ($index_C <= 4) {
+            } elseif ($index_C <= 8 && $row->workgroup != 'ผู้พิพากษา') { // จำกัดแค่ CSM1-CSM8
                 $datas["CSM{$index_C}"] = $row->fullname;
+                $datas["CSM{$index_C}_Dep"] = $row->dep;
                 $index_C++;
             }
         }
 
-
-
-
-
-        // $sql = "SELECT 
-        //                 v.id, v.ven_date, 
-        //                 vn.name AS ven_com_name, 
-        //                 p.fname, p.name, p.sname, p.dep, p.workgroup, 
-        //                 vc.ven_com_num, vc.ven_com_date 
-        //         FROM ven as v 
-        //         INNER JOIN profile as p ON v.user_id = p.user_id
-        //         INNER JOIN ven_com as vc ON vc.id = v.ven_com_idb
-        //         INNER JOIN ven_name as vn ON v.vn_id = vn.id
-        //         WHERE v.ven_date = '$ven_date' 
-        //                 AND v.vn_id = '$vn_id'
-        //                 AND (v.`status` =1 OR v.`status` =2)
-        //         ORDER BY v.ven_time ASC";
-        // $query = $conn->prepare($sql);
-        // $query->execute();
-        // $result = $query->fetchAll(PDO::FETCH_OBJ); 
-
-
-
-
-
+        $datas['Just_Count'] = strval($index - 1);
+        $datas['CSM_Count'] = strval($index_C - 1);
 
         $templateProcessor = new TemplateProcessor($docx_template_path);
 
@@ -154,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $fileUrl = __FULLPATH__ . $relativePath;
 
         http_response_code(200);
-        echo json_encode(['status' => 'success', 'fileUrl' => $fileUrl, 'datas' => $datas]);
+        echo json_encode(['status' => 'success','message'=>'สร้างแบบฟอร์มเรียบร้อย', 'fileUrl' => $fileUrl, 'datas' => $datas]);
 
         exit;
 

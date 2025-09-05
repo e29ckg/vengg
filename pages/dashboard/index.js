@@ -521,7 +521,7 @@ Vue.createApp({
         .then((response) => {
           if (response.data.status == "success") {
             this.alert("success", response.data.message, (timer = 1000));
-            // window.open(response.data.fileUrl, "_blank");
+            window.open(response.data.fileUrl, "_blank");
           } else {
             this.alert("warning", response.data.message, (timer = 0));
           }

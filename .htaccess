@@ -1,5 +1,15 @@
 RewriteEngine On
 RewriteBase /pages
+
+
+# ❌ Block direct access to server/connect.php
+RewriteCond %{REQUEST_URI} ^/server/connect\.php$ [NC]
+RewriteRule ^.*$ - [F,L]
+
+# ❌ Block direct access to anything inside /uploads (including subfolders like /uploads/users)
+RewriteCond %{REQUEST_URI} ^/uploads/ [NC]
+RewriteRule ^.*$ - [F,L]
+
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

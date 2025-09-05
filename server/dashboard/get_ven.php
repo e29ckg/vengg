@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         vc.ven_month as ven_month, 
                         vn.name as ven_name, 
                         vn.DN, 
+                        vn.word as v_word, 
                         vns.name as u_role, 
                         vns.price as price, 
                         vns.color as color,
@@ -185,7 +186,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ? 'uploads/users/' . $result->img
             : 'assets/images/profiles/nopic.png';
 
-
+        $v_word = '';
+        if ($result->v_word != null && $result->v_word != '') {
+            $v_word = __FULLPATH__ .'uploads/template_docx/'. $result->v_word;
+        }
+        
 
         $ven_cerrent = [
             "id" => $result->id,
@@ -204,6 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "ven_name" => $result->ven_name,
             "ven_time" => $result->ven_time,
             "vn_id" => $result->vn_id,
+            "v_word" => $v_word,
             "vns_id" => $result->vns_id,
             "status" => $result->status,
             "resp_text" => $resp_text

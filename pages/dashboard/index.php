@@ -113,7 +113,11 @@ require_once('../../server/authen.php');
                                                     {{data_event.DN}} {{data_event.ven_com_name}} <br>
                                                     {{data_event.ven_com_num_all ? 'คำสั่งที่ '+data_event.ven_com_num_all: ''}}
                                                 </p>
-                                                <p><button @click="report_vn(data_event.ven_date, data_event.vn_id, data_event.vns_id, data_event.user_id)">รายงานเวร</button></p>
+                                                <p v-if="data_event.v_word" class="text-center">
+                                                    <button @click="report_vn(data_event.ven_date, data_event.vn_id, data_event.vns_id, data_event.user_id)" class="btn btn-success btn-sm">
+                                                    <i class="bi bi-printer"></i> รายงานเวร 
+                                                    </button>
+                                                </p>
                                                 <!-- เวรปฏิบัติหน้าที่ออกหมายจับและหมายค้นนอกเวลาราชการ (เวรกลางคืน) -->
                                                 <div v-if="data_event.vns_id == 110">
                                                     <button class="btn btn-success btn-sm mt-2" @click="report_jk(data_event.ven_date)">
