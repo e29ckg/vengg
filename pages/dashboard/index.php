@@ -119,15 +119,14 @@ require_once('../../server/authen.php');
                                                     </button>
                                                 </p>
                                                 <!-- เวรปฏิบัติหน้าที่ออกหมายจับและหมายค้นนอกเวลาราชการ (เวรกลางคืน) -->
-                                                <div v-if="data_event.vns_id == 110">
+                                                <!-- <div v-if="data_event.vns_id == 110">
                                                     <button class="btn btn-success btn-sm mt-2" @click="report_jk(data_event.ven_date)">
                                                         รายงานเวรหมายจับหมายค้น
                                                     </button>
-                                                    <!-- <button class="btn btn-success btn-sm mt-2" @click="report_jk(data_event.ven_date)">
+                                                    <button class="btn btn-success btn-sm mt-2" @click="report_jk(data_event.ven_date)">
                                                         บัญชีลงเวลา
-                                                    </button> -->
-
-                                                </div>
+                                                    </button>
+                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
