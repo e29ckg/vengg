@@ -143,6 +143,9 @@ require_once('../../server/authen.php');
                                                 <optgroup label="ผู้พิพากษาสมทบ" v-if="workgroup =='ผู้พิพากษาสมทบ'" >
                                                     <option v-for="j in judge_somtop" :value="j.uid" > {{j.name}}</option>
                                                 </optgroup>
+                                                <optgroup label="ผู้พิพากษา" v-if="workgroup !== 'ผู้พิพากษา' && workgroup !== 'ผู้พิพากษาสมทบ'">
+                                                    <option v-for="j in judge" :value="j.uid" >{{j.name}}</option>
+                                                </optgroup>
                                                 <optgroup label="เจ้าหน้าที่" v-if="workgroup !== 'ผู้พิพากษา' && workgroup !== 'ผู้พิพากษาสมทบ'">
                                                     <option v-for="u in not_judge" :value="u.uid" >{{u.name}}</option>
                                                 </optgroup>
