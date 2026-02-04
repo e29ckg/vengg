@@ -128,19 +128,56 @@ try {
             $weekdays = 0;
             $holiday = 0;
             $price_all = 0;
+            $comment = '';
 
             foreach ($vens as $ven) {
                 if ($user->user_id == $ven->user_id) {
                     if ($ven->price > 0) {
                         $price_one = $ven->price;
+                        if($ven->DN == 'กลางคืน'){
+                            // ตรวจสอบเวรกลางวันในวันก่อนหน้าและวันถัดไป
+                            $ven_date_d = date("Y-m-d", strtotime($ven->ven_date));
+                            $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven->ven_date)));
+
+                            $sql_VU = "SELECT 
+                                        v.id,
+                                        v.ven_date,
+                                        v.status,
+                                        vn.DN
+                                    FROM ven AS v
+                                    INNER JOIN ven_name AS vn ON v.vn_id = vn.id
+                                    INNER JOIN ven_name_sub AS vns ON v.vns_id = vns.id
+                                    WHERE v.user_id = :user_id
+                                        AND vn.DN = 'กลางวัน'                                            
+                                        AND v.ven_date IN (:ven_date_d1, :ven_date_u1)
+                                        AND vns.price > 0
+                                        AND v.status IN (1, 2);";
+                            $query_VU = $conn->prepare($sql_VU);
+                            $query_VU->bindParam(':user_id', $user->user_id, PDO::PARAM_INT);
+                            $query_VU->bindParam(':ven_date_d1', $ven_date_d);
+                            $query_VU->bindParam(':ven_date_u1', $ven_date_u1);
+                            $query_VU->execute();
+                            $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
+                            if ($query_VU->rowCount()) {
+                                // มีเวรกลางวันในวันก่อนหน้าหรือวันถัดไป ไม่เพิ่มค่ากลางคืน
+                                $comment .= DateThai_full($ven->ven_date).", ";
+                                $price_all += 0;
+                            } else {
+                                // ไม่มีเวรกลางวันในวันก่อนหน้าหรือวันถัดไป เพิ่มค่ากลางคืน
+                                $price_all += $ven->price;
+                            }
+                        }else{
+                           $price_all += $ven->price;
+                        }  
+
+                        
                         $price += $ven->price;
 
                         if (ck_holiday($ven->ven_date, $HLD)) {
                             $holiday++;
                         } else {
                             $weekdays++;
-                        }
-                        
+                        }                        
                         array_push($work_day, $ven->ven_date);
                     }
                 }
@@ -149,7 +186,10 @@ try {
 
             if ($price > 0) {
 
-                $price_total_all += $price_one * ($weekdays + $holiday);
+                $price_total_all += $price_all;
+                if (strlen($comment) > 0) {
+                    $comment = rtrim($comment, ", ")." ไม่เพิ่มค่ากลางคืน";
+                }
                 array_push($datas, array(
                     'user_id'   => $user->user_id,
                     'name'      => $user->fname . $user->name . ' ' . $user->sname,
@@ -160,7 +200,8 @@ try {
                     'price_one' => Num_f($price_one),
                     'weekdays'  => $weekdays,
                     'holiday'   => $holiday,
-                    'price_all' => $price_one * ($weekdays + $holiday),
+                    'price_all' => $price_all,
+                    'comment'   => $comment
 
                 ));
             }

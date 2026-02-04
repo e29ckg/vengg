@@ -62,17 +62,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $users = $query->fetchAll(PDO::FETCH_OBJ);
 
         $sql = "SELECT 
-                        v.*, 
-                        vc.ven_month,                         
-                        vn.DN,                         
-                        vns.price as price
-                FROM ven as v
+                    v.*, 
+                    vc.ven_month,                         
+                    vn.DN,                         
+                    vns.price AS price,
+                    p.fname, 
+                    p.name, 
+                    p.sname
+                FROM ven AS v
                 INNER JOIN ven_com AS vc ON v.ven_com_idb = vc.id
                 INNER JOIN ven_name AS vn ON v.vn_id = vn.id
                 INNER JOIN ven_name_sub AS vns ON v.vns_id = vns.id
+                INNER JOIN profile AS p ON p.user_id = v.user_id
                 WHERE vc.ven_month = :date_month 
-                    AND (v.status = 1 OR v.status = 2) 
-                ORDER BY v.user_id";
+                AND (v.status = 1 OR v.status = 2)
+                ORDER BY v.user_id;";
         $query = $conn->prepare($sql);
         $query->bindParam(':date_month', $DATE_MONTH, PDO::PARAM_STR);
         $query->execute();
@@ -101,23 +105,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $N_price = 0;
 
             foreach ($vens as $ven) {
+                $price = 0;
+                $user_id = $user->user_id;
+                $comment = '';
                 if ($ven->user_id == $user->user_id && $ven->price > 0) {
 
-                    if ($ven->DN == 'กลางวัน') {
+                    // if ($ven->DN == 'กลางวัน') {
+                    if ($ven->DN == 'กลางวัน' || $ven->DN == 'nightCourt') {
+                        $price += $ven->price;
                         $D_price += $ven->price;
                         $D_c++;
                     }
-                    if ($ven->DN == 'กลางคืน') {
-                        $N_price += $ven->price;
-                        $N_c++;
+                    if ($ven->DN == 'กลางคืน') {      
+                        $ven_date_d = date("Y-m-d", strtotime($ven->ven_date));
+                        $ven_date_u1 = date("Y-m-d", strtotime('+1 day', strtotime($ven->ven_date)));
+                        $sql_VU = "SELECT 
+                                        v.id,
+                                        v.ven_date,
+                                        v.status,
+                                        vn.DN
+                                    FROM ven AS v
+                                    INNER JOIN ven_name AS vn ON v.vn_id = vn.id
+                                    INNER JOIN ven_name_sub AS vns ON v.vns_id = vns.id
+                                    WHERE v.user_id = :user_id
+                                        AND vn.DN = 'กลางวัน'                                            
+                                        AND v.ven_date IN (:ven_date_d1, :ven_date_u1)
+                                        AND vns.price > 0
+                                        AND v.status IN (1, 2);";
+                        $query_VU = $conn->prepare($sql_VU);
+                        $query_VU->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                        $query_VU->bindParam(':ven_date_d1', $ven_date_d);
+                        $query_VU->bindParam(':ven_date_u1', $ven_date_u1);
+                        $query_VU->execute();
+                        $res_VU = $query_VU->fetchAll(PDO::FETCH_OBJ);
+                        if ($query_VU->rowCount()) {
+                            // มีเวรกลางวันในวันก่อนหน้าหรือวันถัดไป ไม่เพิ่มค่ากลางคืน
+                            $comment = 'ไม่เพิ่มค่ากลางคืน เนื่องจากมีเวรกลางวันในวันก่อนหน้าหรือวันถัดไป';
+                            $price = 0;
+                        } else {
+                            // ไม่มีเวรกลางวันในวันก่อนหน้าหรือวันถัดไป เพิ่มค่ากลางคืน
+                            $price = $ven->price;
+                            $N_price += $ven->price;
+                            $N_c++;                            
+                        }                  
+
                     }
+
                     $price_all += $ven->price;
 
                     array_push($ven_users, array(
                         "ven_date" => $ven->ven_date,
                         "DN" => $ven->DN,
                         "ven_com_idb" => $ven->ven_com_idb,
-                        "price" => $ven->price,
+                        "price" => $price,
+                        "comment" => $comment
                     ));
                 }
             }
@@ -129,8 +170,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $price_sum = 0;
                     $vsc_price = 0;
                     $v_count = 0;
-                    foreach ($ven_users as $vus) {
-                        if ($vus['ven_com_idb'] == $vcs->id) {
+                    foreach ($ven_users as $vus) {                        
+                        if ($vus['ven_com_idb'] == $vcs->id) {                            
                             $vsc_price += $vus['price'];
                             ++$v_count;
                         }
